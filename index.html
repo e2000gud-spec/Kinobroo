@@ -212,6 +212,23 @@
     .card-meta {
       font-size: 11px; color: var(--muted); margin-top: 3px;
     }
+    .season-chips-mini {
+      display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px;
+    }
+    .s-chip-mini {
+      font-size: 9.5px; font-weight: 700;
+      background: rgba(245, 180, 0, 0.12);
+      border: 1px solid rgba(245, 180, 0, 0.28);
+      color: var(--accent);
+      padding: 1px 5px; border-radius: 5px;
+    }
+    .genre-tags-mini {
+      display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px;
+    }
+    .g-tag-mini {
+      font-size: 9.5px; color: var(--muted);
+      background: var(--card-2); padding: 1px 5px; border-radius: 4px;
+    }
     .wo-pill {
       width: 100%; text-align: left;
       padding: 5px 8px; border-radius: 8px;
@@ -255,6 +272,94 @@
       background: var(--card); border: 1px dashed var(--border);
       border-radius: var(--radius);
     }
+
+    /* Statistics View */
+    .stats-view {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .st-subtabs {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+    }
+    .st-subtab {
+      padding: 8px 4px; border-radius: 12px; text-align: center;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .st-subtab.active {
+      background: var(--accent); color: #111; border-color: var(--accent);
+    }
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+    }
+    .kpi-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 11px 12px;
+    }
+    .kpi-lbl { font-size: 10.5px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+    .kpi-val { font-size: 18px; font-weight: 800; margin-top: 3px; color: var(--text); }
+    .kpi-sub { font-size: 11px; color: var(--accent); margin-top: 2px; font-weight: 600; }
+    .panel {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 13px;
+    }
+    .panel-title {
+      font-size: 14px; font-weight: 800; margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .g-bar-row {
+      margin-bottom: 9px; cursor: pointer;
+      padding: 6px 8px; border-radius: 10px;
+      background: var(--card-2); border: 1px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .g-bar-row:last-child { margin-bottom: 0; }
+    .g-bar-row.selected {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .g-bar-top {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12.5px; font-weight: 700; margin-bottom: 5px;
+    }
+    .g-bar-meta {
+      font-size: 11.5px; color: var(--muted); font-weight: 600;
+    }
+    .g-bar-track {
+      width: 100%; height: 7px; border-radius: 999px;
+      background: #121218; overflow: hidden;
+    }
+    .g-bar-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), #fbbf24);
+    }
+    .g-bar-fill.blue {
+      background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    }
+    .rated-item-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 9px 10px; border-radius: 12px;
+      background: var(--card-2); border: 1px solid var(--border);
+      margin-bottom: 7px; cursor: pointer;
+    }
+    .rated-item-row:last-child { margin-bottom: 0; }
+    .rated-item-left { min-width: 0; flex: 1; }
+    .rated-item-title {
+      font-size: 13px; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .rated-item-sub {
+      font-size: 11px; color: var(--muted); margin-top: 2px;
+    }
+    .rated-item-score {
+      background: rgba(245, 180, 0, 0.14);
+      border: 1px solid rgba(245, 180, 0, 0.4);
+      color: var(--accent);
+      font-size: 12.5px; font-weight: 800;
+      padding: 4px 8px; border-radius: 9px;
+      flex-shrink: 0;
+    }
+
+    /* Modals */
     .modal-bg {
       position: fixed; inset: 0; background: rgba(0,0,0,0.78);
       display: none; align-items: flex-end; justify-content: center;
@@ -372,6 +477,53 @@
       display: flex; align-items: center; justify-content: space-between;
       background: var(--card-2); border-radius: 9px; padding: 4px 8px; margin-top: 4px;
     }
+
+    /* Per-season rating selector in modal */
+    .season-rate-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px; margin-top: 10px;
+    }
+    .season-tabs-row {
+      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px;
+      scrollbar-width: none;
+    }
+    .season-tabs-row::-webkit-scrollbar { display: none; }
+    .sr-tab {
+      flex: 0 0 auto; padding: 6px 10px; border-radius: 9px;
+      background: var(--card-2); border: 1px solid var(--border);
+      color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .sr-tab.active {
+      background: var(--accent-dim); border-color: var(--accent); color: var(--text);
+    }
+    .sr-tab .s-badge {
+      color: var(--accent); font-weight: 800;
+    }
+    .sr-add-btn {
+      flex: 0 0 auto; padding: 6px 10px; border-radius: 9px;
+      background: var(--card-2); border: 1px dashed var(--border);
+      color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .avg-rate-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--border);
+      font-size: 12px; color: var(--muted); font-weight: 600;
+    }
+
+    /* Genre picker chips in modal */
+    .genre-chips-wrap {
+      display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px;
+    }
+    .g-chip {
+      padding: 4px 9px; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer;
+    }
+    .g-chip.active {
+      background: var(--accent-dim); border-color: var(--accent); color: var(--accent);
+    }
+
     .rate-grid {
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;
     }
@@ -399,7 +551,7 @@
       border-radius: 14px; padding: 12px; margin-top: 14px;
     }
 
-    /* Watch Order Modal styles (YummyAnime style with 🟢 / ⏳ / 🔴) */
+    /* Watch Order Modal styles */
     .wo-banner {
       background: #22c55e; color: #052e16;
       font-weight: 800; font-size: 12.5px;
@@ -467,21 +619,25 @@
     <div class="stats" id="statsBar"></div>
     <div class="tabs" id="typeTabs"></div>
 
-    <div class="search-row">
-      <input type="text" class="search-input" id="localSearch" placeholder="Поиск по сохранённым тайтлам..." />
-      <button class="clear-search" id="clearLocalSearch">✕</button>
+    <div id="catalogControls">
+      <div class="search-row">
+        <input type="text" class="search-input" id="localSearch" placeholder="Поиск по сохранённым тайтлам..." />
+        <button class="clear-search" id="clearLocalSearch">✕</button>
+      </div>
+
+      <div class="filters">
+        <div class="pills" id="statusPills"></div>
+        <select class="sort-sel" id="sortSel">
+          <option value="newest">Сначала новые</option>
+          <option value="rating">По оценке</option>
+          <option value="alpha">По алфавиту</option>
+        </select>
+      </div>
+
+      <div class="grid" id="cardsGrid"></div>
     </div>
 
-    <div class="filters">
-      <div class="pills" id="statusPills"></div>
-      <select class="sort-sel" id="sortSel">
-        <option value="newest">Сначала новые</option>
-        <option value="rating">По оценке</option>
-        <option value="alpha">По алфавиту</option>
-      </select>
-    </div>
-
-    <div class="grid" id="cardsGrid"></div>
+    <div id="statsContainer" style="display:none"></div>
   </div>
 
   <!-- Add / Edit Modal -->
@@ -545,8 +701,28 @@
         </div>
       </div>
 
-      <label class="field-lbl">Оценка (1–10)</label>
-      <div class="rate-grid" id="rateGrid"></div>
+      <!-- Movie single rating -->
+      <div id="movieRateBlock">
+        <label class="field-lbl">Оценка (1–10)</label>
+        <div class="rate-grid" id="rateGrid"></div>
+      </div>
+
+      <!-- Series / Anime per-season rating -->
+      <div id="seasonRateBlock" class="season-rate-box" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span class="field-lbl" style="margin:0">Оценка по сезонам (1–10)</span>
+          <span id="activeSeasonLabel" style="font-size:11.5px;font-weight:800;color:var(--accent)">Сезон 1</span>
+        </div>
+        <div class="season-tabs-row" id="seasonRateTabs"></div>
+        <div class="rate-grid" id="seasonRateGrid"></div>
+        <div class="avg-rate-bar" id="seasonAvgBar"></div>
+      </div>
+
+      <label class="field-lbl">Жанры (для статистики)</label>
+      <div class="input-row">
+        <input type="text" class="inp" id="fGenresInput" placeholder="Через запятую: Боевик, Фантастика..." style="height:36px;font-size:13px" />
+      </div>
+      <div class="genre-chips-wrap" id="genreQuickChips"></div>
 
       <label class="field-lbl">Заметка (необязательно)</label>
       <input type="text" class="inp" id="fNote" placeholder="Короткий коммент для себя..." style="width:100%" />
@@ -605,11 +781,11 @@
       </div>
 
       <div class="settings-card">
-        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">Авто-загрузка обложек</div>
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">Авто-загрузка обложек и жанров</div>
         <div id="bulkCoverStatus" style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.4">
-          Подтянет постеры через YummyAnime (для аниме) и Кинопоиск (для фильмов/сериалов).
+          Подтянет постеры и жанры через YummyAnime (для аниме) и Кинопоиск (для фильмов/сериалов).
         </div>
-        <button class="btn-pri" id="btnBulkCovers" style="width:100%;height:40px;font-size:13.5px">🖼️ Загрузить все обложки</button>
+        <button class="btn-pri" id="btnBulkCovers" style="width:100%;height:40px;font-size:13.5px">🖼️ Загрузить обложки и жанры</button>
       </div>
 
       <div class="settings-card" style="display:flex;gap:8px;align-items:center;justify-content:space-between">
@@ -626,31 +802,40 @@
   <div class="toast" id="toast"></div>
 
   <script>
-
+const DEFAULT_GENRE_MAP = {"Микки 17": ["Фантастика", "Комедия", "Приключения"], "Чужой завет": ["Ужасы", "Фантастика", "Триллер"], "Чужой прометей": ["Фантастика", "Ужасы", "Детектив"], "Air:big jump": ["Драма", "Спорт", "Биография"], "Рейс на вылет": ["Боевик", "Триллер", "Комедия"], "Послезавтра": ["Фантастика", "Триллер", "Приключения"], "Потеряшка Джой": ["Комедия", "Драма"], "Последний день Земли": ["Фантастика", "Приключения", "Триллер"], "Человек паук: новый день": ["Фантастика", "Боевик", "Приключения"], "Не беспокойся, дорогая": ["Триллер", "Детектив", "Драма"], "Закатать в асфальт": ["Криминал", "Триллер", "Драма"], "Очень страшное кино 6": ["Комедия", "Ужасы"], "Настройщик": ["Триллер", "Криминал", "Драма"], "Тройная граница": ["Боевик", "Триллер", "Криминал"], "Три секунды": ["Криминал", "Триллер", "Боевик"], "Город воров": ["Криминал", "Триллер", "Драма"], "Планета обезьян: новая эра": ["Фантастика", "Боевик", "Приключения"], "Обсессия": ["Ужасы", "Триллер"], "Крик 7": ["Ужасы", "Детектив", "Триллер"], "Золото": ["Приключения", "Драма", "Триллер"], "Backrooms": ["Ужасы", "Фантастика", "Триллер"], "Майкл": ["Биография", "Драма", "Музыка"], "Проект «конец света»": ["Фантастика", "Драма", "Приключения"], "Тот самый": ["Ужасы", "Триллер", "Спорт"], "Нормал": ["Боевик", "Триллер", "Криминал"], "Ограбление в Лос-Анджелесе": ["Криминал", "Триллер", "Боевик"], "Человек, который изменил все": ["Драма", "Спорт", "Биография"], "Новичок": ["Триллер", "Боевик"], "Мистер и миссис Смит": ["Боевик", "Комедия", "Триллер"], "Тихоокеанский рубеж": ["Фантастика", "Боевик", "Приключения"], "Тихоокеанский рубеж 2": ["Фантастика", "Боевик", "Приключения"], "Гран Торино": ["Драма", "Криминал"], "Патруль": ["Криминал", "Триллер", "Боевик"], "Мортал комбат": ["Боевик", "Фэнтези", "Приключения"], "Мортал Комбат 2": ["Боевик", "Фэнтези", "Приключения"], "Одиссея": ["Приключения", "Фэнтези", "Драма"], "Громовержцы": ["Фантастика", "Боевик", "Приключения"], "Потрошители": ["Фантастика", "Боевик", "Триллер"], "Агенты АНКЛ": ["Боевик", "Комедия", "Приключения"], "Гренландия": ["Фантастика", "Триллер", "Драма"], "Боксёр": ["Драма", "Спорт"], "Горничная": ["Триллер", "Драма", "Детектив"], "Тор:Любовь и гром": ["Фантастика", "Боевик", "Комедия"], "Всеведущий читатель": ["Фэнтези", "Боевик", "Приключения"], "Казнить нельзя помиловать": ["Фантастика", "Триллер", "Детектив"], "Убийца в петле времени": ["Фантастика", "Боевик", "Триллер"], "Тёмные отражения": ["Фантастика", "Триллер", "Приключения"], "Я видел дьявола": ["Триллер", "Криминал", "Драма"], "Никто не выжил": ["Ужасы", "Триллер", "Боевик"], "Враг": ["Триллер", "Детектив", "Драма"], "Орудия": ["Ужасы", "Детектив", "Триллер"], "Угнать за 60 секунд": ["Боевик", "Криминал", "Триллер"], "Бегущий человек": ["Фантастика", "Боевик", "Триллер"], "Гренландия 2": ["Фантастика", "Триллер", "Драма"], "Пандорум": ["Фантастика", "Ужасы", "Триллер"], "Хищник. Планета смерти": ["Фантастика", "Боевик", "Ужасы"], "Матрица": ["Фантастика", "Боевик", "Киберпанк"], "Матрица перезагрузка": ["Фантастика", "Боевик", "Киберпанк"], "Матрица революция": ["Фантастика", "Боевик", "Киберпанк"], "Матрица воскрешение": ["Фантастика", "Боевик", "Киберпанк"], "Иллюзия обмана 3": ["Триллер", "Криминал", "Детектив"], "Особо опасный гражданин": ["Триллер", "Драма", "Криминал"], "Довод": ["Фантастика", "Боевик", "Триллер"], "Ирландец": ["Криминал", "Драма", "Биография"], "Опустошение": ["Боевик", "Триллер", "Криминал"], "Новокаин": ["Боевик", "Комедия", "Триллер"], "Контрабанда": ["Боевик", "Триллер", "Криминал"], "Люди икс:дни минув. будущего": ["Фантастика", "Боевик", "Приключения"], "Волк с Уолл-Стрит": ["Драма", "Криминал", "Комедия"], "Top gun : мэверик": ["Боевик", "Драма"], "Кирпич": ["Детектив", "Триллер", "Криминал"], "Война будущего": ["Фантастика", "Боевик", "Приключения"], "Баллада о маленьком игроке": ["Триллер", "Драма"], "Исчезнувшая": ["Триллер", "Детектив", "Драма"], "11 друзей Оушена": ["Криминал", "Триллер", "Комедия"], "13 друзей Оушена": ["Криминал", "Триллер", "Комедия"], "Левша": ["Драма", "Спорт"], "NFS жажда скорости": ["Боевик", "Криминал", "Триллер"], "Меню": ["Триллер", "Ужасы", "Комедия"], "Ущелье": ["Фантастика", "Боевик", "Триллер"], "Балерина": ["Боевик", "Триллер", "Криминал"], "Чёрная пантера": ["Фантастика", "Боевик", "Приключения"], "Чёрная пантера: Ваканда навеки": ["Фантастика", "Боевик", "Драма"], "Дэдпул": ["Боевик", "Комедия", "Фантастика"], "Дэдпул 2": ["Боевик", "Комедия", "Фантастика"], "Чёрный телефон": ["Ужасы", "Триллер", "Детектив"], "Чёрный телефон 2": ["Ужасы", "Триллер", "Детектив"], "Я Франкенштейн": ["Фэнтези", "Боевик", "Фантастика"], "Грабитель с крышы": ["Криминал", "Драма", "Комедия"], "Линкольн для адвоката": ["Триллер", "Криминал", "Драма"], "Грань будущего": ["Фантастика", "Боевик", "Приключения"], "Расплата": ["Боевик", "Триллер", "Криминал"], "Расплата 2": ["Боевик", "Триллер", "Криминал"], "Как приручить дракона": ["Фэнтези", "Приключения", "Комедия"], "Мастер": ["Боевик", "Триллер"], "Добыча 2022": ["Фантастика", "Боевик", "Ужасы"], "Разбогатей или сдохни": ["Драма", "Криминал", "Музыка"], "8 миля": ["Драма", "Музыка"], "Девушка с татуировкой дракона": ["Триллер", "Детектив", "Криминал"], "Голодные игры баллада": ["Фантастика", "Драма", "Приключения"], "Война миров Z": ["Ужасы", "Фантастика", "Боевик"], "Синистер": ["Ужасы", "Детектив", "Триллер"], "Дэдпул Росомаха": ["Боевик", "Комедия", "Фантастика"], "Пленницы": ["Триллер", "Детектив", "Драма"], "Никто": ["Боевик", "Триллер", "Криминал"], "Никто 2": ["Боевик", "Триллер", "Криминал"], "1+1": ["Драма", "Комедия", "Биография"], "28 дней спустя": ["Ужасы", "Фантастика", "Триллер"], "28 месяцев спустя": ["Ужасы", "Фантастика", "Триллер"], "28 лет спустя": ["Ужасы", "Фантастика", "Триллер"], "Достать ножи": ["Детектив", "Комедия", "Криминал"], "Достать ножи 2 (стекл.луковица)": ["Детектив", "Комедия", "Криминал"], "Достать ножи 3 (вос.покойника)": ["Детектив", "Триллер", "Криминал"], "Аватар путь воды": ["Фантастика", "Фэнтези", "Приключения"], "Аватар": ["Фантастика", "Фэнтези", "Приключения"], "Аватар огонь и пепел": ["Фантастика", "Фэнтези", "Приключения"], "Вес победы": ["Драма", "Спорт"], "Я знаю, что вы сделали прш летом": ["Ужасы", "Триллер", "Детектив"], "Звёздные войны": ["Фантастика", "Приключения", "Боевик"], "Бегущий в лабиринте": ["Фантастика", "Триллер", "Приключения"], "Адреналин": ["Боевик", "Триллер", "Криминал"], "Адреналин 2": ["Боевик", "Триллер", "Криминал"], "Ванильное небо": ["Фантастика", "Триллер", "Драма"], "Планета обезьян": ["Фантастика", "Боевик", "Драма"], "Интерстеллар": ["Фантастика", "Драма", "Приключения"], "Логан:Росомаха": ["Фантастика", "Боевик", "Драма"], "Формула 1": ["Драма", "Спорт"], "Дом у дороги": ["Боевик", "Триллер"], "Фокус": ["Криминал", "Комедия", "Драма"], "Кожа, в которой я живу": ["Триллер", "Драма", "Фантастика"], "Геймер": ["Фантастика", "Боевик", "Триллер"], "Джентельмены": ["Криминал", "Комедия", "Боевик"], "Гранд Туризмо": ["Спорт", "Драма", "Биография"], "Пункт назначения:узы крови": ["Ужасы", "Триллер"], "Главный герой": ["Фантастика", "Комедия", "Боевик"], "Первому игроку приготовиться": ["Фантастика", "Приключения", "Боевик"], "Побег из Шоушенко": ["Драма", "Криминал"], "Остров проклятых": ["Триллер", "Детектив", "Драма"], "Зеленая миля": ["Драма", "Фэнтези", "Криминал"], "Властелин колец": ["Фэнтези", "Приключения", "Драма"], "Варкрафт": ["Фэнтези", "Боевик", "Приключения"], "Дроп": ["Триллер", "Детектив"], "Гонка (2013)": ["Спорт", "Драма", "Биография"], "Ferrari": ["Биография", "Драма", "Спорт"], "Верни ее из мёртвых": ["Ужасы", "Триллер"], "Форест Гамп": ["Драма", "Комедия"], "Зеленая книга": ["Драма", "Комедия", "Биография"], "Бойцовский клуб": ["Триллер", "Драма", "Криминал"], "Леон": ["Боевик", "Триллер", "Драма"], "Хоббит": ["Фэнтези", "Приключения"], "Крэйвен-охотник": ["Фантастика", "Боевик", "Приключения"], "Криминальное чтиво": ["Криминал", "Драма", "Комедия"], "Улыбка": ["Ужасы", "Триллер", "Детектив"], "Улыбка 2": ["Ужасы", "Триллер", "Детектив"], "Бетмен(Паттинсон)": ["Боевик", "Криминал", "Детектив"], "Отряд самоубийц": ["Фантастика", "Боевик", "Комедия"], "Области тьмы": ["Фантастика", "Триллер", "Детектив"], "Наследник": ["Криминал", "Триллер", "Драма"], "Блейд(3)": ["Фэнтези", "Боевик", "Ужасы"], "Западня": ["Триллер", "Криминал", "Детектив"], "Бэтмен против супермена": ["Фантастика", "Боевик", "Приключения"], "Далласский клуб покупателей": ["Драма", "Биография"], "Гарри Поттер(8)": ["Фэнтези", "Приключения", "Детектив"], "Фантастические твари": ["Фэнтези", "Приключения"], "Быстрее пули": ["Боевик", "Комедия", "Триллер"], "Железный человек": ["Фантастика", "Боевик", "Приключения"], "Железный человек 2": ["Фантастика", "Боевик", "Приключения"], "Железный человек 3": ["Фантастика", "Боевик", "Приключения"], "Тор": ["Фэнтези", "Боевик", "Приключения"], "Первый мститель(Кэп)": ["Фантастика", "Боевик", "Приключения"], "Мстители": ["Фантастика", "Боевик", "Приключения"], "Тор 2": ["Фэнтези", "Боевик", "Приключения"], "Первый мститель:Др война": ["Фантастика", "Боевик", "Триллер"], "Стражи галактики": ["Фантастика", "Боевик", "Комедия"], "Мстители: Альтрон": ["Фантастика", "Боевик", "Приключения"], "Франкенштейн": ["Ужасы", "Фантастика", "Драма"], "Первый мститель:Противостояние": ["Фантастика", "Боевик", "Триллер"], "Геошторм": ["Фантастика", "Боевик", "Триллер"], "Грешники": ["Ужасы", "Триллер", "Драма"], "От заката до рассвета": ["Ужасы", "Боевик", "Криминал"], "Фантастическая четвёрка 4": ["Фантастика", "Боевик", "Приключения"], "Джон Уик": ["Боевик", "Триллер", "Криминал"], "Лило и стич": ["Фантастика", "Комедия", "Приключения"], "Великий уравнитель": ["Боевик", "Триллер", "Криминал"], "Эверест": ["Приключения", "Драма", "Триллер"], "Тупой и ещё тупее": ["Комедия"], "Омерзительная восьмерка": ["Криминал", "Детектив", "Триллер"], "КингДом": ["Ужасы", "Триллер", "Боевик"], "Дамер": ["Криминал", "Драма", "Триллер"], "Гангсталэнд": ["Криминал", "Драма", "Триллер"], "КиллерБот": ["Фантастика", "Боевик", "Комедия"], "Фаллаут": ["Фантастика", "Боевик", "Приключения"], "Тед Лассо": ["Комедия", "Драма", "Спорт"], "Рыцарь семи королевств": ["Фэнтези", "Приключения", "Драма"], "Темная материя": ["Фантастика", "Триллер", "Драма"], "Извне": ["Ужасы", "Фантастика", "Триллер"], "Земля без людей": ["Фантастика", "Драма"], "Нарковоры": ["Криминал", "Драма", "Триллер"], "Люк кейдж": ["Фантастика", "Боевик", "Криминал"], "Пингвин": ["Криминал", "Драма", "Триллер"], "Осколки": ["Драма", "Триллер", "Детектив"], "Снегопад": ["Криминал", "Драма"], "Садовник": ["Триллер", "Драма", "Криминал"], "Бункер для богачей": ["Триллер", "Драма", "Фантастика"], "Завучи": ["Комедия", "Драма"], "Друзья и соседи": ["Драма", "Комедия", "Криминал"], "Drive to survive": ["Спорт", "Документальный"], "Переполненная комната": ["Триллер", "Драма", "Детектив"], "Сорвиголова": ["Боевик", "Криминал", "Драма"], "Озарк": ["Криминал", "Драма", "Триллер"], "Пацаны": ["Фантастика", "Боевик", "Комедия"], "Фишер": ["Триллер", "Детектив", "Криминал"], "9 тел в мексиканском морге": ["Детектив", "Триллер", "Криминал"], "Дом драконов": ["Фэнтези", "Драма", "Приключения"], "Амер Ист Ужасов": ["Ужасы", "Триллер", "Драма"], "Видеть": ["Фантастика", "Боевик", "Драма"], "Киберслав": ["Фантастика", "Боевик", "Фэнтези"], "Рай": ["Триллер", "Фантастика", "Драма"], "Разделение": ["Фантастика", "Триллер", "Детектив"], "Игра престолов": ["Фэнтези", "Драма", "Приключения"], "Бухта вдов": ["Детектив", "Триллер", "Ужасы"], "Сквозь снег": ["Фантастика", "Триллер", "Драма"], "Остаться в живых": ["Фантастика", "Приключения", "Детектив"], "Ганнибал": ["Триллер", "Криминал", "Детектив"], "Острые козырьки": ["Криминал", "Драма"], "Очень странные дела": ["Фантастика", "Ужасы", "Детектив"], "Игра в кальмара": ["Триллер", "Драма", "Боевик"], "Защищая Джейкоба": ["Детектив", "Драма", "Триллер"], "Чёрное зеркало": ["Фантастика", "Триллер", "Драма"], "Подросток": ["Драма", "Криминал", "Триллер"], "День шакала": ["Триллер", "Боевик", "Криминал"], "Маньяк": ["Фантастика", "Драма", "Комедия"], "Бумажный дом": ["Криминал", "Триллер", "Боевик"], "Во все тяжкие": ["Криминал", "Драма", "Триллер"], "11.22.63": ["Фантастика", "Триллер", "Детектив"], "Чёрная птица": ["Криминал", "Драма", "Триллер"], "Король талсы": ["Криминал", "Драма", "Комедия"], "Атака титанов": ["Боевик", "Драма", "Фэнтези"], "Человек - бензопила": ["Боевик", "Ужасы", "Фэнтези"], "Человек - бензопила: Фильм": ["Боевик", "Ужасы", "Фэнтези"], "Унесенные призраками": ["Фэнтези", "Приключения", "Драма"], "Клинок рассекающий демонов": ["Боевик", "Фэнтези", "Приключения"], "Код Гиасс": ["Фантастика", "Боевик", "Психология"], "Блю лок": ["Спорт", "Триллер", "Драма"], "Песнь Черных сов": ["Романтика", "Фэнтези", "Комедия"], "Агент времени": ["Фантастика", "Триллер", "Детектив"], "Гачиакута": ["Боевик", "Фэнтези", "Приключения"], "Восхождение в тени": ["Фэнтези", "Боевик", "Комедия"], "Баскетбол Куроко": ["Спорт", "Комедия", "Драма"], "Безумный азарт": ["Психология", "Триллер", "Детектив"], "Судьба: ночь схватки": ["Фэнтези", "Боевик", "Триллер"], "Пламенная бригада пожарных": ["Боевик", "Фэнтези", "Фантастика"], "Сага о Винланде": ["Приключения", "Драма", "Боевик"], "Id: вторжение": ["Фантастика", "Детектив", "Психология"], "Акудама драйв": ["Киберпанк", "Боевик", "Фантастика"], "Психопаспорт": ["Киберпанк", "Фантастика", "Детектив"], "Проект Кей": ["Боевик", "Фантастика", "Фэнтези"], "Война двенадцати12": ["Боевик", "Триллер", "Фэнтези"], "Дека-данс": ["Фантастика", "Боевик", "Приключения"], "Летнее время": ["Триллер", "Фантастика", "Детектив"], "Нежить неудача": ["Боевик", "Комедия", "Фантастика"], "Рагна багровый": ["Боевик", "Фэнтези"], "Банановая рыба": ["Криминал", "Триллер", "Драма"], "Город, в котором меня нет": ["Детектив", "Триллер", "Фантастика"], "Троецарствие": ["Боевик", "Приключения", "Драма"], "Чёрный факел": ["Боевик", "Фэнтези"], "Реинкарнация безработного": ["Фэнтези", "Приключения", "Драма"], "Стальной алхимик: братство": ["Фэнтези", "Приключения", "Драма"], "Моя геройская академия": ["Боевик", "Фантастика", "Приключения"], "Великая небесная стена": ["Фантастика", "Приключения", "Детектив"], "Врата Штейна": ["Фантастика", "Триллер", "Психология"], "Охотник х охотник": ["Приключения", "Фэнтези", "Боевик"], "Сейлор Мун": ["Фэнтези", "Приключения", "Романтика"], "Fate/судьба": ["Фэнтези", "Боевик", "Триллер"], "Адский рай": ["Боевик", "Фэнтези", "Триллер"], "86": ["Фантастика", "Боевик", "Драма"], "Изгнанный реинкарнированный тяжёлый рыцарь не имеет себе равных в знаниях игры": ["Фэнтези", "Приключения", "Боевик"], "О движении земли": ["Драма", "Психология"], "Я получил читерские способности в другом мире и стал экстраординарным в реальном мире": ["Фэнтези", "Боевик", "Приключения"], "Берсерк": ["Фэнтези", "Боевик", "Драма"], "Блич": ["Боевик", "Фэнтези", "Приключения"], "Токийский гуль": ["Ужасы", "Боевик", "Психология"], "Бездомный бог": ["Фэнтези", "Боевик", "Комедия"], "Мастера меча онлайн": ["Фэнтези", "Приключения", "Боевик"], "Король шаманов": ["Фэнтези", "Приключения", "Боевик"], "Приключения ДжоДжо": ["Приключения", "Боевик", "Фэнтези"], "Кизнайвер": ["Фантастика", "Драма", "Психология"], "Ван пис": ["Приключения", "Фэнтези", "Комедия"], "Хантер х Хантер": ["Приключения", "Фэнтези", "Боевик"], "Звездное дитя": ["Драма", "Психология", "Детектив"], "Клеймор": ["Фэнтези", "Боевик", "Ужасы"], "Кайдзи": ["Психология", "Триллер", "Драма"], "Гетто": ["Комедия", "Боевик"], "Афросамурай": ["Боевик", "Фантастика", "Приключения"], "Афросамурай:воскрешение": ["Боевик", "Фантастика", "Приключения"], "Крутой учитель онидзука": ["Комедия", "Драма", "Повседневность"], "Ниндзя Кумуи": ["Боевик", "Фантастика", "Триллер"], "Паразит": ["Ужасы", "Фантастика", "Психология"], "Дороро": ["Фэнтези", "Боевик", "Приключения"], "Тетрадь смерти": ["Детектив", "Триллер", "Психология"], "Чёрный клевер": ["Фэнтези", "Боевик", "Комедия"], "Доктор Стоун": ["Фантастика", "Приключения", "Комедия"], "Ванпачмен": ["Боевик", "Комедия", "Фантастика"], "Киберпанк: бегущий по краю": ["Киберпанк", "Фантастика", "Боевик"], "Евангелион": ["Фантастика", "Психология", "Драма"], "Ковбой бибоп": ["Фантастика", "Боевик", "Приключения"], "Поднятие уровня в одиночку": ["Боевик", "Фэнтези", "Приключения"], "Магическая битва": ["Боевик", "Фэнтези", "Ужасы"]};
+const COMMON_GENRES = ["Боевик", "Фантастика", "Фэнтези", "Триллер", "Драма", "Криминал", "Детектив", "Комедия", "Ужасы", "Приключения", "Психология", "Киберпанк", "Спорт", "Романтика", "Биография", "Повседневность"];
 const INITIAL_SEED = [{"id":"seed_m_1","type":"movie","title":"Микки 17","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000001},{"id":"seed_m_2","type":"movie","title":"Чужой завет","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000002},{"id":"seed_m_3","type":"movie","title":"Чужой прометей","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000003},{"id":"seed_m_4","type":"movie","title":"Air:big jump","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000004},{"id":"seed_m_5","type":"movie","title":"Рейс на вылет","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000005},{"id":"seed_m_6","type":"movie","title":"Послезавтра","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000006},{"id":"seed_m_7","type":"movie","title":"Потеряшка Джой","status":"watched","rating":3,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000007},{"id":"seed_m_8","type":"movie","title":"Последний день Земли","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000008},{"id":"seed_m_9","type":"movie","title":"Человек паук: новый день","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000009},{"id":"seed_m_10","type":"movie","title":"Не беспокойся, дорогая","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000010},{"id":"seed_m_11","type":"movie","title":"Закатать в асфальт","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000011},{"id":"seed_m_12","type":"movie","title":"Очень страшное кино 6","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000012},{"id":"seed_m_13","type":"movie","title":"Настройщик","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000013},{"id":"seed_m_14","type":"movie","title":"Тройная граница","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000014},{"id":"seed_m_15","type":"movie","title":"Три секунды","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000015},{"id":"seed_m_16","type":"movie","title":"Город воров","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000016},{"id":"seed_m_17","type":"movie","title":"Планета обезьян: новая эра","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000017},{"id":"seed_m_18","type":"movie","title":"Обсессия","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000018},{"id":"seed_m_19","type":"movie","title":"Крик 7","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000019},{"id":"seed_m_20","type":"movie","title":"Золото","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000020},{"id":"seed_m_21","type":"movie","title":"Backrooms","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000021},{"id":"seed_m_22","type":"movie","title":"Майкл","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000022},{"id":"seed_m_23","type":"movie","title":"Проект «конец света»","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000023},{"id":"seed_m_24","type":"movie","title":"Тот самый","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000024},{"id":"seed_m_25","type":"movie","title":"Нормал","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000025},{"id":"seed_m_26","type":"movie","title":"Ограбление в Лос-Анджелесе","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000026},{"id":"seed_m_27","type":"movie","title":"Человек, который изменил все","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000027},{"id":"seed_m_28","type":"movie","title":"Новичок","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000028},{"id":"seed_m_29","type":"movie","title":"Мистер и миссис Смит","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000029},{"id":"seed_m_30","type":"movie","title":"Тихоокеанский рубеж","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000030},{"id":"seed_m_31","type":"movie","title":"Тихоокеанский рубеж 2","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000031},{"id":"seed_m_32","type":"movie","title":"Гран Торино","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000032},{"id":"seed_m_33","type":"movie","title":"Патруль","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000033},{"id":"seed_m_34","type":"movie","title":"Мортал комбат","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000034},{"id":"seed_m_35","type":"movie","title":"Мортал Комбат 2","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000035},{"id":"seed_m_36","type":"movie","title":"Одиссея","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000036},{"id":"seed_m_37","type":"movie","title":"Громовержцы","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000037},{"id":"seed_m_38","type":"movie","title":"Потрошители","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000038},{"id":"seed_m_39","type":"movie","title":"Агенты АНКЛ","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000039},{"id":"seed_m_40","type":"movie","title":"Гренландия","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000040},{"id":"seed_m_41","type":"movie","title":"Боксёр","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000041},{"id":"seed_m_42","type":"movie","title":"Горничная","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000042},{"id":"seed_m_43","type":"movie","title":"Тор:Любовь и гром","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000043},{"id":"seed_m_44","type":"movie","title":"Всеведущий читатель","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000044},{"id":"seed_m_45","type":"movie","title":"Казнить нельзя помиловать","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000045},{"id":"seed_m_46","type":"movie","title":"Убийца в петле времени","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000046},{"id":"seed_m_47","type":"movie","title":"Тёмные отражения","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000047},{"id":"seed_m_48","type":"movie","title":"Я видел дьявола","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000048},{"id":"seed_m_49","type":"movie","title":"Никто не выжил","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000049},{"id":"seed_m_50","type":"movie","title":"Враг","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000050},{"id":"seed_m_51","type":"movie","title":"Орудия","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000051},{"id":"seed_m_52","type":"movie","title":"Угнать за 60 секунд","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000052},{"id":"seed_m_53","type":"movie","title":"Бегущий человек","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000053},{"id":"seed_m_54","type":"movie","title":"Гренландия 2","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000054},{"id":"seed_m_55","type":"movie","title":"Пандорум","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000055},{"id":"seed_m_56","type":"movie","title":"Хищник. Планета смерти","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000056},{"id":"seed_m_57","type":"movie","title":"Матрица","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000057},{"id":"seed_m_58","type":"movie","title":"Матрица перезагрузка","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000058},{"id":"seed_m_59","type":"movie","title":"Матрица революция","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000059},{"id":"seed_m_60","type":"movie","title":"Матрица воскрешение","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000060},{"id":"seed_m_61","type":"movie","title":"Иллюзия обмана 3","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000061},{"id":"seed_m_62","type":"movie","title":"Особо опасный гражданин","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000062},{"id":"seed_m_63","type":"movie","title":"Довод","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000063},{"id":"seed_m_64","type":"movie","title":"Ирландец","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000064},{"id":"seed_m_65","type":"movie","title":"Опустошение","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000065},{"id":"seed_m_66","type":"movie","title":"Новокаин","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000066},{"id":"seed_m_67","type":"movie","title":"Тот самый","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000067},{"id":"seed_m_68","type":"movie","title":"Контрабанда","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000068},{"id":"seed_m_69","type":"movie","title":"Люди икс:дни минув. будущего","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000069},{"id":"seed_m_70","type":"movie","title":"Волк с Уолл-Стрит","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000070},{"id":"seed_m_71","type":"movie","title":"Top gun : мэверик","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000071},{"id":"seed_m_72","type":"movie","title":"Кирпич","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000072},{"id":"seed_m_73","type":"movie","title":"Война будущего","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000073},{"id":"seed_m_74","type":"movie","title":"Баллада о маленьком игроке","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000074},{"id":"seed_m_75","type":"movie","title":"Исчезнувшая","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000075},{"id":"seed_m_76","type":"movie","title":"11 друзей Оушена","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000076},{"id":"seed_m_77","type":"movie","title":"13 друзей Оушена","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000077},{"id":"seed_m_78","type":"movie","title":"Левша","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000078},{"id":"seed_m_79","type":"movie","title":"NFS жажда скорости","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000079},{"id":"seed_m_80","type":"movie","title":"Меню","status":"watched","rating":5.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000080},{"id":"seed_m_81","type":"movie","title":"Ущелье","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000081},{"id":"seed_m_82","type":"movie","title":"Балерина","status":"watched","rating":8.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000082},{"id":"seed_m_83","type":"movie","title":"Чёрная пантера","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000083},{"id":"seed_m_84","type":"movie","title":"Чёрная пантера: Ваканда навеки","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000084},{"id":"seed_m_85","type":"movie","title":"Дэдпул","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000085},{"id":"seed_m_86","type":"movie","title":"Дэдпул 2","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000086},{"id":"seed_m_87","type":"movie","title":"Чёрный телефон","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000087},{"id":"seed_m_88","type":"movie","title":"Чёрный телефон 2","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000088},{"id":"seed_m_89","type":"movie","title":"Я Франкенштейн","status":"watched","rating":2,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000089},{"id":"seed_m_90","type":"movie","title":"Грабитель с крышы","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000090},{"id":"seed_m_91","type":"movie","title":"Линкольн для адвоката","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000091},{"id":"seed_m_92","type":"movie","title":"Грань будущего","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000092},{"id":"seed_m_93","type":"movie","title":"Расплата","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000093},{"id":"seed_m_94","type":"movie","title":"Расплата 2","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000094},{"id":"seed_m_95","type":"movie","title":"Как приручить дракона","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000095},{"id":"seed_m_96","type":"movie","title":"Мастер","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000096},{"id":"seed_m_97","type":"movie","title":"Добыча 2022","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000097},{"id":"seed_m_98","type":"movie","title":"Разбогатей или сдохни","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000098},{"id":"seed_m_99","type":"movie","title":"8 миля","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000099},{"id":"seed_m_100","type":"movie","title":"Девушка с татуировкой дракона","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000100},{"id":"seed_m_101","type":"movie","title":"Голодные игры баллада","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000101},{"id":"seed_m_102","type":"movie","title":"Война миров Z","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000102},{"id":"seed_m_103","type":"movie","title":"Синистер","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000103},{"id":"seed_m_104","type":"movie","title":"Дэдпул Росомаха","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000104},{"id":"seed_m_105","type":"movie","title":"Пленницы","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000105},{"id":"seed_m_106","type":"movie","title":"Никто","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000106},{"id":"seed_m_107","type":"movie","title":"Никто 2","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000107},{"id":"seed_m_108","type":"movie","title":"Патруль","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000108},{"id":"seed_m_109","type":"movie","title":"1+1","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000109},{"id":"seed_m_110","type":"movie","title":"28 дней спустя","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000110},{"id":"seed_m_111","type":"movie","title":"28 месяцев спустя","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000111},{"id":"seed_m_112","type":"movie","title":"28 лет спустя","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000112},{"id":"seed_m_113","type":"movie","title":"Достать ножи","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000113},{"id":"seed_m_114","type":"movie","title":"Достать ножи 2 (стекл.луковица)","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000114},{"id":"seed_m_115","type":"movie","title":"Достать ножи 3 (вос.покойника)","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000115},{"id":"seed_m_116","type":"movie","title":"Аватар путь воды","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000116},{"id":"seed_m_117","type":"movie","title":"Аватар","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000117},{"id":"seed_m_118","type":"movie","title":"Аватар огонь и пепел","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000118},{"id":"seed_m_119","type":"movie","title":"Вес победы","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000119},{"id":"seed_m_120","type":"movie","title":"Я знаю, что вы сделали прш летом","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000120},{"id":"seed_m_121","type":"movie","title":"Звёздные войны","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000121},{"id":"seed_m_122","type":"movie","title":"Бегущий в лабиринте","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000122},{"id":"seed_m_123","type":"movie","title":"Адреналин","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000123},{"id":"seed_m_124","type":"movie","title":"Адреналин 2","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000124},{"id":"seed_m_125","type":"movie","title":"Ванильное небо","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000125},{"id":"seed_m_126","type":"movie","title":"Планета обезьян","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000126},{"id":"seed_m_127","type":"movie","title":"Интерстеллар","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000127},{"id":"seed_m_128","type":"movie","title":"Логан:Росомаха","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000128},{"id":"seed_m_129","type":"movie","title":"Формула 1","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000129},{"id":"seed_m_130","type":"movie","title":"Дом у дороги","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000130},{"id":"seed_m_131","type":"movie","title":"Фокус","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000131},{"id":"seed_m_132","type":"movie","title":"Кожа, в которой я живу","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000132},{"id":"seed_m_133","type":"movie","title":"Геймер","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000133},{"id":"seed_m_134","type":"movie","title":"Джентельмены","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000134},{"id":"seed_m_135","type":"movie","title":"Гранд Туризмо","status":"watched","rating":9.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000135},{"id":"seed_m_136","type":"movie","title":"Пункт назначения:узы крови","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000136},{"id":"seed_m_137","type":"movie","title":"Главный герой","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000137},{"id":"seed_m_138","type":"movie","title":"Первому игроку приготовиться","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000138},{"id":"seed_m_139","type":"movie","title":"Побег из Шоушенко","status":"watched","rating":9.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000139},{"id":"seed_m_140","type":"movie","title":"Остров проклятых","status":"watched","rating":8.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000140},{"id":"seed_m_141","type":"movie","title":"Зеленая миля","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000141},{"id":"seed_m_142","type":"movie","title":"Властелин колец","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000142},{"id":"seed_m_143","type":"movie","title":"Варкрафт","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000143},{"id":"seed_m_144","type":"movie","title":"Дроп","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000144},{"id":"seed_m_145","type":"movie","title":"Гонка (2013)","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000145},{"id":"seed_m_146","type":"movie","title":"Ferrari","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000146},{"id":"seed_m_147","type":"movie","title":"Верни ее из мёртвых","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000147},{"id":"seed_m_148","type":"movie","title":"Форест Гамп","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000148},{"id":"seed_m_149","type":"movie","title":"Зеленая книга","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000149},{"id":"seed_m_150","type":"movie","title":"Бойцовский клуб","status":"watched","rating":8.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000150},{"id":"seed_m_151","type":"movie","title":"Леон","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000151},{"id":"seed_m_152","type":"movie","title":"Хоббит","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000152},{"id":"seed_m_153","type":"movie","title":"Крэйвен-охотник","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000153},{"id":"seed_m_154","type":"movie","title":"Криминальное чтиво","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000154},{"id":"seed_m_155","type":"movie","title":"Улыбка","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000155},{"id":"seed_m_156","type":"movie","title":"Улыбка 2","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000156},{"id":"seed_m_157","type":"movie","title":"Бетмен(Паттинсон)","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000157},{"id":"seed_m_158","type":"movie","title":"Отряд самоубийц","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000158},{"id":"seed_m_159","type":"movie","title":"Области тьмы","status":"watched","rating":9.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000159},{"id":"seed_m_160","type":"movie","title":"Наследник","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000160},{"id":"seed_m_161","type":"movie","title":"Блейд(3)","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000161},{"id":"seed_m_162","type":"movie","title":"Западня","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000162},{"id":"seed_m_163","type":"movie","title":"Бэтмен против супермена","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000163},{"id":"seed_m_164","type":"movie","title":"Далласский клуб покупателей","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000164},{"id":"seed_m_165","type":"movie","title":"Гарри Поттер(8)","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000165},{"id":"seed_m_166","type":"movie","title":"Фантастические твари","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000166},{"id":"seed_m_167","type":"movie","title":"Быстрее пули","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000167},{"id":"seed_m_168","type":"movie","title":"Железный человек","status":"watched","rating":8.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000168},{"id":"seed_m_169","type":"movie","title":"Железный человек 2","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000169},{"id":"seed_m_170","type":"movie","title":"Железный человек 3","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000170},{"id":"seed_m_171","type":"movie","title":"Тор","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000171},{"id":"seed_m_172","type":"movie","title":"Первый мститель(Кэп)","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000172},{"id":"seed_m_173","type":"movie","title":"Мстители","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000173},{"id":"seed_m_174","type":"movie","title":"Тор 2","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000174},{"id":"seed_m_175","type":"movie","title":"Первый мститель:Др война","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000175},{"id":"seed_m_176","type":"movie","title":"Стражи галактики","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000176},{"id":"seed_m_177","type":"movie","title":"Мстители: Альтрон","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000177},{"id":"seed_m_178","type":"movie","title":"Франкенштейн","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000178},{"id":"seed_m_179","type":"movie","title":"Первый мститель:Противостояние","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000179},{"id":"seed_m_180","type":"movie","title":"Геошторм","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000180},{"id":"seed_m_181","type":"movie","title":"Грешники","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000181},{"id":"seed_m_182","type":"movie","title":"От заката до рассвета","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000182},{"id":"seed_m_183","type":"movie","title":"Фантастическая четвёрка 4","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000183},{"id":"seed_m_184","type":"movie","title":"Джон Уик","status":"watched","rating":8.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000184},{"id":"seed_m_185","type":"movie","title":"Лило и стич","status":"watched","rating":5.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000185},{"id":"seed_m_186","type":"movie","title":"Великий уравнитель","status":"watched","rating":7.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000186},{"id":"seed_m_187","type":"movie","title":"Эверест","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000187},{"id":"seed_m_188","type":"movie","title":"Тупой и ещё тупее","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000188},{"id":"seed_m_189","type":"movie","title":"Омерзительная восьмерка","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000189},{"id":"seed_s_190","type":"series","title":"КингДом","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000190},{"id":"seed_s_191","type":"series","title":"Дамер","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000191},{"id":"seed_s_192","type":"series","title":"Гангсталэнд","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000192},{"id":"seed_s_193","type":"series","title":"КиллерБот","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000193},{"id":"seed_s_194","type":"series","title":"Фаллаут","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000194},{"id":"seed_s_195","type":"series","title":"Тед Лассо","status":"watched","rating":8,"season":3,"episode":1,"poster":"","note":"3 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000195},{"id":"seed_s_196","type":"series","title":"Рыцарь семи королевств","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000196},{"id":"seed_s_197","type":"series","title":"Темная материя","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000197},{"id":"seed_s_198","type":"series","title":"Извне","status":"watching","rating":null,"season":2,"episode":3,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000198},{"id":"seed_s_199","type":"series","title":"Земля без людей","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000199},{"id":"seed_s_200","type":"series","title":"Джентельмены","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000200},{"id":"seed_s_201","type":"series","title":"Нарковоры","status":"watching","rating":null,"season":1,"episode":3,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000201},{"id":"seed_s_202","type":"series","title":"Люк кейдж","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000202},{"id":"seed_s_203","type":"series","title":"Пингвин","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000203},{"id":"seed_s_204","type":"series","title":"Осколки","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000204},{"id":"seed_s_205","type":"series","title":"Снегопад","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000205},{"id":"seed_s_206","type":"series","title":"Садовник","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000206},{"id":"seed_s_207","type":"series","title":"Бункер для богачей","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000207},{"id":"seed_s_208","type":"series","title":"Завучи","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000208},{"id":"seed_s_209","type":"series","title":"Друзья и соседи","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000209},{"id":"seed_s_210","type":"series","title":"Drive to survive","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000210},{"id":"seed_s_211","type":"series","title":"Переполненная комната","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000211},{"id":"seed_s_212","type":"series","title":"Сорвиголова","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000212},{"id":"seed_s_213","type":"series","title":"Озарк","status":"watching","rating":null,"season":1,"episode":7,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000213},{"id":"seed_s_214","type":"series","title":"Пацаны","status":"watching","rating":null,"season":5,"episode":3,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000214},{"id":"seed_s_215","type":"series","title":"Фишер","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000215},{"id":"seed_s_216","type":"series","title":"9 тел в мексиканском морге","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000216},{"id":"seed_s_217","type":"series","title":"Дом драконов","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000217},{"id":"seed_s_218","type":"series","title":"Амер Ист Ужасов","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000218},{"id":"seed_s_219","type":"series","title":"Видеть","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000219},{"id":"seed_s_220","type":"series","title":"Киберслав","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000220},{"id":"seed_s_221","type":"series","title":"Рай","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000221},{"id":"seed_s_222","type":"series","title":"Разделение","status":"watched","rating":7,"season":2,"episode":1,"poster":"","note":"2 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000222},{"id":"seed_s_223","type":"series","title":"Игра престолов","status":"watched","rating":9.5,"season":8,"episode":1,"poster":"","note":"8 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000223},{"id":"seed_s_224","type":"series","title":"Бухта вдов","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000224},{"id":"seed_s_225","type":"series","title":"Сквозь снег","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000225},{"id":"seed_s_226","type":"series","title":"Остаться в живых","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000226},{"id":"seed_s_227","type":"series","title":"Ганнибал","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000227},{"id":"seed_s_228","type":"series","title":"Острые козырьки","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000228},{"id":"seed_s_229","type":"series","title":"Очень странные дела","status":"watching","rating":null,"season":2,"episode":6,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000229},{"id":"seed_s_230","type":"series","title":"Игра в кальмара","status":"watched","rating":7,"season":3,"episode":1,"poster":"","note":"3 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000230},{"id":"seed_s_231","type":"series","title":"Защищая Джейкоба","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000231},{"id":"seed_s_232","type":"series","title":"Чёрное зеркало","status":"watched","rating":9,"season":7,"episode":1,"poster":"","note":"7 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000232},{"id":"seed_s_233","type":"series","title":"Подросток","status":"watched","rating":4,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000233},{"id":"seed_s_234","type":"series","title":"Области тьмы","status":"watched","rating":4,"season":2,"episode":1,"poster":"","note":"2 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000234},{"id":"seed_s_235","type":"series","title":"День шакала","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000235},{"id":"seed_s_236","type":"series","title":"Маньяк","status":"watched","rating":3,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000236},{"id":"seed_s_237","type":"series","title":"Бумажный дом","status":"watched","rating":8,"season":5,"episode":1,"poster":"","note":"5 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000237},{"id":"seed_s_238","type":"series","title":"Во все тяжкие","status":"watched","rating":9,"season":5,"episode":1,"poster":"","note":"5 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000238},{"id":"seed_s_239","type":"series","title":"11.22.63","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000239},{"id":"seed_s_240","type":"series","title":"Чёрная птица","status":"watched","rating":6.5,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000240},{"id":"seed_s_241","type":"series","title":"Король талсы","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000241},{"id":"seed_a_242","type":"anime","title":"Атака титанов","status":"watched","rating":8,"season":4,"episode":1,"poster":"","note":"4 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Атака титанов (1 сезон)","meta":"ТВ, 25 эп., 2013","state":"done"},{"title":"Атака титанов: Дневник Ильзе / Потерянные девушки","meta":"OVA, 2013–2017","state":"done"},{"title":"Атака титанов 2","meta":"ТВ, 12 эп., 2017","state":"done"},{"title":"Атака титанов 3 (Части 1 и 2)","meta":"ТВ, 22 эп., 2018–2019","state":"done"},{"title":"Атака титанов: Финал (Части 1–2)","meta":"ТВ, 28 эп., 2020–2022","state":"done"},{"title":"Атака титанов: Финал — Заключительная глава","meta":"Спешлы 1–2, 2023","state":"done"}],"createdAt":1700000000242},{"id":"seed_a_243","type":"anime","title":"Человек - бензопила","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Человек-бензопила (1 сезон)","meta":"ТВ, 12 эп., 2022","state":"done"},{"title":"Человек-бензопила: История Резе","meta":"п/ф, продолжение, 2025","state":"done"}],"createdAt":1700000000243},{"id":"seed_a_244","type":"anime","title":"Человек - бензопила: Фильм","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000244},{"id":"seed_a_245","type":"anime","title":"Унесенные призраками","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000245},{"id":"seed_a_246","type":"anime","title":"Клинок рассекающий демонов","status":"watched","rating":10,"season":4,"episode":1,"poster":"","note":"4 сез.","waiting":true,"waitNote":"Жду 5 сез.","watchOrder":[{"title":"Клинок, рассекающий демонов (1 сезон)","meta":"ТВ, 26 эп., 2019","state":"done"},{"title":"Бесконечный поезд (Фильм / ТВ-арка)","meta":"п/ф / ТВ, 2020–2021","state":"done"},{"title":"Квартал красных фонарей (2 сезон)","meta":"ТВ, 11 эп., 2021–2022","state":"done"},{"title":"Деревня кузнецов (3 сезон)","meta":"ТВ, 11 эп., 2023","state":"done"},{"title":"Тренировка столпов (4 сезон)","meta":"ТВ, 8 эп., 2024","state":"done"},{"title":"Бесконечный замок (Трилогия фильмов)","meta":"п/ф, финал (анонс)","state":"wait"}],"createdAt":1700000000246},{"id":"seed_a_247","type":"anime","title":"Код Гиасс","status":"watched","rating":10,"season":2,"episode":1,"poster":"","note":"2 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Код Гиасс: Восставший Лелуш (R1)","meta":"ТВ, 25 эп., 2006","state":"done"},{"title":"Код Гиасс: Восставший Лелуш R2","meta":"ТВ, 25 эп., 2008","state":"done"},{"title":"Код Гиасс: Отступник Акито","meta":"OVA, 5 эп., спин-офф, 2012","state":"none"},{"title":"Код Гиасс: Лелуш Воскресший","meta":"п/ф, альт. продолжение, 2019","state":"none"},{"title":"Код Гиасс: Розе из захвата","meta":"ONA, 12 эп., 2024","state":"none"}],"createdAt":1700000000247},{"id":"seed_a_248","type":"anime","title":"Блю лок","status":"watched","rating":10,"season":2,"episode":1,"poster":"","note":"2 сез.","waiting":true,"waitNote":"Жду 3 сез.","watchOrder":[{"title":"Блю Лок: Синяя тюрьма (1 сезон)","meta":"ТВ, 24 эп., 2022–2023","state":"done"},{"title":"Блю Лок: Эпизод Наги","meta":"п/ф, спин-офф, 2024","state":"done"},{"title":"Блю Лок 2: Против сборной Японии U-20","meta":"ТВ, 14 эп., 2024","state":"done"},{"title":"Блю Лок (3 сезон — Лига Нео-Эгоистов)","meta":"ТВ, анонс продолжения","state":"wait"}],"createdAt":1700000000248},{"id":"seed_a_249","type":"anime","title":"Песнь Черных сов","status":"watched","rating":8,"season":2,"episode":1,"poster":"","note":"2 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Песнь ночных сов (1 сезон)","meta":"ТВ, 13 эп., 2022","state":"done"},{"title":"Песнь ночных сов (2 сезон)","meta":"ТВ, продолжение, 2025","state":"done"}],"createdAt":1700000000249},{"id":"seed_a_250","type":"anime","title":"Агент времени","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Агент времени (1 сезон)","meta":"ONA, 11 эп., 2021","state":"done"},{"title":"Агент времени (2 сезон)","meta":"ONA, 12 эп., 2023","state":"none"},{"title":"Агент времени: Глава Инду","meta":"ONA, приквел, 2024","state":"none"}],"createdAt":1700000000250},{"id":"seed_a_251","type":"anime","title":"Гачиакута","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":true,"waitNote":"Жду 2 сез.","watchOrder":[{"title":"Гачиакута (1 сезон)","meta":"ТВ, 2025","state":"done"},{"title":"Гачиакута (2 сезон / Продолжение)","meta":"Анонс продолжения","state":"wait"}],"createdAt":1700000000251},{"id":"seed_a_252","type":"anime","title":"Восхождение в тени","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000252},{"id":"seed_a_253","type":"anime","title":"Баскетбол Куроко","status":"watched","rating":10,"season":3,"episode":1,"poster":"","note":"3 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Баскетбол Куроко (1 сезон)","meta":"ТВ, 25 эп., 2012","state":"done"},{"title":"Баскетбол Куроко 2","meta":"ТВ, 25 эп., 2013","state":"done"},{"title":"Баскетбол Куроко 3","meta":"ТВ, 25 эп., 2015","state":"done"},{"title":"Баскетбол Куроко: Последняя игра","meta":"п/ф, финал, 2017","state":"done"}],"createdAt":1700000000253},{"id":"seed_a_254","type":"anime","title":"Безумный азарт","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000254},{"id":"seed_a_255","type":"anime","title":"Судьба: ночь схватки","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000255},{"id":"seed_a_256","type":"anime","title":"Пламенная бригада пожарных","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000256},{"id":"seed_a_257","type":"anime","title":"Сага о Винланде","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000257},{"id":"seed_a_258","type":"anime","title":"Id: вторжение","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000258},{"id":"seed_a_259","type":"anime","title":"Акудама драйв","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000259},{"id":"seed_a_260","type":"anime","title":"Психопаспорт","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000260},{"id":"seed_a_261","type":"anime","title":"Проект Кей","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000261},{"id":"seed_a_262","type":"anime","title":"Война двенадцати12","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000262},{"id":"seed_a_263","type":"anime","title":"Дека-данс","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000263},{"id":"seed_a_264","type":"anime","title":"Летнее время","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000264},{"id":"seed_a_265","type":"anime","title":"Нежить неудача","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000265},{"id":"seed_a_266","type":"anime","title":"Рагна багровый","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000266},{"id":"seed_a_267","type":"anime","title":"Банановая рыба","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000267},{"id":"seed_a_268","type":"anime","title":"Город, в котором меня нет","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000268},{"id":"seed_a_269","type":"anime","title":"Троецарствие","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000269},{"id":"seed_a_270","type":"anime","title":"Чёрный факел","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000270},{"id":"seed_a_271","type":"anime","title":"Реинкарнация безработного","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000271},{"id":"seed_a_272","type":"anime","title":"Стальной алхимик: братство","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000272},{"id":"seed_a_273","type":"anime","title":"Моя геройская академия","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000273},{"id":"seed_a_274","type":"anime","title":"Великая небесная стена","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000274},{"id":"seed_a_275","type":"anime","title":"Врата Штейна","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000275},{"id":"seed_a_276","type":"anime","title":"Охотник х охотник","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000276},{"id":"seed_a_277","type":"anime","title":"Сейлор Мун","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000277},{"id":"seed_a_278","type":"anime","title":"Fate/судьба","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000278},{"id":"seed_a_279","type":"anime","title":"Адский рай","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000279},{"id":"seed_a_280","type":"anime","title":"86","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000280},{"id":"seed_a_281","type":"anime","title":"Изгнанный реинкарнированный тяжёлый рыцарь не имеет себе равных в знаниях игры","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000281},{"id":"seed_a_282","type":"anime","title":"О движении земли","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000282},{"id":"seed_a_283","type":"anime","title":"Я получил читерские способности в другом мире и стал экстраординарным в реальном мире","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000283},{"id":"seed_a_284","type":"anime","title":"Берсерк","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000284},{"id":"seed_a_285","type":"anime","title":"Блич","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000285},{"id":"seed_a_286","type":"anime","title":"Токийский гуль","status":"watched","rating":7,"season":3,"episode":1,"poster":"","note":"3 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Токийский гуль (1 сезон)","meta":"ТВ, 12 эп., 2014","state":"done"},{"title":"Токийский гуль √A (2 сезон)","meta":"ТВ, 12 эп., 2015","state":"done"},{"title":"Токийский гуль: Перерождение (:re)","meta":"ТВ, 24 эп., 2018","state":"done"}],"createdAt":1700000000286},{"id":"seed_a_287","type":"anime","title":"Бездомный бог","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000287},{"id":"seed_a_288","type":"anime","title":"Мастера меча онлайн","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000288},{"id":"seed_a_289","type":"anime","title":"Король шаманов","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000289},{"id":"seed_a_290","type":"anime","title":"Приключения ДжоДжо","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000290},{"id":"seed_a_291","type":"anime","title":"Кизнайвер","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000291},{"id":"seed_a_292","type":"anime","title":"Ван пис","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000292},{"id":"seed_a_293","type":"anime","title":"Хантер х Хантер","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000293},{"id":"seed_a_294","type":"anime","title":"Звездное дитя","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000294},{"id":"seed_a_295","type":"anime","title":"Клеймор","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000295},{"id":"seed_a_296","type":"anime","title":"Кайдзи","status":"watched","rating":6,"season":2,"episode":1,"poster":"","note":"2 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Кайдзи (1 сезон)","meta":"ТВ, 26 эп., 2007","state":"done"},{"title":"Кайдзи 2: Против правил","meta":"ТВ, 26 эп., 2011","state":"done"}],"createdAt":1700000000296},{"id":"seed_a_297","type":"anime","title":"Гетто","status":"watched","rating":8,"season":4,"episode":1,"poster":"","note":"4 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Гетто / The Boondocks (Сезоны 1–4)","meta":"ТВ, 55 эп., 2005–2014","state":"done"}],"createdAt":1700000000297},{"id":"seed_a_298","type":"anime","title":"Афросамурай","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[{"title":"Афросамурай","meta":"ТВ, 5 эп., 2007","state":"done"},{"title":"Афросамурай: Воскрешение","meta":"п/ф, продолжение, 2009","state":"done"}],"createdAt":1700000000298},{"id":"seed_a_299","type":"anime","title":"Афросамурай:воскрешение","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000299},{"id":"seed_a_300","type":"anime","title":"Крутой учитель онидзука","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000300},{"id":"seed_a_301","type":"anime","title":"Ниндзя Кумуи","status":"watched","rating":5,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Ниндзя Камуи (1 сезон)","meta":"ТВ, 13 эп., 2024","state":"done"}],"createdAt":1700000000301},{"id":"seed_a_302","type":"anime","title":"Паразит","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Паразит: Учение о жизни","meta":"ТВ, 24 эп., 2014–2015","state":"done"}],"createdAt":1700000000302},{"id":"seed_a_303","type":"anime","title":"Дороро","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Дороро","meta":"ТВ, 24 эп., 2019","state":"done"}],"createdAt":1700000000303},{"id":"seed_a_304","type":"anime","title":"Тетрадь смерти","status":"watched","rating":8,"season":1,"episode":1,"poster":"","note":"1 сез.","waiting":false,"waitNote":"","watchOrder":[{"title":"Тетрадь смерти","meta":"ТВ, 37 эп., 2006–2007","state":"done"},{"title":"Тетрадь смерти: Переписывание 1–2","meta":"Спешлы / рекапы, 2007–2008","state":"none"}],"createdAt":1700000000304},{"id":"seed_a_305","type":"anime","title":"Чёрный клевер","status":"watched","rating":9,"season":1,"episode":1,"poster":"","note":"","waiting":true,"waitNote":"Жду продолжение","watchOrder":[{"title":"Чёрный клевер (ТВ-сериал)","meta":"ТВ, 170 эп., 2017–2021","state":"done"},{"title":"Чёрный клевер: Меч короля магов","meta":"п/ф, спин-офф, 2023","state":"done"},{"title":"Чёрный клевер (2 сезон / Арка Пикового королевства)","meta":"ТВ, анонс продолжения","state":"wait"}],"createdAt":1700000000305},{"id":"seed_a_306","type":"anime","title":"Доктор Стоун","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000306},{"id":"seed_a_307","type":"anime","title":"Ванпачмен","status":"watched","rating":6,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[{"title":"Ванпанчмен (1 сезон)","meta":"ТВ, 12 эп., 2015","state":"done"},{"title":"Ванпанчмен (2 сезон)","meta":"ТВ, 12 эп., 2019","state":"done"},{"title":"Ванпанчмен (3 сезон)","meta":"ТВ, 2025","state":"none"}],"createdAt":1700000000307},{"id":"seed_a_308","type":"anime","title":"Киберпанк: бегущий по краю","status":"watched","rating":10,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[{"title":"Киберпанк: Бегущий по краю","meta":"ONA, 10 эп., 2022","state":"done"}],"createdAt":1700000000308},{"id":"seed_a_309","type":"anime","title":"Евангелион","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000309},{"id":"seed_a_310","type":"anime","title":"Ковбой бибоп","status":"watched","rating":7,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[{"title":"Ковбой Бибоп","meta":"ТВ, 26 эп., 1998","state":"done"},{"title":"Ковбой Бибоп: Достучаться до небес","meta":"п/ф, 2001","state":"none"}],"createdAt":1700000000310},{"id":"seed_a_311","type":"anime","title":"Поднятие уровня в одиночку","status":"watched","rating":10,"season":2,"episode":1,"poster":"","note":"2 сез.","waiting":true,"waitNote":"Жду 3 сез.","watchOrder":[{"title":"Поднятие уровня в одиночку","meta":"ТВ, адаптация новеллы, 2024","state":"done"},{"title":"Поднятие уровня в одиночку: Как стать сильнее","meta":"спешл, компиляция сериала, 2024","state":"done"},{"title":"Поднятие уровня в одиночку: Повторное пробуждение — Рекап","meta":"п/ф, компиляция сериала, 2024","state":"done"},{"title":"Поднятие уровня в одиночку 2: Восстаньте из тени","meta":"ТВ, продолжение, 2025","state":"done"},{"title":"Поднятие уровня в одиночку: За пределами Системы","meta":"п/ф, анонс продолжения","state":"wait"}],"createdAt":1700000000311},{"id":"seed_a_312","type":"anime","title":"Магическая битва","status":"planned","rating":null,"season":1,"episode":1,"poster":"","note":"","waiting":false,"waitNote":"","watchOrder":[],"createdAt":1700000000312}];
 
-const STORAGE_KEYS_READ = ['kinobrouski_v6', 'kinobrouski_v5', 'kinobrouski_v4', 'kinobrouski_v3', 'kinobrouski_v2', 'kinobrouski_v1'];
-const STORAGE_KEY_WRITE = 'kinobrouski_v6';
+const STORAGE_KEYS_READ = ['kinobrouski_v7', 'kinobrouski_v6', 'kinobrouski_v5', 'kinobrouski_v4', 'kinobrouski_v3', 'kinobrouski_v2', 'kinobrouski_v1'];
+const STORAGE_KEY_WRITE = 'kinobrouski_v7';
 const KP_KEY_STORAGE = 'kinobrouski_kp_key';
-const SEED_FLAG_KEY = 'kinobrouski_seeded_v6';
+const SEED_FLAG_KEY = 'kinobrouski_seeded_v7';
 
 let items = [];
 let kpApiKey = '';
-let filterType = 'all';
+let filterType = 'all'; // 'all' | 'movie' | 'series' | 'anime' | 'stats'
 let filterStatus = 'all'; // 'all' | 'watching' | 'watched' | 'planned' | 'sequel'
 let localQuery = '';
 let sortBy = 'newest';
 let visibleLimit = 40;
 
+// Stats view state
+let statsTypeFilter = 'all'; // 'all' | 'anime' | 'series' | 'movie'
+let statsSelectedGenre = null;
+
 let editingId = null;
 let formType = 'movie';
 let formStatus = 'watched';
 let formRating = null;
+let formSeasonRatings = {}; // { "1": 9, "2": 8.5 }
+let formActiveRateSeason = 1;
+let formSeasonCount = 1;
 let formSeason = 1;
 let formEpisode = 1;
 let formWaiting = false;
 let formWaitNote = '';
 let formWatchOrder = [];
+let formGenres = [];
 
 let isFetchingCovers = false;
 let stopCoversFlag = false;
@@ -668,7 +853,49 @@ function showToast(msg) {
   setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-// WatchOrder item state: 'done' (0 -> 🟢), 'wait' (1 -> ⏳), 'none' (2 -> 🔴)
+function normalizeGenres(gArr, title) {
+  if (Array.isArray(gArr) && gArr.length > 0) {
+    return gArr.map(x => String(x).trim()).filter(Boolean);
+  }
+  if (title && DEFAULT_GENRE_MAP[title]) {
+    return DEFAULT_GENRE_MAP[title].slice();
+  }
+  if (title) {
+    const low = title.toLowerCase().trim();
+    for (const k of Object.keys(DEFAULT_GENRE_MAP)) {
+      if (k.toLowerCase().trim() === low) return DEFAULT_GENRE_MAP[k].slice();
+    }
+  }
+  return [];
+}
+
+function computeAvgRating(seasonRatingsObj, fallbackRating) {
+  if (seasonRatingsObj && typeof seasonRatingsObj === 'object') {
+    const vals = Object.values(seasonRatingsObj).filter(v => typeof v === 'number' && !isNaN(v) && v > 0);
+    if (vals.length > 0) {
+      const sum = vals.reduce((a, b) => a + b, 0);
+      return Math.round((sum / vals.length) * 10) / 10;
+    }
+  }
+  return (typeof fallbackRating === 'number' && !isNaN(fallbackRating)) ? fallbackRating : null;
+}
+
+function migrateItemFields(it) {
+  it.genres = normalizeGenres(it.genres, it.title);
+  if (!it.seasonRatings || typeof it.seasonRatings !== 'object') {
+    it.seasonRatings = {};
+  }
+  if (it.type !== 'movie') {
+    // If item already had a rating from older version and empty seasonRatings, assign it to season 1 (or current season if 1)
+    if (Object.keys(it.seasonRatings).length === 0 && typeof it.rating === 'number' && it.rating > 0) {
+      it.seasonRatings['1'] = it.rating;
+    }
+    const avg = computeAvgRating(it.seasonRatings, it.rating);
+    if (avg !== null) it.rating = avg;
+  }
+  return it;
+}
+
 function packItems(arr) {
   return JSON.stringify(arr.map(x => [
     x.id,
@@ -687,7 +914,9 @@ function packItems(arr) {
       w.state === 'done' ? 0 : (w.state === 'wait' ? 1 : 2)
     ]) : [],
     x.waiting ? 1 : 0,
-    x.waitNote || ''
+    x.waitNote || '',
+    x.seasonRatings || {},
+    x.genres || []
   ]));
 }
 
@@ -702,16 +931,20 @@ function unpackItems(str) {
         meta: w.meta || '',
         state: w.state || (w.done ? 'done' : 'none')
       })) : [];
-      return Object.assign({ waiting: false, waitNote: '', watchOrder: wo }, obj, { status: st });
+      return migrateItemFields(Object.assign({
+        waiting: false,
+        waitNote: '',
+        watchOrder: wo,
+        seasonRatings: {},
+        genres: []
+      }, obj, { status: st }));
     });
   }
   const types = ['movie', 'series', 'anime'];
   const statuses = ['watched', 'watching', 'planned', 'planned'];
-  const woStates = ['done', 'wait', 'none'];
   return raw.map(r => {
     const woRaw = Array.isArray(r[10]) ? r[10] : [];
     const wo = woRaw.map(w => {
-      // Support both v5 (w[2] was 0/1 boolean done) and v6 (0=done, 1=wait, 2=none)
       let st = 'none';
       if (typeof w[2] === 'string') st = w[2];
       else if (w[2] === 0) st = 'done';
@@ -719,7 +952,7 @@ function unpackItems(str) {
       else st = 'none';
       return { title: w[0] || '', meta: w[1] || '', state: st };
     });
-    return {
+    return migrateItemFields({
       id: r[0],
       type: types[r[1]] || 'movie',
       title: r[2] || '',
@@ -732,8 +965,10 @@ function unpackItems(str) {
       createdAt: r[9] || 0,
       watchOrder: wo,
       waiting: !!r[11],
-      waitNote: r[12] || ''
-    };
+      waitNote: r[12] || '',
+      seasonRatings: (r[13] && typeof r[13] === 'object') ? r[13] : {},
+      genres: Array.isArray(r[14]) ? r[14] : []
+    });
   });
 }
 
@@ -757,7 +992,7 @@ function cloudGetRaw(key) {
 async function readCloudSmart(baseKey) {
   const chunkCntStr = await cloudGetRaw(baseKey + '_chunks');
   const chunkCnt = parseInt(chunkCntStr, 10);
-  if (chunkCnt > 0 && chunkCnt < 60) {
+  if (chunkCnt > 0 && chunkCnt < 80) {
     const promises = [];
     for (let i = 0; i < chunkCnt; i++) {
       promises.push(cloudGetRaw(baseKey + '_' + i));
@@ -816,14 +1051,14 @@ function mergeSeed(existing) {
     }
     seen.add(norm);
     seen.add(typeKey);
-    merged.push(it);
+    merged.push(migrateItemFields(it));
   }
   for (const s of INITIAL_SEED) {
     const norm = String(s.title).toLowerCase().trim();
     const typeKey = (s.type || 'movie') + '::' + norm;
     if (!seen.has(norm) && !seen.has(typeKey)) {
       seen.add(typeKey);
-      merged.push(JSON.parse(JSON.stringify(s)));
+      merged.push(migrateItemFields(JSON.parse(JSON.stringify(s))));
     }
   }
   return merged;
@@ -855,7 +1090,7 @@ function bootInstant() {
     try { localStorage.setItem(SEED_FLAG_KEY, '1'); } catch (e) {}
     saveItems();
   } else {
-    items = localFound;
+    items = localFound.map(migrateItemFields);
   }
   render();
   syncCloudBackground();
@@ -883,12 +1118,21 @@ async function syncCloudBackground() {
             const key = (ci.type || 'movie') + '::' + String(ci.title || '').toLowerCase().trim();
             const loc = byTitle.get(key);
             if (!loc) {
-              items.push(ci);
+              items.push(migrateItemFields(ci));
               changed = true;
             } else {
               if (!loc.poster && ci.poster) { loc.poster = ci.poster; changed = true; }
               if ((!loc.watchOrder || !loc.watchOrder.length) && ci.watchOrder && ci.watchOrder.length) {
                 loc.watchOrder = ci.watchOrder;
+                changed = true;
+              }
+              if ((!loc.genres || !loc.genres.length) && ci.genres && ci.genres.length) {
+                loc.genres = ci.genres;
+                changed = true;
+              }
+              if (ci.seasonRatings && Object.keys(ci.seasonRatings).length > Object.keys(loc.seasonRatings || {}).length) {
+                loc.seasonRatings = ci.seasonRatings;
+                loc.rating = computeAvgRating(loc.seasonRatings, loc.rating);
                 changed = true;
               }
               if (ci.waiting && !loc.waiting) {
@@ -934,21 +1178,33 @@ function render() {
   const cSequel = items.filter(x => isItemWaitingSequel(x)).length;
 
   document.getElementById('statsBar').innerHTML =
-    `<div class="stat ${filterStatus==='all'?'active':''}" onclick="setStatusFilter('all')"><span class="lbl">Всего</span><span class="val">${total}</span></div>` +
-    `<div class="stat ${filterStatus==='watched'?'active':''}" onclick="setStatusFilter('watched')"><span class="lbl">Просмот.</span><span class="val" style="color:var(--green)">${cWatched}</span></div>` +
-    `<div class="stat ${filterStatus==='watching'?'active':''}" onclick="setStatusFilter('watching')"><span class="lbl">Смотрю</span><span class="val" style="color:var(--blue)">${cWatching}</span></div>` +
-    `<div class="stat ${filterStatus==='planned'?'active':''}" onclick="setStatusFilter('planned')"><span class="lbl">В планах</span><span class="val">${cPlanned}</span></div>` +
-    `<div class="stat ${filterStatus==='sequel'?'active':''}" onclick="setStatusFilter('sequel')"><span class="lbl">Жду прод.</span><span class="val" style="color:var(--accent)">${cSequel}</span></div>`;
+    `<div class="stat ${filterType!=='stats'&&filterStatus==='all'?'active':''}" onclick="setStatusFilter('all')"><span class="lbl">Всего</span><span class="val">${total}</span></div>` +
+    `<div class="stat ${filterType!=='stats'&&filterStatus==='watched'?'active':''}" onclick="setStatusFilter('watched')"><span class="lbl">Просмот.</span><span class="val" style="color:var(--green)">${cWatched}</span></div>` +
+    `<div class="stat ${filterType!=='stats'&&filterStatus==='watching'?'active':''}" onclick="setStatusFilter('watching')"><span class="lbl">Смотрю</span><span class="val" style="color:var(--blue)">${cWatching}</span></div>` +
+    `<div class="stat ${filterType!=='stats'&&filterStatus==='planned'?'active':''}" onclick="setStatusFilter('planned')"><span class="lbl">В планах</span><span class="val">${cPlanned}</span></div>` +
+    `<div class="stat ${filterType!=='stats'&&filterStatus==='sequel'?'active':''}" onclick="setStatusFilter('sequel')"><span class="lbl">Жду прод.</span><span class="val" style="color:var(--accent)">${cSequel}</span></div>`;
 
   const cMovies = items.filter(x => x.type === 'movie').length;
   const cSeries = items.filter(x => x.type === 'series').length;
   const cAnime = items.filter(x => x.type === 'anime').length;
+  const cRated = items.filter(x => typeof x.rating === 'number' && x.rating > 0).length;
 
   document.getElementById('typeTabs').innerHTML =
     `<div class="tab ${filterType==='all'?'active':''}" onclick="setTypeFilter('all')">🔥 Все <span class="cnt">${total}</span></div>` +
     `<div class="tab ${filterType==='movie'?'active':''}" onclick="setTypeFilter('movie')">🎬 Фильмы <span class="cnt">${cMovies}</span></div>` +
     `<div class="tab ${filterType==='series'?'active':''}" onclick="setTypeFilter('series')">📺 Сериалы <span class="cnt">${cSeries}</span></div>` +
-    `<div class="tab ${filterType==='anime'?'active':''}" onclick="setTypeFilter('anime')">⛩️ Аниме <span class="cnt">${cAnime}</span></div>`;
+    `<div class="tab ${filterType==='anime'?'active':''}" onclick="setTypeFilter('anime')">⛩️ Аниме <span class="cnt">${cAnime}</span></div>` +
+    `<div class="tab ${filterType==='stats'?'active':''}" onclick="setTypeFilter('stats')">📊 Статистика <span class="cnt">${cRated}</span></div>`;
+
+  if (filterType === 'stats') {
+    document.getElementById('catalogControls').style.display = 'none';
+    document.getElementById('statsContainer').style.display = 'block';
+    renderStatsView();
+    return;
+  }
+
+  document.getElementById('catalogControls').style.display = 'block';
+  document.getElementById('statsContainer').style.display = 'none';
 
   const pillsData = [
     ['all', 'Все'],
@@ -1013,6 +1269,23 @@ function render() {
       ? escapeHtml(item.note)
       : (showSE && item.status === 'watching' ? `Сезон ${item.season} • Серия ${item.episode}` : 'Без заметки');
 
+    // Per-season ratings mini chips on card
+    let seasonChipsHtml = '';
+    if (showSE && item.seasonRatings && typeof item.seasonRatings === 'object') {
+      const sKeys = Object.keys(item.seasonRatings)
+        .filter(k => typeof item.seasonRatings[k] === 'number' && item.seasonRatings[k] > 0)
+        .sort((a, b) => Number(a) - Number(b));
+      if (sKeys.length > 0) {
+        seasonChipsHtml = `<div class="season-chips-mini">` +
+          sKeys.map(k => `<span class="s-chip-mini">С${k}: ★${item.seasonRatings[k]}</span>`).join('') +
+        `</div>`;
+      }
+    }
+
+    const gTagsHtml = (item.genres && item.genres.length)
+      ? `<div class="genre-tags-mini">${item.genres.slice(0, 3).map(g => `<span class="g-tag-mini">${escapeHtml(g)}</span>`).join('')}</div>`
+      : '';
+
     const progHtml = (showSE && item.status === 'watching')
       ? `<div class="prog-bar"><span>С${item.season} : Э${item.episode}</span><div class="prog-btns"><button class="p-btn" onclick="stepEpisode('${item.id}', -1)">-</button><button class="p-btn" onclick="stepEpisode('${item.id}', 1)">+</button></div></div>`
       : '';
@@ -1050,6 +1323,8 @@ function render() {
         `<div>` +
           `<div class="card-title">${escapeHtml(item.title)}</div>` +
           `<div class="card-meta">${hasSequel ? `<span style="color:var(--accent);font-weight:700">⏳ ${seqLabel}</span>` : metaText}</div>` +
+          seasonChipsHtml +
+          gTagsHtml +
         `</div>` +
         woBadgeHtml +
         progHtml +
@@ -1070,13 +1345,191 @@ function render() {
   grid.innerHTML = html;
 }
 
+/* ================= STATISTICS & GENRE ANALYTICS ================= */
+function renderStatsView() {
+  const container = document.getElementById('statsContainer');
+  const subTabs = [
+    ['all', '🔥 Всё'],
+    ['anime', '⛩️ Аниме'],
+    ['series', '📺 Сериалы'],
+    ['movie', '🎬 Фильмы']
+  ];
+
+  const scoped = items.filter(x => statsTypeFilter === 'all' || x.type === statsTypeFilter);
+  const watchedOrWatching = scoped.filter(x => x.status === 'watched' || x.status === 'watching');
+  const ratedItems = scoped.filter(x => typeof x.rating === 'number' && x.rating > 0);
+
+  // Average score across rated items
+  const avgScore = ratedItems.length
+    ? (Math.round((ratedItems.reduce((acc, x) => acc + x.rating, 0) / ratedItems.length) * 100) / 100)
+    : 0;
+
+  // Aggregate genres: frequency (watched/watching + all) and average rating (rated)
+  const genreMap = new Map();
+  scoped.forEach(item => {
+    const gs = (item.genres && item.genres.length) ? item.genres : ['Без жанра'];
+    const isConsumed = (item.status === 'watched' || item.status === 'watching');
+    const hasRating = (typeof item.rating === 'number' && item.rating > 0);
+
+    gs.forEach(g => {
+      if (!genreMap.has(g)) {
+        genreMap.set(g, { name: g, totalCount: 0, consumedCount: 0, ratedCount: 0, ratingSum: 0 });
+      }
+      const entry = genreMap.get(g);
+      entry.totalCount++;
+      if (isConsumed) entry.consumedCount++;
+      if (hasRating) {
+        entry.ratedCount++;
+        entry.ratingSum += item.rating;
+      }
+    });
+  });
+
+  const genreStats = Array.from(genreMap.values()).map(g => ({
+    ...g,
+    avgRating: g.ratedCount ? Math.round((g.ratingSum / g.ratedCount) * 10) / 10 : 0
+  }));
+
+  // Most watched genres (excluding "Без жанра" from top callout if real genres exist)
+  const byFreq = genreStats.slice().sort((a, b) => (b.consumedCount - a.consumedCount) || (b.totalCount - a.totalCount));
+  const topFreqReal = byFreq.find(g => g.name !== 'Без жанра') || byFreq[0];
+
+  // Highest rated genres (at least 1 rated item)
+  const byScore = genreStats
+    .filter(g => g.ratedCount > 0)
+    .sort((a, b) => (b.avgRating - a.avgRating) || (b.ratedCount - a.ratedCount));
+  const topScoreReal = byScore.find(g => g.name !== 'Без жанра') || byScore[0];
+
+  const maxConsumed = byFreq.length ? Math.max(1, byFreq[0].consumedCount || byFreq[0].totalCount) : 1;
+
+  if (statsSelectedGenre && !genreMap.has(statsSelectedGenre)) {
+    statsSelectedGenre = null;
+  }
+
+  // Filter rated items by selected genre
+  const filteredRated = ratedItems
+    .filter(item => {
+      if (!statsSelectedGenre) return true;
+      const gs = (item.genres && item.genres.length) ? item.genres : ['Без жанра'];
+      return gs.includes(statsSelectedGenre);
+    })
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+  const typeBadge = { movie: '🎬 Фильм', series: '📺 Сериал', anime: '⛩️ Аниме' };
+
+  container.innerHTML = `<div class="stats-view">` +
+    `<div class="st-subtabs">` +
+      subTabs.map(p => `<div class="st-subtab ${statsTypeFilter===p[0]?'active':''}" onclick="setStatsType('${p[0]}')">${p[1]}</div>`).join('') +
+    `</div>` +
+
+    `<div class="kpi-grid">` +
+      `<div class="kpi-box">` +
+        `<div class="kpi-lbl">Оценено / Всего</div>` +
+        `<div class="kpi-val">${ratedItems.length} <span style="font-size:13px;color:var(--muted)">из ${scoped.length}</span></div>` +
+        `<div class="kpi-sub">Средний балл: ★ ${avgScore || '—'}</div>` +
+      `</div>` +
+      `<div class="kpi-box">` +
+        `<div class="kpi-lbl">Любимый жанр</div>` +
+        `<div class="kpi-val" style="font-size:15px">${topFreqReal ? escapeHtml(topFreqReal.name) : '—'}</div>` +
+        `<div class="kpi-sub">${topFreqReal ? `Смотрел: ${topFreqReal.consumedCount} тайтл.` : 'Нет данных'}</div>` +
+      `</div>` +
+      `<div class="kpi-box">` +
+        `<div class="kpi-lbl">Высший рейтинг жанра</div>` +
+        `<div class="kpi-val" style="font-size:15px">${topScoreReal ? escapeHtml(topScoreReal.name) : '—'}</div>` +
+        `<div class="kpi-sub">${topScoreReal ? `Средняя: ★ ${topScoreReal.avgRating} (${topScoreReal.ratedCount})` : 'Нет оценок'}</div>` +
+      `</div>` +
+      `<div class="kpi-box">` +
+        `<div class="kpi-lbl">Просмотрено / Смотрю</div>` +
+        `<div class="kpi-val">${watchedOrWatching.length}</div>` +
+        `<div class="kpi-sub">В планах: ${scoped.filter(x => x.status === 'planned').length}</div>` +
+      `</div>` +
+    `</div>` +
+
+    `<div class="panel">` +
+      `<div class="panel-title">` +
+        `<span>📈 Топ жанров по просмотрам</span>` +
+        `<span style="font-size:11px;color:var(--muted);font-weight:600">Нажми для фильтра</span>` +
+      `</div>` +
+      (byFreq.length ? byFreq.map(g => {
+        const cnt = g.consumedCount || g.totalCount;
+        const pct = Math.min(100, Math.round((cnt / maxConsumed) * 100));
+        const isSel = statsSelectedGenre === g.name;
+        return `<div class="g-bar-row ${isSel ? 'selected' : ''}" onclick="toggleStatsGenre('${escapeHtml(g.name)}')">` +
+          `<div class="g-bar-top">` +
+            `<span>${escapeHtml(g.name)}</span>` +
+            `<span class="g-bar-meta">${g.consumedCount} просм. • Всего ${g.totalCount} ${g.avgRating ? `• <b style="color:var(--accent)">★ ${g.avgRating}</b>` : ''}</span>` +
+          `</div>` +
+          `<div class="g-bar-track"><div class="g-bar-fill blue" style="width:${pct}%"></div></div>` +
+        `</div>`;
+      }).join('') : `<div style="font-size:12px;color:var(--muted)">Пока нет тайтлов в этой категории</div>`) +
+    `</div>` +
+
+    `<div class="panel">` +
+      `<div class="panel-title">` +
+        `<span>🏆 Рейтинг жанров по твоим оценкам</span>` +
+      `</div>` +
+      (byScore.length ? byScore.map(g => {
+        const pct = Math.min(100, Math.round((g.avgRating / 10) * 100));
+        const isSel = statsSelectedGenre === g.name;
+        return `<div class="g-bar-row ${isSel ? 'selected' : ''}" onclick="toggleStatsGenre('${escapeHtml(g.name)}')">` +
+          `<div class="g-bar-top">` +
+            `<span>${escapeHtml(g.name)}</span>` +
+            `<span class="g-bar-meta">Оценено: ${g.ratedCount} • <b style="color:var(--accent)">★ ${g.avgRating} / 10</b></span>` +
+          `</div>` +
+          `<div class="g-bar-track"><div class="g-bar-fill" style="width:${pct}%"></div></div>` +
+        `</div>`;
+      }).join('') : `<div style="font-size:12px;color:var(--muted)">Оцени хотя бы один тайтл, чтобы увидеть аналитику</div>`) +
+    `</div>` +
+
+    `<div class="panel">` +
+      `<div class="panel-title">` +
+        `<span>⭐ Все твои оценки ${statsSelectedGenre ? `(${escapeHtml(statsSelectedGenre)})` : ''}</span>` +
+        (statsSelectedGenre ? `<button class="pill active" onclick="toggleStatsGenre(null)">Сбросить фильтр ✕</button>` : `<span style="font-size:11px;color:var(--muted)">${filteredRated.length} шт.</span>`) +
+      `</div>` +
+      (filteredRated.length ? filteredRated.map(item => {
+        let sDetail = '';
+        if (item.type !== 'movie' && item.seasonRatings) {
+          const sKeys = Object.keys(item.seasonRatings).filter(k => item.seasonRatings[k] > 0).sort((a,b)=>Number(a)-Number(b));
+          if (sKeys.length > 0) {
+            sDetail = ' • ' + sKeys.map(k => `С${k}: ${item.seasonRatings[k]}`).join(', ');
+          }
+        }
+        const gLine = (item.genres && item.genres.length) ? item.genres.join(', ') : 'Без жанра';
+        return `<div class="rated-item-row" onclick="openEditModal('${item.id}')">` +
+          `<div class="rated-item-left">` +
+            `<div class="rated-item-title">${escapeHtml(item.title)}</div>` +
+            `<div class="rated-item-sub">${typeBadge[item.type] || ''} • ${escapeHtml(gLine)}${escapeHtml(sDetail)}</div>` +
+          `</div>` +
+          `<div class="rated-item-score">★ ${item.rating}</div>` +
+        `</div>`;
+      }).join('') : `<div style="font-size:12px;color:var(--muted)">Нет оценённых тайтлов по выбранному фильтру</div>`) +
+    `</div>` +
+  `</div>`;
+}
+
+window.setStatsType = function(t) {
+  statsTypeFilter = t;
+  renderStatsView();
+};
+
+window.toggleStatsGenre = function(g) {
+  if (!g || statsSelectedGenre === g) statsSelectedGenre = null;
+  else statsSelectedGenre = g;
+  renderStatsView();
+};
+
 window.showMore = function() {
   visibleLimit += 60;
   render();
 };
 
 window.setTypeFilter = function(t) { filterType = t; visibleLimit = 40; render(); };
-window.setStatusFilter = function(s) { filterStatus = s; visibleLimit = 40; render(); };
+window.setStatusFilter = function(s) {
+  if (filterType === 'stats') filterType = 'all';
+  filterStatus = s;
+  visibleLimit = 40;
+  render();
+};
 
 window.stepEpisode = function(id, delta) {
   const it = items.find(x => x.id === id);
@@ -1131,11 +1584,13 @@ async function searchYummyAnime(q) {
         const typeLbl = (a.type && a.type.name) ? a.type.name : '';
         const epCnt = (a.episodes && a.episodes.count) ? (a.episodes.count + ' эп.') : '';
         const sub = [a.year, typeLbl, epCnt, 'YummyAnime'].filter(Boolean).join(' • ');
+        const genres = Array.isArray(a.genres) ? a.genres.map(g => g.title || g.name || g).filter(Boolean) : [];
         out.push({
           title: a.title || q,
           sub: sub,
           poster: poster,
-          yummyId: a.anime_id || a.id || null
+          yummyId: a.anime_id || a.id || null,
+          genres: genres
         });
       });
     }
@@ -1175,8 +1630,6 @@ async function fetchYummyWatchOrder(title, defaultState) {
   }
 }
 
-
-// Fetch seasons list from Kinopoisk Unofficial API (/api/v2.2/films/{id}/seasons)
 async function fetchKpSeasons(title, watchedSeasonNum, isWatchedStatus) {
   if (!kpApiKey) return 'NO_KEY';
   const cleanQ = title.replace(/\([^)]*\)/g, '').trim();
@@ -1225,7 +1678,7 @@ async function fetchKpSeasons(title, watchedSeasonNum, isWatchedStatus) {
   }
 }
 
-// Watch Order Modal with 3 states: 🟢 done -> ⏳ wait -> 🔴 none
+// Watch Order Modal
 let activeWoItemId = null;
 
 window.openWatchOrderModal = function(id) {
@@ -1291,7 +1744,6 @@ window.cycleWoStep = function(idx) {
   const next = order[(order.indexOf(cur) + 1) % order.length];
   it.watchOrder[idx].state = next;
 
-  // Auto-sync waiting flag with ⏳ steps in watchOrder!
   const waitSteps = it.watchOrder.filter(w => w.state === 'wait');
   if (waitSteps.length > 0) {
     it.waiting = true;
@@ -1389,15 +1841,26 @@ document.getElementById('woFetchBtn').onclick = async function() {
 
 document.getElementById('closeWoModal').onclick = () => document.getElementById('watchOrderModal').classList.remove('open');
 
-async function fetchBestPoster(title, type) {
+function capitalizeGenre(g) {
+  const s = String(g || '').trim();
+  if (!s) return '';
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
+async function fetchBestMeta(title, type) {
   const cleanQ = title.replace(/\([^)]*\)/g, '').trim();
+  let poster = '';
+  let genres = [];
 
   if (type === 'anime') {
     const ya = await searchYummyAnime(cleanQ);
-    if (ya.length && ya[0].poster) return ya[0].poster;
+    if (ya.length) {
+      if (ya[0].poster) poster = ya[0].poster;
+      if (ya[0].genres && ya[0].genres.length) genres = ya[0].genres.map(capitalizeGenre);
+    }
   }
 
-  if (kpApiKey) {
+  if (kpApiKey && (!poster || !genres.length)) {
     try {
       const res = await fetch('https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword=' + encodeURIComponent(cleanQ) + '&page=1', {
         headers: { 'X-API-KEY': kpApiKey, 'Content-Type': 'application/json' }
@@ -1407,39 +1870,42 @@ async function fetchBestPoster(title, type) {
         const films = data.films || [];
         if (films.length > 0) {
           const f = films[0];
-          return f.posterUrlPreview || f.posterUrl || '';
+          if (!poster) poster = f.posterUrlPreview || f.posterUrl || '';
+          if (!genres.length && Array.isArray(f.genres)) {
+            genres = f.genres.map(x => capitalizeGenre(x.genre)).filter(Boolean);
+          }
         }
       } else if (res.status === 402 || res.status === 429) {
-        return 'RATE_LIMIT';
+        return { poster: 'RATE_LIMIT', genres: [] };
       }
     } catch (e) {}
   }
 
-  if (type === 'anime') {
+  if (!poster && type === 'anime') {
     try {
       const r = await fetch('https://shikimori.one/api/animes?search=' + encodeURIComponent(cleanQ) + '&limit=1');
       if (r.ok) {
         const arr = await r.json();
         if (arr.length && arr[0].image && arr[0].image.original) {
-          return 'https://shikimori.one' + arr[0].image.original;
+          poster = 'https://shikimori.one' + arr[0].image.original;
         }
       }
     } catch (e) {}
   }
 
-  if (type === 'series') {
+  if (!poster && type === 'series') {
     try {
       const r = await fetch('https://api.tvmaze.com/search/shows?q=' + encodeURIComponent(cleanQ));
       if (r.ok) {
         const arr = await r.json();
         if (arr.length && arr[0].show && arr[0].show.image) {
-          return arr[0].show.image.medium || arr[0].show.image.original || '';
+          poster = arr[0].show.image.medium || arr[0].show.image.original || '';
         }
       }
     } catch (e) {}
   }
 
-  return '';
+  return { poster, genres };
 }
 
 async function startBulkCoverLoad() {
@@ -1447,12 +1913,12 @@ async function startBulkCoverLoad() {
     stopCoversFlag = true;
     return;
   }
-  const missing = items.filter(x => !x.poster);
+  const missing = items.filter(x => !x.poster || !x.genres || !x.genres.length);
   const statusEl = document.getElementById('bulkCoverStatus');
   const btnEl = document.getElementById('btnBulkCovers');
 
   if (!missing.length) {
-    statusEl.textContent = 'У всех карточек уже есть обложки!';
+    statusEl.textContent = 'У всех карточек уже есть обложки и жанры!';
     return;
   }
 
@@ -1464,14 +1930,22 @@ async function startBulkCoverLoad() {
   let found = 0;
   for (const it of missing) {
     if (stopCoversFlag) break;
-    statusEl.textContent = `Загрузка: ${done + 1} из ${missing.length} (найдено: ${found}) — ${it.title}`;
-    const url = await fetchBestPoster(it.title, it.type);
-    if (url === 'RATE_LIMIT') {
+    statusEl.textContent = `Загрузка: ${done + 1} из ${missing.length} (обновлено: ${found}) — ${it.title}`;
+    const meta = await fetchBestMeta(it.title, it.type);
+    if (meta.poster === 'RATE_LIMIT') {
       statusEl.textContent = `Лимит Кинопоиска исчерпан на ${done}/${missing.length}. Остальные можно докачать завтра!`;
       break;
     }
-    if (url) {
-      it.poster = url;
+    let updated = false;
+    if (!it.poster && meta.poster) {
+      it.poster = meta.poster;
+      updated = true;
+    }
+    if ((!it.genres || !it.genres.length) && meta.genres && meta.genres.length) {
+      it.genres = meta.genres;
+      updated = true;
+    }
+    if (updated) {
       found++;
       if (found % 5 === 0) {
         saveItems();
@@ -1483,13 +1957,13 @@ async function startBulkCoverLoad() {
   }
 
   isFetchingCovers = false;
-  btnEl.textContent = '🖼️ Загрузить все обложки';
+  btnEl.textContent = '🖼️ Загрузить обложки и жанры';
   saveItems();
   render();
   if (!stopCoversFlag) {
-    statusEl.textContent = `Готово! Загружено обложек: ${found} из ${done}.`;
+    statusEl.textContent = `Готово! Обновлено карточек: ${found} из ${done}.`;
   } else {
-    statusEl.textContent = `Остановлено. Сохранено обложек: ${found}.`;
+    statusEl.textContent = `Остановлено. Обновлено карточек: ${found}.`;
   }
 }
 
@@ -1519,10 +1993,12 @@ async function searchMediaApi() {
         (data.films || []).slice(0, 6).forEach(function(f) {
           const title = f.nameRu || f.nameEn || q;
           const sub = [f.year, (f.nameEn && f.nameRu) ? f.nameEn : '', 'Кинопоиск'].filter(Boolean).join(' • ');
+          const genres = Array.isArray(f.genres) ? f.genres.map(x => capitalizeGenre(x.genre)).filter(Boolean) : [];
           results.push({
             title: title,
             sub: sub,
-            poster: f.posterUrlPreview || f.posterUrl || ''
+            poster: f.posterUrlPreview || f.posterUrl || '',
+            genres: genres
           });
         });
       }
@@ -1543,7 +2019,8 @@ async function searchMediaApi() {
               results.push({
                 title: a.russian || a.name,
                 sub: [a.aired_on ? a.aired_on.slice(0, 4) : '', 'Shikimori'].filter(Boolean).join(' • '),
-                poster: img
+                poster: img,
+                genres: []
               });
             });
           }
@@ -1562,7 +2039,8 @@ async function searchMediaApi() {
               results.push({
                 title: sh.name,
                 sub: [sh.premiered ? sh.premiered.slice(0, 4) : '', 'TVMaze'].filter(Boolean).join(' • '),
-                poster: sh.image ? (sh.image.medium || sh.image.original || '') : ''
+                poster: sh.image ? (sh.image.medium || sh.image.original || '') : '',
+                genres: []
               });
             });
           }
@@ -1592,7 +2070,8 @@ async function searchMediaApi() {
             results.push({
               title: cleanT,
               sub: [yrMatch ? yrMatch[1] : '', 'Википедия'].filter(Boolean).join(' • '),
-              poster: p.thumbnail ? p.thumbnail.source : ''
+              poster: p.thumbnail ? p.thumbnail.source : '',
+              genres: []
             });
           });
         }
@@ -1629,6 +2108,19 @@ window.pickApiResult = async function(idx) {
   updatePosterPreview();
   document.getElementById('apiResults').innerHTML = '';
 
+  if (r.genres && r.genres.length) {
+    formGenres = r.genres.map(capitalizeGenre);
+    document.getElementById('fGenresInput').value = formGenres.join(', ');
+    renderGenreQuickChips();
+  } else {
+    const mapped = normalizeGenres([], r.title);
+    if (mapped.length) {
+      formGenres = mapped;
+      document.getElementById('fGenresInput').value = formGenres.join(', ');
+      renderGenreQuickChips();
+    }
+  }
+
   if (r.yummyId && (!formWatchOrder || !formWatchOrder.length)) {
     const wo = await fetchYummyWatchOrder(r.title, formStatus === 'watched' ? 'done' : 'none');
     if (wo.length) {
@@ -1640,6 +2132,8 @@ window.pickApiResult = async function(idx) {
     const kpSeasons = await fetchKpSeasons(r.title, formSeason, formStatus === 'watched');
     if (Array.isArray(kpSeasons) && kpSeasons.length) {
       formWatchOrder = kpSeasons;
+      formSeasonCount = Math.max(formSeasonCount, kpSeasons.length);
+      renderModalControls();
       showToast('Подтянуты сезоны с Кинопоиска (' + kpSeasons.length + ' сез.)');
     }
   }
@@ -1654,6 +2148,24 @@ function updatePosterPreview() {
     box.textContent = 'Нет фото';
   }
 }
+
+function renderGenreQuickChips() {
+  const wrap = document.getElementById('genreQuickChips');
+  if (!wrap) return;
+  const currentSet = new Set(formGenres.map(g => g.toLowerCase()));
+  wrap.innerHTML = COMMON_GENRES.map(g => {
+    const active = currentSet.has(g.toLowerCase());
+    return `<span class="g-chip ${active ? 'active' : ''}" onclick="toggleFormGenre('${g}')">${g}</span>`;
+  }).join('');
+}
+
+window.toggleFormGenre = function(g) {
+  const idx = formGenres.findIndex(x => x.toLowerCase() === g.toLowerCase());
+  if (idx >= 0) formGenres.splice(idx, 1);
+  else formGenres.push(g);
+  document.getElementById('fGenresInput').value = formGenres.join(', ');
+  renderGenreQuickChips();
+};
 
 function renderModalControls() {
   document.querySelectorAll('#modalTypeSwitch .t-opt').forEach(function(el) {
@@ -1671,12 +2183,76 @@ function renderModalControls() {
   document.getElementById('fWaitNoteRow').style.display = formWaiting ? 'block' : 'none';
 
   const rates = [null, 1, 2, 3, 4, 5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
-  document.getElementById('rateGrid').innerHTML = rates.map(function(r) {
-    const arg = (r === null) ? 'null' : r;
-    const lbl = (r === null) ? 'Без' : r;
-    return `<button type="button" class="r-opt ${formRating === r ? 'active' : ''}" onclick="setFormRating(${arg})">${lbl}</button>`;
-  }).join('');
+
+  if (formType === 'movie') {
+    document.getElementById('movieRateBlock').style.display = 'block';
+    document.getElementById('seasonRateBlock').style.display = 'none';
+    document.getElementById('rateGrid').innerHTML = rates.map(function(r) {
+      const arg = (r === null) ? 'null' : r;
+      const lbl = (r === null) ? 'Без' : r;
+      return `<button type="button" class="r-opt ${formRating === r ? 'active' : ''}" onclick="setFormRating(${arg})">${lbl}</button>`;
+    }).join('');
+  } else {
+    document.getElementById('movieRateBlock').style.display = 'none';
+    document.getElementById('seasonRateBlock').style.display = 'block';
+
+    // Ensure formSeasonCount covers formSeason and all keys in formSeasonRatings
+    const maxKey = Object.keys(formSeasonRatings).reduce((m, k) => Math.max(m, Number(k) || 1), 1);
+    formSeasonCount = Math.max(formSeasonCount, formSeason, maxKey);
+    if (formActiveRateSeason > formSeasonCount) formActiveRateSeason = formSeasonCount;
+
+    document.getElementById('activeSeasonLabel').textContent = `Сезон ${formActiveRateSeason}`;
+
+    let tabsHtml = '';
+    for (let s = 1; s <= formSeasonCount; s++) {
+      const sr = formSeasonRatings[String(s)];
+      const badge = (typeof sr === 'number' && sr > 0) ? ` <span class="s-badge">★${sr}</span>` : '';
+      tabsHtml += `<button type="button" class="sr-tab ${formActiveRateSeason === s ? 'active' : ''}" onclick="selectRateSeason(${s})">Сезон ${s}${badge}</button>`;
+    }
+    tabsHtml += `<button type="button" class="sr-add-btn" onclick="addSeasonRateTab()">+ Сезон</button>`;
+    document.getElementById('seasonRateTabs').innerHTML = tabsHtml;
+
+    const currentSeasonVal = (formSeasonRatings[String(formActiveRateSeason)] !== undefined)
+      ? formSeasonRatings[String(formActiveRateSeason)]
+      : null;
+
+    document.getElementById('seasonRateGrid').innerHTML = rates.map(function(r) {
+      const arg = (r === null) ? 'null' : r;
+      const lbl = (r === null) ? 'Без' : r;
+      return `<button type="button" class="r-opt ${currentSeasonVal === r ? 'active' : ''}" onclick="setSeasonRating(${arg})">${lbl}</button>`;
+    }).join('');
+
+    const avg = computeAvgRating(formSeasonRatings, null);
+    const ratedCount = Object.values(formSeasonRatings).filter(v => typeof v === 'number' && v > 0).length;
+    document.getElementById('seasonAvgBar').innerHTML =
+      `<span>Оценено сезонов: <b>${ratedCount} из ${formSeasonCount}</b></span>` +
+      `<span>Общая оценка: <b style="color:var(--accent)">${avg !== null ? '★ ' + avg : 'Без оценки'}</b></span>`;
+  }
+
+  renderGenreQuickChips();
 }
+
+window.selectRateSeason = function(s) {
+  formActiveRateSeason = s;
+  renderModalControls();
+};
+
+window.addSeasonRateTab = function() {
+  formSeasonCount++;
+  formActiveRateSeason = formSeasonCount;
+  renderModalControls();
+};
+
+window.setSeasonRating = function(r) {
+  if (r === null) {
+    delete formSeasonRatings[String(formActiveRateSeason)];
+  } else {
+    formSeasonRatings[String(formActiveRateSeason)] = r;
+    if (formStatus === 'planned') formStatus = 'watched';
+  }
+  formRating = computeAvgRating(formSeasonRatings, null);
+  renderModalControls();
+};
 
 window.setFormRating = function(r) {
   formRating = r;
@@ -1686,19 +2262,24 @@ window.setFormRating = function(r) {
 
 function openAddModal() {
   editingId = null;
-  formType = filterType !== 'all' ? filterType : 'movie';
+  formType = (filterType !== 'all' && filterType !== 'stats') ? filterType : 'movie';
   formStatus = 'watched';
   formRating = null;
+  formSeasonRatings = {};
+  formActiveRateSeason = 1;
+  formSeasonCount = 1;
   formSeason = 1;
   formEpisode = 1;
   formWaiting = false;
   formWaitNote = '';
   formWatchOrder = [];
+  formGenres = [];
   document.getElementById('modalHeading').textContent = 'Добавить тайтл';
   document.getElementById('fTitle').value = '';
   document.getElementById('fPoster').value = '';
   document.getElementById('fNote').value = '';
   document.getElementById('fWaitNote').value = '';
+  document.getElementById('fGenresInput').value = '';
   document.getElementById('apiResults').innerHTML = '';
   updatePosterPreview();
   renderModalControls();
@@ -1714,14 +2295,24 @@ window.openEditModal = function(id) {
   formRating = (it.rating !== undefined) ? it.rating : null;
   formSeason = it.season || 1;
   formEpisode = it.episode || 1;
+  formSeasonRatings = Object.assign({}, it.seasonRatings || {});
+  if (formType !== 'movie' && Object.keys(formSeasonRatings).length === 0 && typeof formRating === 'number' && formRating > 0) {
+    formSeasonRatings['1'] = formRating;
+  }
+  const maxKey = Object.keys(formSeasonRatings).reduce((m, k) => Math.max(m, Number(k) || 1), 1);
+  formSeasonCount = Math.max(formSeason, maxKey);
+  formActiveRateSeason = Math.min(formSeason, formSeasonCount) || 1;
   formWaiting = !!it.waiting;
   formWaitNote = it.waitNote || '';
   formWatchOrder = Array.isArray(it.watchOrder) ? it.watchOrder : [];
+  formGenres = Array.isArray(it.genres) ? it.genres.slice() : normalizeGenres([], it.title);
+
   document.getElementById('modalHeading').textContent = 'Редактировать';
   document.getElementById('fTitle').value = it.title || '';
   document.getElementById('fPoster').value = it.poster || '';
   document.getElementById('fNote').value = it.note || '';
   document.getElementById('fWaitNote').value = formWaitNote;
+  document.getElementById('fGenresInput').value = formGenres.join(', ');
   document.getElementById('apiResults').innerHTML = '';
   updatePosterPreview();
   renderModalControls();
@@ -1738,6 +2329,19 @@ function saveModalItem() {
   const note = document.getElementById('fNote').value.trim();
   const waitNote = formWaiting ? (document.getElementById('fWaitNote').value.trim() || (formType !== 'movie' ? `Жду ${formSeason + 1} сез.` : 'Жду продолжение')) : '';
 
+  const rawG = document.getElementById('fGenresInput').value;
+  let parsedGenres = rawG.split(',').map(s => capitalizeGenre(s)).filter(Boolean);
+  if (!parsedGenres.length) {
+    parsedGenres = normalizeGenres([], title);
+  }
+
+  let finalRating = formRating;
+  let finalSeasonRatings = {};
+  if (formType !== 'movie') {
+    finalSeasonRatings = Object.assign({}, formSeasonRatings);
+    finalRating = computeAvgRating(finalSeasonRatings, null);
+  }
+
   if (editingId) {
     const it = items.find(x => x.id === editingId);
     if (it) {
@@ -1745,13 +2349,15 @@ function saveModalItem() {
       it.title = title;
       it.poster = poster;
       it.status = formStatus;
-      it.rating = formRating;
+      it.rating = finalRating;
+      it.seasonRatings = finalSeasonRatings;
       it.season = formSeason;
       it.episode = formEpisode;
       it.note = note;
       it.waiting = formWaiting;
       it.waitNote = waitNote;
       it.watchOrder = formWatchOrder;
+      it.genres = parsedGenres;
     }
     showToast('Сохранено');
   } else {
@@ -1761,13 +2367,15 @@ function saveModalItem() {
       title: title,
       poster: poster,
       status: formStatus,
-      rating: formRating,
+      rating: finalRating,
+      seasonRatings: finalSeasonRatings,
       season: formSeason,
       episode: formEpisode,
       note: note,
       waiting: formWaiting,
       waitNote: waitNote,
       watchOrder: formWatchOrder,
+      genres: parsedGenres,
       createdAt: Date.now()
     });
     showToast('Добавлено в список');
@@ -1784,6 +2392,11 @@ document.getElementById('saveItemBtn').onclick = saveModalItem;
 document.getElementById('btnSearchApi').onclick = searchMediaApi;
 document.getElementById('fPoster').oninput = updatePosterPreview;
 
+document.getElementById('fGenresInput').oninput = function(e) {
+  formGenres = e.target.value.split(',').map(s => capitalizeGenre(s)).filter(Boolean);
+  renderGenreQuickChips();
+};
+
 document.getElementById('fWaitingToggle').onclick = function() {
   formWaiting = !formWaiting;
   if (formWaiting && !document.getElementById('fWaitNote').value.trim()) {
@@ -1799,8 +2412,16 @@ document.querySelectorAll('#modalStatusPills .st-opt').forEach(function(el) {
   el.onclick = function() { formStatus = el.dataset.st; renderModalControls(); };
 });
 
-document.getElementById('decSeason').onclick = () => { formSeason = Math.max(1, formSeason - 1); renderModalControls(); };
-document.getElementById('incSeason').onclick = () => { formSeason++; renderModalControls(); };
+document.getElementById('decSeason').onclick = () => {
+  formSeason = Math.max(1, formSeason - 1);
+  renderModalControls();
+};
+document.getElementById('incSeason').onclick = () => {
+  formSeason++;
+  formSeasonCount = Math.max(formSeasonCount, formSeason);
+  formActiveRateSeason = formSeason;
+  renderModalControls();
+};
 document.getElementById('decEp').onclick = () => { formEpisode = Math.max(1, formEpisode - 1); renderModalControls(); };
 document.getElementById('incEp').onclick = () => { formEpisode++; renderModalControls(); };
 
@@ -1821,10 +2442,10 @@ document.getElementById('sortSel').onchange = function(e) { sortBy = e.target.va
 
 document.getElementById('btnSettings').onclick = function() {
   document.getElementById('kpKeyInput').value = kpApiKey;
-  const missingCnt = items.filter(x => !x.poster).length;
+  const missingCnt = items.filter(x => !x.poster || !x.genres || !x.genres.length).length;
   document.getElementById('bulkCoverStatus').textContent = missingCnt > 0
-    ? `Карточек без обложки: ${missingCnt} из ${items.length}`
-    : 'У всех карточек уже есть обложки!';
+    ? `Карточек без обложки или жанров: ${missingCnt} из ${items.length}`
+    : 'У всех карточек уже есть обложки и жанры!';
   document.getElementById('settingsModal').classList.add('open');
 };
 document.getElementById('closeSettingsModal').onclick = () => document.getElementById('settingsModal').classList.remove('open');
@@ -1867,7 +2488,7 @@ document.getElementById('importFile').onchange = function(e) {
     try {
       const data = JSON.parse(reader.result);
       if (Array.isArray(data)) {
-        items = data;
+        items = data.map(migrateItemFields);
         saveItems();
         render();
         showToast('Импортировано: ' + items.length);
@@ -1880,7 +2501,6 @@ document.getElementById('importFile').onchange = function(e) {
 };
 
 bootInstant();
-
   </script>
 </body>
 </html>
