@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="referrer" content="no-referrer" />
-  <title>КиноБро — Трекер фильмов, сериалов и аниме</title>
+  <title>Киноброуски — Трекер фильмов, сериалов и аниме</title>
   <!-- Telegram Mini App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- Tailwind CSS -->
@@ -26,7 +26,7 @@
   </script>
   <style>
     body {
-      background-color: #16171a;
+      background-color: #0f1115;
       color: #f3f4f6;
       font-family: 'Inter', sans-serif;
       -webkit-tap-highlight-color: transparent;
@@ -37,10 +37,10 @@
       height: 4px;
     }
     ::-webkit-scrollbar-track {
-      background: #16171a;
+      background: #0f1115;
     }
     ::-webkit-scrollbar-thumb {
-      background: #2f333d;
+      background: #272b34;
       border-radius: 9999px;
     }
     .no-scrollbar::-webkit-scrollbar {
@@ -65,17 +65,17 @@
   <div id="toast-container" class="fixed bottom-4 right-4 left-4 sm:left-auto z-50 flex flex-col items-end gap-2 pointer-events-none"></div>
 
   <!-- Top Navigation & Header -->
-  <header class="sticky top-0 z-30 bg-[#16171a]/95 backdrop-blur-xl border-b border-[#2a2d35]">
+  <header class="sticky top-0 z-30 bg-[#0f1115]/95 backdrop-blur-xl border-b border-[#22262e]">
     <div class="max-w-[560px] mx-auto px-3 py-2.5">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <!-- Brand Logo & Cloud Sync Indicator -->
+        <!-- Brand Logo & Sync Indicator -->
         <div class="flex items-center gap-2">
           <div id="brand-icon" class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow text-zinc-950 font-black text-base transition-all duration-300">
             🎬
           </div>
           <div class="flex items-center gap-1.5">
-            <h1 class="text-base font-extrabold tracking-tight text-white">КиноБро</h1>
-            <span id="sync-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#1f2126] text-zinc-400 border border-[#2a2d35]">
+            <h1 class="text-base font-extrabold tracking-tight text-white">Киноброуски</h1>
+            <span id="sync-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#181b20] text-zinc-400 border border-[#252932]">
               💾 Local
             </span>
           </div>
@@ -83,51 +83,75 @@
 
         <!-- Global Actions & Backup Controls -->
         <div class="flex items-center gap-1.5">
-          <button type="button" onclick="handleClearOrDemoClick()" id="btn-demo-toggle" title="Очистить список или загрузить примеры" class="px-2 py-1.5 rounded-xl bg-[#1f2126] hover:bg-[#272a31] border border-[#2a2d35] text-zinc-300 hover:text-white transition text-[11px] font-bold flex items-center gap-1 active:scale-95">
-            <span id="btn-demo-icon">🧹</span>
-            <span id="btn-demo-label">Очистить всё</span>
-          </button>
-
           <!-- JSON Export -->
-          <button type="button" onclick="exportData()" title="Скачать / скопировать бэкап (JSON)" class="p-1.5 rounded-xl bg-[#1f2126] hover:bg-[#272a31] border border-[#2a2d35] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
+          <button type="button" onclick="exportData()" title="Скачать / скопировать бэкап (JSON)" class="p-2 rounded-xl bg-[#181b20] hover:bg-[#22262e] border border-[#252932] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           </button>
 
           <!-- JSON Import -->
-          <label title="Загрузить из файла (JSON)" class="cursor-pointer p-1.5 rounded-xl bg-[#1f2126] hover:bg-[#272a31] border border-[#2a2d35] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
+          <label title="Загрузить бэкап (JSON)" class="cursor-pointer p-2 rounded-xl bg-[#181b20] hover:bg-[#22262e] border border-[#252932] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
             <input type="file" accept=".json" onchange="importData(event)" class="hidden" />
           </label>
 
           <!-- Main Add Button -->
-          <button type="button" id="btn-add-main" onclick="openAddModal()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold text-xs shadow transition-all flex items-center gap-1 active:scale-95">
+          <button type="button" id="btn-add-main" onclick="openAddModal()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold text-xs shadow transition-all flex items-center gap-1 active:scale-95">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-            <span>Добавить</span>
+            <span>+ Добавить</span>
           </button>
         </div>
       </div>
 
-      <!-- 2x2 Category Grid -->
-      <div class="mt-2.5 grid grid-cols-2 gap-1.5">
-        <button type="button" onclick="switchTab('movie')" id="tab-movie" class="tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border">
+      <!-- 5-Column Stats Counter Strip -->
+      <div class="mt-2.5 grid grid-cols-5 gap-1 bg-[#181b20] border border-[#252932] rounded-2xl p-1.5 text-center">
+        <div>
+          <div class="text-[9px] text-zinc-400 font-medium">Всего</div>
+          <div id="stat-all" class="font-extrabold text-white text-xs">0</div>
+        </div>
+        <div class="border-l border-[#252932]">
+          <div class="text-[9px] text-zinc-400 font-medium">Смотрю</div>
+          <div id="stat-watching" class="font-extrabold text-blue-400 text-xs">0</div>
+        </div>
+        <div class="border-l border-[#252932]">
+          <div class="text-[9px] text-zinc-400 font-medium">Просмот.</div>
+          <div id="stat-completed" class="font-extrabold text-emerald-400 text-xs">0</div>
+        </div>
+        <div class="border-l border-[#252932]">
+          <div class="text-[9px] text-zinc-400 font-medium">В планах</div>
+          <div id="stat-planned" class="font-extrabold text-zinc-300 text-xs">0</div>
+        </div>
+        <div class="border-l border-[#252932]">
+          <div class="text-[9px] text-zinc-400 font-medium">Ожидание</div>
+          <div id="stat-waiting" class="font-extrabold text-rose-400 text-xs">0</div>
+        </div>
+      </div>
+
+      <!-- Filter Tabs: Все, Фильмы, Сериалы, Аниме, Ожидание -->
+      <div class="mt-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+        <button type="button" onclick="switchTab('all')" id="tab-all" class="tab-btn flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border">
+          <span>🔥</span>
+          <span>Все</span>
+          <span id="count-all" class="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30">0</span>
+        </button>
+        <button type="button" onclick="switchTab('movie')" id="tab-movie" class="tab-btn flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border">
           <span>🎬</span>
           <span>Фильмы</span>
-          <span id="count-movie" class="text-[10px] px-1.5 py-0.5 rounded-full bg-black/30">0</span>
+          <span id="count-movie" class="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30">0</span>
         </button>
-        <button type="button" onclick="switchTab('series')" id="tab-series" class="tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border">
+        <button type="button" onclick="switchTab('series')" id="tab-series" class="tab-btn flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border">
           <span>📺</span>
           <span>Сериалы</span>
-          <span id="count-series" class="text-[10px] px-1.5 py-0.5 rounded-full bg-black/30">0</span>
+          <span id="count-series" class="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30">0</span>
         </button>
-        <button type="button" onclick="switchTab('anime')" id="tab-anime" class="tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border">
+        <button type="button" onclick="switchTab('anime')" id="tab-anime" class="tab-btn flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border">
           <span>⛩️</span>
           <span>Аниме</span>
-          <span id="count-anime" class="text-[10px] px-1.5 py-0.5 rounded-full bg-black/30">0</span>
+          <span id="count-anime" class="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30">0</span>
         </button>
-        <button type="button" onclick="switchTab('waiting')" id="tab-waiting" class="tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border">
+        <button type="button" onclick="switchTab('waiting')" id="tab-waiting" class="tab-btn flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border">
           <span>⏳</span>
           <span>Ожидание</span>
-          <span id="count-waiting" class="text-[10px] px-1.5 py-0.5 rounded-full bg-black/30">0</span>
+          <span id="count-waiting" class="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30">0</span>
         </button>
       </div>
     </div>
@@ -135,49 +159,24 @@
 
   <!-- Main Workspace -->
   <main class="flex-1 max-w-[560px] w-full mx-auto px-3 py-3">
-    
-    <!-- 3-Column Stats Bar -->
-    <div class="grid grid-cols-3 gap-2 mb-3 bg-[#1f2126] border border-[#2a2d35] rounded-2xl p-2 text-center">
-      <div>
-        <div id="stat-total-label" class="text-[10px] text-zinc-400">В разделе</div>
-        <div id="stat-total" class="font-extrabold text-white text-sm">0</div>
-      </div>
-      <div class="border-x border-[#2a2d35]">
-        <div id="stat-second-label" class="text-[10px] text-zinc-400">Просмотрено</div>
-        <div id="stat-completed" class="font-extrabold text-emerald-400 text-sm">0</div>
-      </div>
-      <div>
-        <div class="text-[10px] text-zinc-400">Средний балл</div>
-        <div id="stat-avg" class="font-extrabold text-amber-400 text-sm">—</div>
-      </div>
-    </div>
 
-    <!-- Search, Filter & Sort Controls -->
+    <!-- Search Across Saved Items & Secondary Filters -->
     <div class="flex flex-col gap-2 mb-3">
       <div class="relative flex-1">
         <svg class="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        <input id="search-input" type="text" oninput="renderItems()" placeholder="Быстрый поиск по названию..." class="w-full pl-8 pr-7 py-2 rounded-xl bg-[#1f2126] border border-[#2a2d35] focus:border-amber-500/60 focus:outline-none text-xs text-white placeholder-zinc-500 transition" />
+        <input id="search-input" type="text" oninput="renderItems()" placeholder="Поиск по сохранённым тайтлам..." class="w-full pl-8 pr-7 py-2 rounded-xl bg-[#181b20] border border-[#252932] focus:border-amber-500/60 focus:outline-none text-xs text-white placeholder-zinc-500 transition" />
         <button type="button" id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs px-1">✕</button>
       </div>
 
       <div class="flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar">
-        <!-- Status Pills -->
-        <div id="standard-filters" class="flex items-center gap-1">
+        <div id="status-filters" class="flex items-center gap-1">
           <button type="button" onclick="setStatusFilter('all')" data-status="all" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border">Все</button>
-          <button type="button" onclick="setStatusFilter('watching')" data-status="watching" id="filter-watching-btn" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">Смотрю</button>
-          <button type="button" onclick="setStatusFilter('completed')" data-status="completed" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">Глянул</button>
+          <button type="button" onclick="setStatusFilter('watching')" data-status="watching" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">Смотрю</button>
+          <button type="button" onclick="setStatusFilter('completed')" data-status="completed" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">Просмотрено</button>
           <button type="button" onclick="setStatusFilter('planned')" data-status="planned" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">В планах</button>
         </div>
 
-        <!-- Waiting Type Pills -->
-        <div id="waiting-filters" class="hidden items-center gap-1">
-          <button type="button" onclick="setWaitingTypeFilter('all')" data-wtype="all" class="wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border">Все</button>
-          <button type="button" onclick="setWaitingTypeFilter('movie')" data-wtype="movie" class="wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">🎬 Фильмы</button>
-          <button type="button" onclick="setWaitingTypeFilter('series')" data-wtype="series" class="wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">📺 Сериалы</button>
-          <button type="button" onclick="setWaitingTypeFilter('anime')" data-wtype="anime" class="wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">⛩️ Аниме</button>
-        </div>
-
-        <select id="sort-select" onchange="renderItems()" class="px-2 py-1.5 rounded-xl bg-[#1f2126] border border-[#2a2d35] text-[11px] font-semibold text-zinc-300 focus:outline-none">
+        <select id="sort-select" onchange="renderItems()" class="px-2 py-1.5 rounded-xl bg-[#181b20] border border-[#252932] text-[11px] font-semibold text-zinc-300 focus:outline-none">
           <option value="recent">Новые</option>
           <option value="rating">По оценке</option>
           <option value="title">По названию</option>
@@ -185,21 +184,21 @@
       </div>
     </div>
 
-    <!-- Cards Grid: 2 columns on mobile (gap-3) -->
+    <!-- Cards Grid: 2 columns on mobile -->
     <div id="items-grid" class="grid grid-cols-2 gap-3">
       <!-- Dynamic cards injected here -->
     </div>
 
     <!-- Empty State -->
-    <div id="empty-state" class="hidden flex-col items-center justify-center text-center py-10 px-4 bg-[#1f2126] border border-dashed border-[#343844] rounded-3xl">
+    <div id="empty-state" class="hidden flex-col items-center justify-center text-center py-10 px-4 bg-[#181b20] border border-dashed border-[#2c313c] rounded-3xl">
       <div id="empty-icon" class="text-4xl mb-2">🍿</div>
       <h3 id="empty-title" class="text-sm font-bold text-white mb-1">Пока тут пустовато</h3>
-      <p id="empty-desc" class="text-xs text-zinc-400 max-w-xs mb-4">Добавь свой первый тайтл или загрузи стартовые примеры.</p>
+      <p id="empty-desc" class="text-xs text-zinc-400 max-w-xs mb-4">Добавь свой первый фильм, сериал или аниме — автопоиск сам подтянет название и постер.</p>
       <div class="flex flex-wrap justify-center gap-2">
         <button type="button" onclick="openAddModal()" class="px-4 py-2 rounded-xl bg-amber-500 text-zinc-950 font-extrabold text-xs hover:bg-amber-400 transition active:scale-95">
           + Добавить тайтл
         </button>
-        <button type="button" onclick="restoreDemoItems()" class="px-4 py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] text-zinc-200 border border-[#3a3e4b] font-bold text-xs transition active:scale-95">
+        <button type="button" onclick="restoreDemoItems()" class="px-4 py-2 rounded-xl bg-[#22262e] hover:bg-[#2b303a] text-zinc-200 border border-[#323744] font-bold text-xs transition active:scale-95">
           ✨ Примеры
         </button>
       </div>
@@ -208,12 +207,12 @@
 
   <!-- ADD / EDIT MODAL -->
   <div id="item-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm overflow-y-auto">
-    <div class="bg-[#1f2126] border border-[#2a2d35] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden my-auto animate-fade-in">
+    <div class="bg-[#181b20] border border-[#272b34] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden my-auto animate-fade-in">
       <!-- Modal Header -->
-      <div class="px-4 py-3 border-b border-[#2a2d35] flex items-center justify-between bg-[#16171a]">
+      <div class="px-4 py-3 border-b border-[#252932] flex items-center justify-between bg-[#0f1115]">
         <div class="flex items-center gap-2">
           <span id="modal-category-badge" class="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide bg-amber-500/20 text-amber-300">Фильм</span>
-          <h2 id="modal-title" class="text-sm font-extrabold text-white">Добавить тайтл</h2>
+          <h2 id="modal-title" class="text-sm font-extrabold text-white">Добавить: Фильм</h2>
         </div>
         <button type="button" onclick="closeModal()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center transition">✕</button>
       </div>
@@ -222,8 +221,8 @@
       <div class="p-4 space-y-3.5 max-h-[84vh] overflow-y-auto">
         <input type="hidden" id="edit-item-id" />
 
-        <!-- IN-MODAL TYPE SWITCHER PILL BAR -->
-        <div class="bg-[#16171a] border border-[#2a2d35] rounded-2xl p-1.5">
+        <!-- Category Switcher Pills + Wishlist Toggle -->
+        <div class="bg-[#0f1115] border border-[#252932] rounded-2xl p-1.5">
           <div class="grid grid-cols-3 gap-1">
             <button type="button" id="modal-type-movie" onclick="switchModalMediaType('movie')" class="py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1">
               <span>🎬</span>
@@ -238,26 +237,26 @@
               <span>Аниме</span>
             </button>
           </div>
-          <!-- Optional Wishlist Toggle -->
-          <div class="mt-1.5 pt-1.5 border-t border-[#242730] flex items-center justify-between px-1.5">
+          <!-- Waiting Toggle Switch -->
+          <div class="mt-1.5 pt-1.5 border-t border-[#1e222a] flex items-center justify-between px-1.5">
             <span class="text-[11px] font-semibold text-zinc-400 flex items-center gap-1">
               <span>⏳</span>
               <span>В список ожидания (ещё не вышел)</span>
             </span>
-            <button type="button" id="modal-waiting-toggle" onclick="toggleModalWaitingFlag()" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-[#1f2126] border-[#2a2d35] text-zinc-400">
+            <button type="button" id="modal-waiting-toggle" onclick="toggleModalWaitingFlag()" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-[#181b20] border-[#252932] text-zinc-400">
               Выкл
             </button>
           </div>
         </div>
 
-        <!-- Title + Multi-Source CORS-Immune Auto Cover Search -->
+        <!-- Title Input + Live Auto Search -->
         <div class="relative">
           <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-            Название по-русски или на английском
+            НАЗВАНИЕ ПО-РУССКИ ИЛИ НА АНГЛИЙСКОМ
           </label>
           <div class="flex gap-1.5">
             <div class="relative flex-1">
-              <input id="input-title" type="text" autocomplete="off" oninput="handleTitleInput(this.value)" placeholder="Матрица, Начало, Мстители, Код гиас..." class="w-full px-3 py-2 pr-8 rounded-xl bg-[#16171a] border border-[#2a2d35] focus:border-amber-500/70 focus:outline-none text-white text-xs font-medium" />
+              <input id="input-title" type="text" autocomplete="off" oninput="handleTitleInput(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();triggerPosterSearch();}" placeholder="Матрица, Мстители, Брат, Код гиас..." class="w-full px-3 py-2.5 pr-8 rounded-xl bg-[#0f1115] border border-[#252932] focus:border-amber-500/70 focus:outline-none text-white text-xs font-medium" />
               <div id="api-spinner" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
                 <svg class="animate-spin h-4 w-4 text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -265,20 +264,20 @@
                 </svg>
               </div>
             </div>
-            <button type="button" onclick="triggerPosterSearch()" class="px-3 py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] border border-[#3a3e4b] text-zinc-100 text-xs font-bold transition whitespace-nowrap active:scale-95">
+            <button type="button" onclick="triggerPosterSearch()" class="px-3 py-2.5 rounded-xl bg-[#22262e] hover:bg-[#2c313b] border border-[#323744] text-zinc-100 text-xs font-bold transition whitespace-nowrap active:scale-95">
               🔍 Постер
             </button>
           </div>
 
-          <!-- Scrollable Autocomplete Results Dropdown (max-h-64) -->
-          <div id="autocomplete-dropdown" class="hidden mt-2 bg-[#16171a] border border-[#343844] rounded-2xl overflow-hidden shadow-2xl max-h-64 overflow-y-auto divide-y divide-[#242730]"></div>
+          <!-- Live Dropdown Results List -->
+          <div id="autocomplete-dropdown" class="hidden mt-2 bg-[#0f1115] border border-[#2d323e] rounded-2xl overflow-hidden shadow-2xl max-h-64 overflow-y-auto divide-y divide-[#1d2028]"></div>
         </div>
 
-        <!-- Poster Preview + Manual URL + Status Pills -->
-        <div class="flex gap-3 items-start bg-[#16171a] p-2.5 rounded-2xl border border-[#2a2d35]">
-          <div class="w-16 h-24 rounded-xl overflow-hidden bg-[#1f2126] flex-shrink-0 border border-[#343844] relative">
+        <!-- Cover Preview Box + Manual URL + Status Buttons -->
+        <div class="flex gap-3 items-start bg-[#0f1115] p-2.5 rounded-2xl border border-[#252932]">
+          <div class="w-16 h-24 rounded-xl overflow-hidden bg-[#181b20] flex-shrink-0 border border-[#2c313c] relative">
             <img id="poster-preview" src="" referrerpolicy="no-referrer" alt="Постер" class="w-full h-full object-cover hidden" onerror="handlePosterPreviewError()" />
-            <div id="poster-placeholder" class="w-full h-full flex flex-col items-center justify-center text-center p-1 bg-gradient-to-br from-[#272a33] to-[#16171a] text-zinc-500">
+            <div id="poster-placeholder" class="w-full h-full flex flex-col items-center justify-center text-center p-1 bg-gradient-to-br from-[#232730] to-[#0f1115] text-zinc-500">
               <span class="text-lg">🖼️</span>
               <span class="text-[9px] leading-tight">Нет фото</span>
             </div>
@@ -286,7 +285,7 @@
           <div class="flex-1 w-full space-y-2">
             <div>
               <label class="block text-[10px] font-semibold text-zinc-400 mb-1">Ссылка на обложку</label>
-              <input id="input-poster" type="url" oninput="updatePosterPreview(this.value)" placeholder="https://..." class="w-full px-2.5 py-1.5 rounded-xl bg-[#1f2126] border border-[#2a2d35] focus:border-amber-500/70 focus:outline-none text-xs text-zinc-300" />
+              <input id="input-poster" type="url" oninput="updatePosterPreview(this.value)" placeholder="https://..." class="w-full px-2.5 py-1.5 rounded-xl bg-[#181b20] border border-[#252932] focus:border-amber-500/70 focus:outline-none text-xs text-zinc-300" />
             </div>
             <div id="modal-status-wrapper" class="flex flex-wrap items-center gap-1">
               <span class="text-[10px] text-zinc-500 mr-1">Статус:</span>
@@ -296,14 +295,14 @@
         </div>
 
         <!-- WAITING DETAILS SECTION -->
-        <div id="waiting-details-section" class="hidden bg-[#16171a] border border-rose-500/30 rounded-2xl p-3 space-y-2.5">
+        <div id="waiting-details-section" class="hidden bg-[#0f1115] border border-rose-500/30 rounded-2xl p-3 space-y-2.5">
           <label class="block text-[10px] font-semibold uppercase tracking-wider text-rose-300">
             ⏳ Детали выхода в «Ожидание»
           </label>
           <div class="grid grid-cols-2 gap-2">
             <div id="waiting-season-box">
               <span class="block text-[10px] text-zinc-400 mb-1">Какой сезон ждём</span>
-              <div class="flex items-center bg-[#1f2126] border border-[#2a2d35] rounded-xl overflow-hidden">
+              <div class="flex items-center bg-[#181b20] border border-[#252932] rounded-xl overflow-hidden">
                 <button type="button" onclick="stepWaitingSeason(-1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
                 <input id="input-waiting-season" type="number" min="1" value="2" class="w-full text-center bg-transparent text-white font-extrabold text-xs focus:outline-none" />
                 <button type="button" onclick="stepWaitingSeason(1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
@@ -311,161 +310,68 @@
             </div>
             <div id="waiting-date-box">
               <span class="block text-[10px] text-zinc-400 mb-1">Когда выходит</span>
-              <input id="input-waiting-date" type="text" placeholder="Зима 2027, Жду анонс..." class="w-full px-2.5 py-1.5 rounded-xl bg-[#1f2126] border border-[#2a2d35] focus:border-rose-400 focus:outline-none text-xs text-white placeholder-zinc-600" />
+              <input id="input-waiting-date" type="text" placeholder="Зима 2027, Жду анонс..." class="w-full px-2.5 py-1.5 rounded-xl bg-[#181b20] border border-[#252932] focus:border-rose-400 focus:outline-none text-xs text-white placeholder-zinc-600" />
             </div>
           </div>
-          <div class="flex flex-wrap gap-1">
-            <button type="button" onclick="setWaitingDatePreset('Зима 2027')" class="px-2 py-1 rounded-lg bg-[#1f2126] hover:bg-[#272a31] text-[10px] text-zinc-300">Зима 2027</button>
-            <button type="button" onclick="setWaitingDatePreset('Весна 2027')" class="px-2 py-1 rounded-lg bg-[#1f2126] hover:bg-[#272a31] text-[10px] text-zinc-300">Весна 2027</button>
-            <button type="button" onclick="setWaitingDatePreset('Осень 2027')" class="px-2 py-1 rounded-lg bg-[#1f2126] hover:bg-[#272a31] text-[10px] text-zinc-300">Осень 2027</button>
-            <button type="button" onclick="setWaitingDatePreset('Жду анонс')" class="px-2 py-1 rounded-lg bg-[#1f2126] hover:bg-[#272a31] text-[10px] text-zinc-300">Жду анонс</button>
-          </div>
         </div>
 
-        <!-- MOVIE RATING SECTION (1-10 including 8.5, 9.5) -->
-        <div id="movie-rating-section" class="space-y-1.5">
-          <div class="flex items-center justify-between">
-            <label class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Оценка фильму (1–10)</label>
-            <span id="movie-rating-display" class="text-xs font-extrabold text-amber-400">Без оценки</span>
+        <!-- PROGRESS TRACKER -->
+        <div id="series-progress-section" class="hidden bg-[#0f1115] border border-[#252932] rounded-2xl p-3">
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+              📍 ГДЕ ОСТАНОВИЛСЯ СЕЙЧАС
+            </label>
+            <span id="total-episodes-hint" class="text-[10px] text-zinc-500 font-semibold"></span>
           </div>
-          <div id="movie-rating-pills" class="grid grid-cols-6 gap-1"></div>
-        </div>
-
-        <!-- SERIES & ANIME PROGRESS SECTION -->
-        <div id="series-progress-section" class="hidden bg-[#16171a] border border-[#2a2d35] rounded-2xl p-3">
-          <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-            📍 Где остановился сейчас
-          </label>
           <div class="grid grid-cols-2 gap-2">
             <div>
               <span class="block text-[10px] text-zinc-400 mb-1">Текущий сезон</span>
-              <div class="flex items-center bg-[#1f2126] border border-[#2a2d35] rounded-xl overflow-hidden">
-                <button type="button" onclick="stepProgress('season', -1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
+              <div class="flex items-center bg-[#181b20] border border-[#252932] rounded-xl overflow-hidden">
+                <button type="button" onclick="stepProgress('season', -1)" class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
                 <input id="input-cur-season" type="number" min="1" value="1" class="w-full text-center bg-transparent text-white font-bold text-xs focus:outline-none" />
-                <button type="button" onclick="stepProgress('season', 1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
+                <button type="button" onclick="stepProgress('season', 1)" class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
               </div>
             </div>
             <div>
               <span class="block text-[10px] text-zinc-400 mb-1">Текущая серия</span>
-              <div class="flex items-center bg-[#1f2126] border border-[#2a2d35] rounded-xl overflow-hidden">
-                <button type="button" onclick="stepProgress('episode', -1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
+              <div class="flex items-center bg-[#181b20] border border-[#252932] rounded-xl overflow-hidden">
+                <button type="button" onclick="stepProgress('episode', -1)" class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
                 <input id="input-cur-episode" type="number" min="0" value="1" class="w-full text-center bg-transparent text-white font-bold text-xs focus:outline-none" />
-                <button type="button" onclick="stepProgress('episode', 1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
+                <button type="button" onclick="stepProgress('episode', 1)" class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- PER-SEASON RATINGS MANAGER -->
-        <div id="seasons-ratings-section" class="hidden bg-[#16171a] border border-[#2a2d35] rounded-2xl p-3 space-y-2">
+        <!-- RATING SELECTOR (1–10 including 8.5, 9.5) -->
+        <div id="rating-section" class="space-y-1.5">
           <div class="flex items-center justify-between">
-            <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-              ⭐ Оценки по сезонам (1–10)
-            </label>
-            <button type="button" onclick="addSeasonRow()" class="px-2 py-1 rounded-lg bg-[#272a31] hover:bg-[#323640] text-zinc-200 border border-[#3a3e4b] text-[11px] font-bold transition">
-              + Сезон
-            </button>
+            <label id="rating-section-label" class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">ОЦЕНКА ФИЛЬМУ (1–10)</label>
+            <button type="button" onclick="clearModalRating()" id="rating-display" class="text-xs font-extrabold text-amber-400 hover:underline">Без оценки</button>
           </div>
-          <div id="seasons-list-editor" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+          <div id="rating-pills" class="grid grid-cols-6 gap-1"></div>
         </div>
 
-        <!-- Personal Note -->
+        <!-- Optional Note Textarea -->
         <div>
-          <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">Заметка (необязательно)</label>
-          <input id="input-note" type="text" placeholder="Короткий коммент для себя..." class="w-full px-3 py-2 rounded-xl bg-[#16171a] border border-[#2a2d35] focus:border-amber-500/70 focus:outline-none text-xs text-zinc-200 placeholder-zinc-600" />
+          <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">ЗАМЕТКА (НЕОБЯЗАТЕЛЬНО)</label>
+          <textarea id="input-note" rows="2" placeholder="Короткий коммент, озвучка или впечатления..." class="w-full px-3 py-2 rounded-xl bg-[#0f1115] border border-[#252932] focus:border-amber-500/70 focus:outline-none text-xs text-zinc-200 placeholder-zinc-600 resize-none"></textarea>
         </div>
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-4 py-3 bg-[#16171a] border-t border-[#2a2d35] flex items-center justify-between gap-2">
+      <div class="px-4 py-3 bg-[#0f1115] border-t border-[#252932] flex items-center justify-between gap-2">
         <button id="btn-delete-modal" type="button" onclick="deleteCurrentEditingItem()" class="hidden px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 text-xs font-bold transition">
           Удалить
         </button>
         <div class="flex items-center gap-2 ml-auto">
-          <button type="button" onclick="closeModal()" class="px-3 py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] text-zinc-300 text-xs font-semibold transition">
+          <button type="button" onclick="closeModal()" class="px-3.5 py-2 rounded-xl bg-[#22262e] hover:bg-[#2c313b] text-zinc-300 text-xs font-semibold transition">
             Отмена
           </button>
           <button type="button" onclick="saveItem()" id="btn-save-modal" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-extrabold shadow transition active:scale-95">
             Сохранить
           </button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONFIRM CLEAR ALL MODAL -->
-  <div id="confirm-clear-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-    <div class="bg-[#1f2126] border border-[#2a2d35] rounded-3xl w-full max-w-xs p-5 shadow-2xl text-center animate-fade-in">
-      <div class="text-3xl mb-2">🧹</div>
-      <h3 class="text-sm font-extrabold text-white mb-1">Очистить всю коллекцию?</h3>
-      <p class="text-xs text-zinc-400 mb-4">Все сохранённые фильмы, сериалы и аниме будут удалены из локального кэша и облака.</p>
-      <div class="grid grid-cols-2 gap-2">
-        <button type="button" onclick="closeConfirmClearModal()" class="py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] text-zinc-300 text-xs font-bold">Отмена</button>
-        <button type="button" onclick="executeClearAll()" class="py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-xs font-extrabold">Очистить</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- QUICK SEASON RATING MODAL -->
-  <div id="season-quick-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm">
-    <div class="bg-[#1f2126] border border-[#2a2d35] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
-      <div class="px-4 py-3 border-b border-[#2a2d35] flex items-center justify-between bg-[#16171a]">
-        <h3 id="sqm-title" class="font-extrabold text-white text-sm truncate pr-3">Оценки сезонов</h3>
-        <button type="button" onclick="closeSeasonQuickModal()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
-      </div>
-      <div class="p-3.5 space-y-2 max-h-[68vh] overflow-y-auto">
-        <div id="sqm-seasons-container" class="space-y-2"></div>
-        <button type="button" onclick="sqmAddSeason()" class="w-full py-2 rounded-xl border border-dashed border-[#3a3e4b] hover:border-zinc-400 text-zinc-300 text-xs font-bold transition">
-          + Добавить ещё сезон
-        </button>
-      </div>
-      <div class="px-4 py-3 bg-[#16171a] border-t border-[#2a2d35] flex justify-end gap-2">
-        <button type="button" onclick="closeSeasonQuickModal()" class="px-3 py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] text-zinc-300 text-xs font-semibold">Закрыть</button>
-        <button type="button" onclick="saveSeasonQuickModal()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-extrabold">Готово</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SEND TO WAITING MODAL -->
-  <div id="send-waiting-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm">
-    <div class="bg-[#1f2126] border border-[#2a2d35] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
-      <div class="px-4 py-3 border-b border-[#2a2d35] flex items-center justify-between bg-[#16171a]">
-        <div class="flex items-center gap-2 min-w-0">
-          <span class="text-base">⏳</span>
-          <h3 id="swm-title" class="font-extrabold text-white text-sm truncate">В ожидание продолжения</h3>
-        </div>
-        <button type="button" onclick="closeSendWaitingModal()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
-      </div>
-      <div class="p-4 space-y-3">
-        <p class="text-xs text-zinc-400 leading-relaxed">
-          Тайтл переедет во вкладку <span class="text-rose-400 font-bold">«Ожидание»</span> со всеми прошлыми оценками и постером.
-        </p>
-
-        <div>
-          <label class="block text-xs font-semibold text-zinc-300 mb-1">Какой сезон ждём?</label>
-          <div class="flex items-center bg-[#16171a] border border-[#2a2d35] rounded-xl overflow-hidden">
-            <button type="button" onclick="stepSwmSeason(-1)" class="px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
-            <input id="swm-season-input" type="number" min="1" value="2" class="w-full text-center bg-transparent text-white font-extrabold text-sm focus:outline-none" />
-            <button type="button" onclick="stepSwmSeason(1)" class="px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-zinc-300 mb-1">Когда выходит</label>
-          <input id="swm-date-input" type="text" placeholder="Зима 2027, Осень 2026, Жду анонс..." class="w-full px-3 py-2 rounded-xl bg-[#16171a] border border-[#2a2d35] focus:border-rose-400 focus:outline-none text-xs text-white placeholder-zinc-600" />
-          <div class="flex flex-wrap gap-1 mt-2">
-            <button type="button" onclick="document.getElementById('swm-date-input').value='Зима 2027'" class="px-2 py-1 rounded-lg bg-[#16171a] hover:bg-[#272a31] text-[10px] text-zinc-300">Зима 2027</button>
-            <button type="button" onclick="document.getElementById('swm-date-input').value='Весна 2027'" class="px-2 py-1 rounded-lg bg-[#16171a] hover:bg-[#272a31] text-[10px] text-zinc-300">Весна 2027</button>
-            <button type="button" onclick="document.getElementById('swm-date-input').value='Осень 2027'" class="px-2 py-1 rounded-lg bg-[#16171a] hover:bg-[#272a31] text-[10px] text-zinc-300">Осень 2027</button>
-            <button type="button" onclick="document.getElementById('swm-date-input').value='Жду анонс'" class="px-2 py-1 rounded-lg bg-[#16171a] hover:bg-[#272a31] text-[10px] text-zinc-300">Жду анонс</button>
-          </div>
-        </div>
-      </div>
-      <div class="px-4 py-3 bg-[#16171a] border-t border-[#2a2d35] flex justify-end gap-2">
-        <button type="button" onclick="closeSendWaitingModal()" class="px-3 py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] text-zinc-300 text-xs font-semibold">Отмена</button>
-        <button type="button" onclick="confirmSendToWaiting()" class="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-xs font-extrabold">
-          ⏳ В ожидание
-        </button>
       </div>
     </div>
   </div>
@@ -487,14 +393,11 @@
       try {
         tg.ready();
         tg.expand();
-        if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#16171a');
-        if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#16171a');
+        if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#0f1115');
+        if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#0f1115');
         if (tg.BackButton) {
           tg.BackButton.onClick(() => {
             if (!document.getElementById('item-modal').classList.contains('hidden')) closeModal();
-            else if (!document.getElementById('season-quick-modal').classList.contains('hidden')) closeSeasonQuickModal();
-            else if (!document.getElementById('send-waiting-modal').classList.contains('hidden')) closeSendWaitingModal();
-            else if (!document.getElementById('confirm-clear-modal').classList.contains('hidden')) closeConfirmClearModal();
           });
         }
       } catch (e) {
@@ -505,13 +408,9 @@
 
     function updateTgBackButton() {
       if (!tg || !tg.BackButton) return;
-      const anyModalOpen =
-        !document.getElementById('item-modal').classList.contains('hidden') ||
-        !document.getElementById('season-quick-modal').classList.contains('hidden') ||
-        !document.getElementById('send-waiting-modal').classList.contains('hidden') ||
-        !document.getElementById('confirm-clear-modal').classList.contains('hidden');
+      const modalOpen = !document.getElementById('item-modal').classList.contains('hidden');
       try {
-        if (anyModalOpen) tg.BackButton.show();
+        if (modalOpen) tg.BackButton.show();
         else tg.BackButton.hide();
       } catch (e) {}
     }
@@ -536,38 +435,41 @@
         badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30';
       } else {
         badge.textContent = '💾 Local';
-        badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#1f2126] text-zinc-400 border border-[#2a2d35]';
+        badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#181b20] text-zinc-400 border border-[#252932]';
       }
     }
 
     // ==========================================
-    // 2. STATE & DEFAULT DEMO CARDS
+    // 2. STATE & STORAGE (kinobro_items_v1)
     // ==========================================
-    const STORAGE_KEY = 'kinobro_v3_gray_demo';
-    const CLOUD_META_KEY = 'kinobro_v3_gray_demo_meta';
-    const CLOUD_CHUNK_PREFIX = 'kinobro_v3_gray_demo_c_';
+    const STORAGE_KEY = 'kinobro_items_v1';
+    const CLOUD_META_KEY = 'kinobro_items_v1_meta';
+    const CLOUD_CHUNK_PREFIX = 'kinobro_items_v1_c_';
     const CLOUD_CHUNK_SIZE = 3800;
 
     let mediaItems = [];
-    let currentTab = 'movie';
+    let currentTab = 'all';
     let currentStatusFilter = 'all';
-    let currentWaitingTypeFilter = 'all';
 
     // Modal state
     let modalMediaType = 'movie';
     let modalIsWaiting = false;
-    let modalMovieRating = 0;
-    let modalSeasons = [];
+    let modalRating = 0;
     let modalSelectedStatus = 'watching';
+    let modalTotalEpisodes = null;
     let searchDebounceTimer = null;
     let activeSearchSessionId = 0;
 
-    // Quick modals state
-    let sqmItemId = null;
-    let sqmTempSeasons = [];
-    let swmItemId = null;
-
     const CATEGORY_META = {
+      all: {
+        singular: 'Тайтл',
+        plural: 'Все',
+        icon: '🔥',
+        accentBtn: 'bg-amber-500 hover:bg-amber-400 text-zinc-950',
+        badgeClass: 'bg-amber-500/20 text-amber-300',
+        tabActive: 'bg-amber-500/15 border-amber-500/50 text-amber-300',
+        brandGrad: 'from-amber-500 to-orange-600'
+      },
       movie: {
         singular: 'Фильм',
         plural: 'Фильмы',
@@ -608,14 +510,14 @@
 
     const STATUS_LABELS = {
       watching: { label: 'Смотрю', class: 'bg-blue-500/90 text-white border-blue-400/40' },
-      completed: { label: 'Глянул', class: 'bg-emerald-500/90 text-zinc-950 border-emerald-300/40' },
+      completed: { label: 'Просмотрено', class: 'bg-emerald-500/90 text-zinc-950 border-emerald-300/40' },
       planned: { label: 'В планах', class: 'bg-zinc-900/90 text-zinc-200 border-zinc-700/60' }
     };
 
     function getSvgFallbackDataUri(type = 'movie') {
       const emojiMap = { movie: '🎬', series: '📺', anime: '⛩️', waiting: '⏳' };
       const emoji = emojiMap[type] || '🎬';
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a2d36"/><stop offset="100%" stop-color="#16171a"/></linearGradient></defs><rect width="300" height="450" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="64">${emoji}</text></svg>`;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22262e"/><stop offset="100%" stop-color="#0f1115"/></linearGradient></defs><rect width="300" height="450" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="64">${emoji}</text></svg>`;
       return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
     }
 
@@ -625,11 +527,11 @@
         {
           id: 'demo_m1',
           type: 'movie',
-          title: 'Интерстеллар (Interstellar)',
-          poster: 'https://is1-ssl.mzstatic.com/image/thumb/Video125/v4/67/43/7d/67437d57-0a68-66a3-f984-26e78e1b66c5/pr_source.lsr/600x900bb.jpg',
+          title: 'Матрица (The Matrix)',
+          poster: 'https://m.media-amazon.com/images/M/MV5BN2NmN2VhMTQtMDNiOS00NDlhLTliMjgtODE2ZTY0ODQyNDRhXkEyXkFqcGc@._V1_UX400_.jpg',
           status: 'completed',
           rating: 10,
-          note: 'Шедевр Нолана, музыка Циммера до мурашек',
+          note: 'Культовая классика братьев/сестёр Вачовски',
           updatedAt: now - 1000
         },
         {
@@ -640,14 +542,9 @@
           status: 'completed',
           currentSeason: 5,
           currentEpisode: 16,
-          seasons: [
-            { season: 1, rating: 9 },
-            { season: 2, rating: 9.5 },
-            { season: 3, rating: 9.5 },
-            { season: 4, rating: 10 },
-            { season: 5, rating: 10 }
-          ],
-          note: 'Эталон сериалов от начала до конца',
+          totalEpisodes: 62,
+          rating: 10,
+          note: 'Эталонный сериал',
           updatedAt: now - 2000
         },
         {
@@ -656,41 +553,16 @@
           title: 'Код Гиас: Восставший Лелуш (Code Geass)',
           poster: 'https://shikimori.one/system/animes/original/1575.jpg',
           status: 'watching',
-          currentSeason: 2,
-          currentEpisode: 25,
-          seasons: [
-            { season: 1, rating: 9.5 },
-            { season: 2, rating: 10 }
-          ],
-          note: 'Лелуш Британский — гений тактики',
+          currentSeason: 1,
+          currentEpisode: 14,
+          totalEpisodes: 25,
+          rating: 9.5,
+          note: 'Гениальная тактика Лелуша',
           updatedAt: now - 3000
-        },
-        {
-          id: 'demo_w1',
-          type: 'waiting',
-          waitingSubtype: 'series',
-          title: 'Пацаны — Финал (The Boys)',
-          poster: 'https://static.tvmaze.com/uploads/images/medium_portrait/516/1291562.jpg',
-          status: 'planned',
-          expectedSeason: 5,
-          releaseDate: 'Лето 2026',
-          currentSeason: 5,
-          currentEpisode: 1,
-          seasons: [
-            { season: 1, rating: 9 },
-            { season: 2, rating: 8.5 },
-            { season: 3, rating: 9 },
-            { season: 4, rating: 8 }
-          ],
-          note: 'Финальный сезон, не пропустить!',
-          updatedAt: now - 4000
         }
       ];
     }
 
-    // ==========================================
-    // 3. HYBRID STORAGE (LOCALSTORAGE + TG CLOUD)
-    // ==========================================
     function saveToLocal(items) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
@@ -800,7 +672,6 @@
     function saveToStorage() {
       saveToLocal(mediaItems);
       saveToTgCloud(mediaItems);
-      updateDemoToggleButton();
     }
 
     function loadItemsAsync() {
@@ -811,7 +682,7 @@
         mediaItems = getDefaultDemoItems();
         saveToLocal(mediaItems);
       }
-      switchTab('movie');
+      switchTab('all');
 
       if (hasTgCloudStorage) {
         loadFromTgCloud((cloudItems) => {
@@ -819,54 +690,11 @@
             mediaItems = cloudItems;
             saveToLocal(mediaItems);
             renderItems();
-            updateDemoToggleButton();
           } else if (mediaItems.length > 0) {
             saveToTgCloud(mediaItems);
           }
         });
       }
-      updateDemoToggleButton();
-    }
-
-    function updateDemoToggleButton() {
-      const btnLabel = document.getElementById('btn-demo-label');
-      const btnIcon = document.getElementById('btn-demo-icon');
-      if (!btnLabel || !btnIcon) return;
-      if (mediaItems.length === 0) {
-        btnIcon.textContent = '✨';
-        btnLabel.textContent = 'Примеры';
-      } else {
-        btnIcon.textContent = '🧹';
-        btnLabel.textContent = 'Очистить всё';
-      }
-    }
-
-    function handleClearOrDemoClick() {
-      triggerHaptic('light');
-      if (mediaItems.length === 0) {
-        restoreDemoItems();
-      } else {
-        const modal = document.getElementById('confirm-clear-modal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        updateTgBackButton();
-      }
-    }
-
-    function closeConfirmClearModal() {
-      const modal = document.getElementById('confirm-clear-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      updateTgBackButton();
-    }
-
-    function executeClearAll() {
-      triggerHaptic('medium');
-      mediaItems = [];
-      saveToStorage();
-      closeConfirmClearModal();
-      renderItems();
-      showToast('Коллекция очищена!');
     }
 
     function restoreDemoItems() {
@@ -874,31 +702,20 @@
       mediaItems = getDefaultDemoItems();
       saveToStorage();
       renderItems();
-      showToast('Загружены 4 стартовых примера!');
+      showToast('Загружены стартовые примеры!');
     }
 
     // ==========================================
-    // 4. RATINGS & TOASTS
+    // 3. TOAST NOTIFICATIONS
     // ==========================================
-    function getEffectiveRating(item) {
-      if (item.type === 'movie' || item.waitingSubtype === 'movie') {
-        return Number(item.rating) || 0;
-      }
-      if (!Array.isArray(item.seasons) || item.seasons.length === 0) return 0;
-      const rated = item.seasons.filter(s => Number(s.rating) > 0);
-      if (rated.length === 0) return 0;
-      const sum = rated.reduce((acc, s) => acc + Number(s.rating), 0);
-      return Number((sum / rated.length).toFixed(1));
-    }
-
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       if (!container) return;
       const el = document.createElement('div');
       const colors = {
-        success: 'bg-[#1f2126] border-emerald-500/40 text-emerald-300',
-        info: 'bg-[#1f2126] border-blue-500/40 text-blue-300',
-        error: 'bg-[#1f2126] border-rose-500/40 text-rose-300'
+        success: 'bg-[#181b20] border-emerald-500/40 text-emerald-300',
+        info: 'bg-[#181b20] border-blue-500/40 text-blue-300',
+        error: 'bg-[#181b20] border-rose-500/40 text-rose-300'
       };
       el.className = `px-3.5 py-2 rounded-2xl border shadow-xl text-xs font-bold backdrop-blur-md animate-fade-in ${colors[type] || colors.success}`;
       el.textContent = message;
@@ -911,15 +728,13 @@
     }
 
     // ==========================================
-    // 5. NAVIGATION, TABS & FILTERS
+    // 4. TABS, FILTERS & RENDERING
     // ==========================================
     function switchTab(tab) {
       triggerHaptic('light');
       currentTab = tab;
-      currentStatusFilter = 'all';
-      currentWaitingTypeFilter = 'all';
 
-      const meta = CATEGORY_META[tab];
+      const meta = CATEGORY_META[tab] || CATEGORY_META.all;
       const brandIcon = document.getElementById('brand-icon');
       if (brandIcon) {
         brandIcon.textContent = meta.icon;
@@ -928,34 +743,22 @@
 
       const addBtn = document.getElementById('btn-add-main');
       if (addBtn) {
-        addBtn.className = `px-3 py-1.5 rounded-xl ${meta.accentBtn} font-extrabold text-xs shadow transition-all flex items-center gap-1 active:scale-95`;
+        addBtn.className = `px-3.5 py-2 rounded-xl ${meta.accentBtn} font-extrabold text-xs shadow transition-all flex items-center gap-1 active:scale-95`;
       }
 
-      ['movie', 'series', 'anime', 'waiting'].forEach(t => {
+      ['all', 'movie', 'series', 'anime', 'waiting'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         if (!el) return;
         if (t === tab) {
-          el.className = `tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border ${CATEGORY_META[t].tabActive}`;
+          el.className = `tab-btn flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border ${CATEGORY_META[t].tabActive}`;
         } else {
-          el.className = 'tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border bg-[#1f2126] border-[#2a2d35] text-zinc-400 hover:text-zinc-200';
+          el.className = 'tab-btn flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border bg-[#181b20] border-[#252932] text-zinc-400 hover:text-zinc-200';
         }
       });
 
-      const stdFilters = document.getElementById('standard-filters');
-      const waitFilters = document.getElementById('waiting-filters');
-      const watchingBtn = document.getElementById('filter-watching-btn');
-
-      if (tab === 'waiting') {
-        stdFilters.classList.add('hidden');
-        waitFilters.classList.remove('hidden');
-        waitFilters.classList.add('flex');
-      } else {
-        waitFilters.classList.add('hidden');
-        waitFilters.classList.remove('flex');
-        stdFilters.classList.remove('hidden');
-        if (watchingBtn) {
-          watchingBtn.style.display = tab === 'movie' ? 'none' : 'inline-block';
-        }
+      const statusFilters = document.getElementById('status-filters');
+      if (statusFilters) {
+        statusFilters.style.display = tab === 'waiting' ? 'none' : 'flex';
       }
 
       updateFilterPillsUI();
@@ -969,29 +772,13 @@
       renderItems();
     }
 
-    function setWaitingTypeFilter(wtype) {
-      triggerHaptic('light');
-      currentWaitingTypeFilter = wtype;
-      updateFilterPillsUI();
-      renderItems();
-    }
-
     function updateFilterPillsUI() {
       document.querySelectorAll('.status-pill').forEach(btn => {
         const st = btn.getAttribute('data-status');
         if (st === currentStatusFilter) {
           btn.className = 'status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border bg-zinc-200 text-zinc-950 border-white';
         } else {
-          btn.className = 'status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#1f2126] border-[#2a2d35] text-zinc-400 hover:text-white';
-        }
-      });
-
-      document.querySelectorAll('.wtype-pill').forEach(btn => {
-        const wt = btn.getAttribute('data-wtype');
-        if (wt === currentWaitingTypeFilter) {
-          btn.className = 'wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border bg-rose-500/20 text-rose-300 border-rose-500/50';
-        } else {
-          btn.className = 'wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#1f2126] border-[#2a2d35] text-zinc-400 hover:text-white';
+          btn.className = 'status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#181b20] border-[#252932] text-zinc-400 hover:text-white';
         }
       });
     }
@@ -1002,9 +789,6 @@
       renderItems();
     }
 
-    // ==========================================
-    // 6. CARDS & STATS RENDERING
-    // ==========================================
     function renderItems() {
       const grid = document.getElementById('items-grid');
       const emptyState = document.getElementById('empty-state');
@@ -1018,60 +802,34 @@
         else clearBtn.classList.add('hidden');
       }
 
+      // Header 5-counter stats
+      document.getElementById('stat-all').textContent = mediaItems.length;
+      document.getElementById('stat-watching').textContent = mediaItems.filter(i => i.type !== 'waiting' && i.status === 'watching').length;
+      document.getElementById('stat-completed').textContent = mediaItems.filter(i => i.type !== 'waiting' && i.status === 'completed').length;
+      document.getElementById('stat-planned').textContent = mediaItems.filter(i => i.type !== 'waiting' && i.status === 'planned').length;
+      document.getElementById('stat-waiting').textContent = mediaItems.filter(i => i.type === 'waiting').length;
+
+      // Tab badges
+      document.getElementById('count-all').textContent = mediaItems.length;
       ['movie', 'series', 'anime', 'waiting'].forEach(t => {
         const cEl = document.getElementById(`count-${t}`);
         if (cEl) cEl.textContent = mediaItems.filter(i => i.type === t).length;
       });
 
-      const tabItems = mediaItems.filter(i => i.type === currentTab);
-
-      const statTotalLabel = document.getElementById('stat-total-label');
-      const statTotal = document.getElementById('stat-total');
-      const statSecondLabel = document.getElementById('stat-second-label');
-      const statCompleted = document.getElementById('stat-completed');
-      const statAvg = document.getElementById('stat-avg');
-
-      if (currentTab === 'waiting') {
-        statTotalLabel.textContent = 'В ожидании';
-        statTotal.textContent = tabItems.length;
-        const sCount = tabItems.filter(i => i.waitingSubtype !== 'anime').length;
-        const aCount = tabItems.filter(i => i.waitingSubtype === 'anime').length;
-        statSecondLabel.textContent = 'Сер. / Аниме';
-        statCompleted.textContent = `${sCount} / ${aCount}`;
-      } else {
-        statTotalLabel.textContent = 'В разделе';
-        statTotal.textContent = tabItems.length;
-        statSecondLabel.textContent = 'Просмотрено';
-        statCompleted.textContent = tabItems.filter(i => i.status === 'completed').length;
-      }
-
-      const ratedItems = tabItems.map(getEffectiveRating).filter(r => r > 0);
-      if (ratedItems.length > 0) {
-        const avg = (ratedItems.reduce((a, b) => a + b, 0) / ratedItems.length).toFixed(1);
-        statAvg.textContent = `${avg} / 10`;
-      } else {
-        statAvg.textContent = '—';
-      }
-
-      let filtered = tabItems.filter(item => {
+      let filtered = mediaItems.filter(item => {
+        if (currentTab !== 'all' && item.type !== currentTab) return false;
         if (query && !item.title.toLowerCase().includes(query) && !(item.note || '').toLowerCase().includes(query)) {
           return false;
         }
-        if (currentTab === 'waiting') {
-          if (currentWaitingTypeFilter !== 'all') {
-            const sub = item.waitingSubtype || 'series';
-            if (sub !== currentWaitingTypeFilter) return false;
-          }
-        } else {
-          if (currentStatusFilter !== 'all' && item.status !== currentStatusFilter) {
-            return false;
-          }
+        if (currentTab !== 'waiting' && currentStatusFilter !== 'all') {
+          if (item.type === 'waiting') return false;
+          if (item.status !== currentStatusFilter) return false;
         }
         return true;
       });
 
       filtered.sort((a, b) => {
-        if (sortVal === 'rating') return getEffectiveRating(b) - getEffectiveRating(a);
+        if (sortVal === 'rating') return (Number(b.rating) || 0) - (Number(a.rating) || 0);
         if (sortVal === 'title') return a.title.localeCompare(b.title, 'ru');
         return (b.updatedAt || 0) - (a.updatedAt || 0);
       });
@@ -1080,7 +838,7 @@
         grid.innerHTML = '';
         emptyState.classList.remove('hidden');
         emptyState.classList.add('flex');
-        const meta = CATEGORY_META[currentTab];
+        const meta = CATEGORY_META[currentTab] || CATEGORY_META.all;
         document.getElementById('empty-icon').textContent = meta.icon;
         document.getElementById('empty-title').textContent = query ? 'Ничего не найдено' : `Раздел «${meta.plural}» пуст`;
         return;
@@ -1092,55 +850,54 @@
     }
 
     function renderCardHTML(item) {
-      const rating = getEffectiveRating(item);
-      const effectiveCategory = item.type === 'waiting' ? (item.waitingSubtype || 'series') : item.type;
+      const rating = Number(item.rating) || 0;
+      const isWaiting = item.type === 'waiting';
+      const effectiveCategory = isWaiting ? (item.waitingSubtype || 'series') : item.type;
       const svgFallback = getSvgFallbackDataUri(effectiveCategory);
       const posterSrc = item.poster && item.poster.trim() ? item.poster.trim() : svgFallback;
+
+      const catBadgeMap = {
+        movie: { text: '🎬 Фильм', cls: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
+        series: { text: '📺 Сериал', cls: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
+        anime: { text: '⛩️ Аниме', cls: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' }
+      };
+      const catBadge = catBadgeMap[effectiveCategory] || catBadgeMap.movie;
+
       const ratingBadge = rating > 0
-        ? `<span class="px-1.5 py-0.5 rounded-lg bg-black/80 backdrop-blur-md border border-amber-400/40 text-amber-300 font-extrabold text-[10px]">★ ${rating}</span>`
+        ? `<span class="px-1.5 py-0.5 rounded-lg bg-black/85 backdrop-blur-md border border-amber-400/40 text-amber-300 font-extrabold text-[10px]">★ ${rating}</span>`
         : '';
 
-      if (item.type === 'waiting') {
-        const subMap = { movie: '🎬 Фильм', series: '📺 Сериал', anime: '⛩️ Аниме' };
-        const sub = subMap[item.waitingSubtype] || '📺 Сериал';
+      if (isWaiting) {
         const expSeason = item.expectedSeason || 2;
         const relDate = item.releaseDate || 'Жду анонс';
-        const isMovieWait = item.waitingSubtype === 'movie';
-
-        const seasonPills = !isMovieWait && Array.isArray(item.seasons) && item.seasons.length > 0
-          ? item.seasons.slice(-3).map(s => `<span class="px-1.5 py-0.5 rounded bg-[#16171a] text-[9px] font-bold text-zinc-300 border border-[#2a2d35]">С${s.season}:${s.rating || '—'}</span>`).join('')
-          : '';
+        const isMovieWait = effectiveCategory === 'movie';
 
         return `
-          <div class="bg-[#1f2126] border border-[#2a2d35] hover:border-rose-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
+          <div class="bg-[#181b20] border border-[#252932] hover:border-rose-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
             <div>
-              <div class="relative aspect-[2/3] w-full bg-[#16171a] overflow-hidden">
+              <div class="relative aspect-[2/3] w-full bg-[#0f1115] overflow-hidden">
                 <img src="${escapeHtml(posterSrc)}" referrerpolicy="no-referrer" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.onerror=null;this.src='${svgFallback}'" />
-                <div class="absolute inset-0 bg-gradient-to-t from-[#1f2126] via-transparent to-black/45"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#181b20] via-transparent to-black/50"></div>
                 <div class="absolute top-2 left-2 right-2 flex items-center justify-between gap-1">
-                  <span class="px-1.5 py-0.5 rounded-lg bg-black/80 backdrop-blur-md border border-white/15 text-zinc-200 font-bold text-[10px]">${sub}</span>
+                  <span class="px-1.5 py-0.5 rounded-lg bg-black/85 backdrop-blur-md border border-rose-500/40 text-rose-300 font-bold text-[10px]">⏳ Жду</span>
                   ${ratingBadge}
                 </div>
-                <div class="absolute bottom-2 right-2 flex items-center gap-1">
-                  <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
-                    ✎
-                  </button>
-                  <button type="button" onclick="deleteItemQuick('${item.id}')" title="Удалить" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-rose-600 text-rose-300 hover:text-white flex items-center justify-center text-xs backdrop-blur-md border border-white/15 transition">
-                    🗑
-                  </button>
+                <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1">
+                  <span class="px-1.5 py-0.5 rounded-md border backdrop-blur-md font-bold text-[9px] ${catBadge.cls}">${catBadge.text}</span>
+                  <div class="flex items-center gap-1">
+                    <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">✎</button>
+                    <button type="button" onclick="deleteItemQuick('${item.id}')" title="Удалить" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-rose-600 text-rose-300 hover:text-white flex items-center justify-center text-xs backdrop-blur-md border border-white/15 transition">🗑</button>
+                  </div>
                 </div>
               </div>
 
               <div class="p-2.5 pb-1.5">
                 <h3 class="font-extrabold text-white text-xs leading-snug line-clamp-2 min-h-[2rem]" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</h3>
                 ${item.note ? `<p class="text-[10px] text-zinc-400 italic truncate mt-0.5">«${escapeHtml(item.note)}»</p>` : ''}
-                
-                <div class="mt-2 bg-[#16171a] border border-rose-500/25 rounded-xl px-2 py-1.5 flex items-center justify-between gap-1">
+                <div class="mt-2 bg-[#0f1115] border border-rose-500/25 rounded-xl px-2 py-1.5 flex items-center justify-between gap-1">
                   <span class="text-[10px] font-extrabold text-rose-300">${isMovieWait ? 'Премьера' : 'Сезон ' + expSeason}</span>
                   <span class="text-[10px] font-semibold text-zinc-300 truncate">${escapeHtml(relDate)}</span>
                 </div>
-
-                ${seasonPills ? `<div class="mt-1.5 flex flex-wrap gap-1">${seasonPills}</div>` : ''}
               </div>
             </div>
 
@@ -1161,22 +918,21 @@
         const toggleLabel = item.status === 'completed' ? '↩ В планы' : '✓ Глянул';
 
         return `
-          <div class="bg-[#1f2126] border border-[#2a2d35] hover:border-amber-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
+          <div class="bg-[#181b20] border border-[#252932] hover:border-amber-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
             <div>
-              <div class="relative aspect-[2/3] w-full bg-[#16171a] overflow-hidden">
+              <div class="relative aspect-[2/3] w-full bg-[#0f1115] overflow-hidden">
                 <img src="${escapeHtml(posterSrc)}" referrerpolicy="no-referrer" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.onerror=null;this.src='${svgFallback}'" />
-                <div class="absolute inset-0 bg-gradient-to-t from-[#1f2126] via-transparent to-black/45"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#181b20] via-transparent to-black/50"></div>
                 <div class="absolute top-2 left-2 right-2 flex items-center justify-between gap-1">
                   <span class="px-1.5 py-0.5 rounded-lg border backdrop-blur-md font-bold text-[10px] ${stInfo.class}">${stInfo.label}</span>
                   ${ratingBadge}
                 </div>
-                <div class="absolute bottom-2 right-2 flex items-center gap-1">
-                  <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
-                    ✎
-                  </button>
-                  <button type="button" onclick="deleteItemQuick('${item.id}')" title="Удалить" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-rose-600 text-rose-300 hover:text-white flex items-center justify-center text-xs backdrop-blur-md border border-white/15 transition">
-                    🗑
-                  </button>
+                <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1">
+                  <span class="px-1.5 py-0.5 rounded-md border backdrop-blur-md font-bold text-[9px] ${catBadge.cls}">${catBadge.text}</span>
+                  <div class="flex items-center gap-1">
+                    <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">✎</button>
+                    <button type="button" onclick="deleteItemQuick('${item.id}')" title="Удалить" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-rose-600 text-rose-300 hover:text-white flex items-center justify-center text-xs backdrop-blur-md border border-white/15 transition">🗑</button>
+                  </div>
                 </div>
               </div>
 
@@ -1187,7 +943,7 @@
             </div>
 
             <div class="p-2.5 pt-1.5 grid grid-cols-2 gap-1.5">
-              <button type="button" onclick="quickToggleMovieStatus('${item.id}', '${nextStatus}')" class="py-1.5 px-2 rounded-xl bg-[#16171a] hover:bg-[#272a31] border border-[#2a2d35] text-[10px] font-bold text-zinc-200 transition active:scale-95">
+              <button type="button" onclick="quickToggleMovieStatus('${item.id}', '${nextStatus}')" class="py-1.5 px-2 rounded-xl bg-[#0f1115] hover:bg-[#22262e] border border-[#252932] text-[10px] font-bold text-zinc-200 transition active:scale-95">
                 ${toggleLabel}
               </button>
               <button type="button" onclick="openEditModal('${item.id}')" class="py-1.5 px-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-[10px] font-extrabold text-amber-300 transition active:scale-95">
@@ -1201,27 +957,24 @@
       // SERIES OR ANIME CARD
       const curS = item.currentSeason || 1;
       const curE = item.currentEpisode || 1;
-      const seasonPills = Array.isArray(item.seasons) && item.seasons.length > 0
-        ? item.seasons.map(s => `<span class="px-1.5 py-0.5 rounded bg-[#16171a] text-[9px] font-bold text-zinc-300 border border-[#2a2d35]">С${s.season}:${s.rating || '—'}</span>`).join('')
-        : '<span class="text-[9px] text-zinc-500">Оценок сезонов нет</span>';
+      const epSuffix = item.totalEpisodes ? ` / ${item.totalEpisodes}` : '';
 
       return `
-        <div class="bg-[#1f2126] border border-[#2a2d35] hover:border-blue-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
+        <div class="bg-[#181b20] border border-[#252932] hover:border-blue-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
           <div>
-            <div class="relative aspect-[2/3] w-full bg-[#16171a] overflow-hidden">
+            <div class="relative aspect-[2/3] w-full bg-[#0f1115] overflow-hidden">
               <img src="${escapeHtml(posterSrc)}" referrerpolicy="no-referrer" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.onerror=null;this.src='${svgFallback}'" />
-              <div class="absolute inset-0 bg-gradient-to-t from-[#1f2126] via-transparent to-black/45"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#181b20] via-transparent to-black/50"></div>
               <div class="absolute top-2 left-2 right-2 flex items-center justify-between gap-1">
                 <span class="px-1.5 py-0.5 rounded-lg border backdrop-blur-md font-bold text-[10px] ${stInfo.class}">${stInfo.label}</span>
                 ${ratingBadge}
               </div>
-              <div class="absolute bottom-2 right-2 flex items-center gap-1">
-                <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
-                  ✎
-                </button>
-                <button type="button" onclick="deleteItemQuick('${item.id}')" title="Удалить" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-rose-600 text-rose-300 hover:text-white flex items-center justify-center text-xs backdrop-blur-md border border-white/15 transition">
-                  🗑
-                </button>
+              <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1">
+                <span class="px-1.5 py-0.5 rounded-md border backdrop-blur-md font-bold text-[9px] ${catBadge.cls}">${catBadge.text}</span>
+                <div class="flex items-center gap-1">
+                  <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">✎</button>
+                  <button type="button" onclick="deleteItemQuick('${item.id}')" title="Удалить" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-rose-600 text-rose-300 hover:text-white flex items-center justify-center text-xs backdrop-blur-md border border-white/15 transition">🗑</button>
+                </div>
               </div>
             </div>
 
@@ -1229,26 +982,19 @@
               <h3 class="font-extrabold text-white text-xs leading-snug line-clamp-2 min-h-[2rem]" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</h3>
               ${item.note ? `<p class="text-[10px] text-zinc-400 italic truncate mt-0.5">«${escapeHtml(item.note)}»</p>` : ''}
 
-              <!-- Compact Progress Row: С1 • Э5 with +1 buttons -->
-              <div class="mt-2 bg-[#16171a] border border-[#2a2d35] rounded-xl px-2 py-1.5 flex items-center justify-between gap-1">
-                <span class="text-[11px] font-extrabold text-white tracking-tight">С${curS} • Э${curE}</span>
-                <div class="flex items-center gap-1">
-                  <button type="button" onclick="incrementProgress('${item.id}', 'episode')" class="px-1.5 py-0.5 rounded-md bg-[#272a31] hover:bg-blue-500 hover:text-white text-[10px] font-extrabold text-zinc-200 transition active:scale-90">+1 эп</button>
-                  <button type="button" onclick="incrementProgress('${item.id}', 'season')" class="px-1.5 py-0.5 rounded-md bg-[#272a31] hover:bg-emerald-500 hover:text-zinc-950 text-[10px] font-extrabold text-zinc-200 transition active:scale-90">+1 сез</button>
-                </div>
-              </div>
-
-              <div class="mt-1.5 flex flex-wrap gap-1 max-h-10 overflow-hidden">
-                ${seasonPills}
+              <!-- Season / Episode Progress with Quick +1 серия button -->
+              <div class="mt-2 bg-[#0f1115] border border-[#252932] rounded-xl px-2 py-1.5 flex items-center justify-between gap-1">
+                <span class="text-[11px] font-extrabold text-white tracking-tight">С${curS} • СЕР ${curE}${epSuffix}</span>
+                <button type="button" onclick="incrementEpisode('${item.id}')" class="px-2 py-0.5 rounded-lg bg-[#22262e] hover:bg-blue-500 hover:text-white text-[10px] font-extrabold text-zinc-200 border border-[#323744] transition active:scale-90">+1 серия</button>
               </div>
             </div>
           </div>
 
           <div class="p-2.5 pt-1.5 grid grid-cols-2 gap-1.5">
-            <button type="button" onclick="openSeasonQuickModal('${item.id}')" class="py-1.5 px-1.5 rounded-xl bg-[#16171a] hover:bg-[#272a31] border border-[#2a2d35] text-[10px] font-bold text-amber-300 transition active:scale-95 truncate">
-              ⭐ Оценки
+            <button type="button" onclick="openEditModal('${item.id}')" class="py-1.5 px-1.5 rounded-xl bg-[#0f1115] hover:bg-[#22262e] border border-[#252932] text-[10px] font-bold text-amber-300 transition active:scale-95 truncate">
+              ⭐ Оценка
             </button>
-            <button type="button" onclick="openSendWaitingModal('${item.id}')" class="py-1.5 px-1.5 rounded-xl bg-[#16171a] hover:bg-rose-500/20 border border-[#2a2d35] hover:border-rose-500/40 text-[10px] font-bold text-rose-300 transition active:scale-95 truncate">
+            <button type="button" onclick="moveItemToWaiting('${item.id}')" class="py-1.5 px-1.5 rounded-xl bg-[#0f1115] hover:bg-rose-500/20 border border-[#252932] hover:border-rose-500/40 text-[10px] font-bold text-rose-300 transition active:scale-95 truncate">
               ⏳ Ждать
             </button>
           </div>
@@ -1257,7 +1003,7 @@
     }
 
     // ==========================================
-    // 7. QUICK CARD ACTIONS
+    // 5. QUICK CARD ACTIONS
     // ==========================================
     function deleteItemQuick(id) {
       triggerHaptic('medium');
@@ -1269,25 +1015,20 @@
       showToast(`«${item.title}» удалён`);
     }
 
-    function incrementProgress(id, field) {
+    function incrementEpisode(id) {
       triggerHaptic('light');
       const idx = mediaItems.findIndex(i => i.id === id);
       if (idx === -1) return;
       const item = mediaItems[idx];
 
-      if (field === 'episode') {
-        item.currentEpisode = (Number(item.currentEpisode) || 0) + 1;
-        if (item.status === 'planned') item.status = 'watching';
+      item.currentEpisode = (Number(item.currentEpisode) || 0) + 1;
+      if (item.status === 'planned') item.status = 'watching';
+      if (item.totalEpisodes && item.currentEpisode >= item.totalEpisodes) {
+        item.currentEpisode = item.totalEpisodes;
+        item.status = 'completed';
+        showToast(`🎉 «${item.title}» полностью просмотрен!`);
+      } else {
         showToast(`${item.title}: Сезон ${item.currentSeason || 1}, Серия ${item.currentEpisode}`);
-      } else if (field === 'season') {
-        item.currentSeason = (Number(item.currentSeason) || 1) + 1;
-        item.currentEpisode = 1;
-        if (!Array.isArray(item.seasons)) item.seasons = [];
-        if (!item.seasons.some(s => Number(s.season) === item.currentSeason)) {
-          item.seasons.push({ season: item.currentSeason, rating: 0 });
-        }
-        if (item.status === 'planned') item.status = 'watching';
-        showToast(`${item.title}: Перешли на ${item.currentSeason} сезон!`);
       }
 
       item.updatedAt = Date.now();
@@ -1306,26 +1047,36 @@
       showToast(newStatus === 'completed' ? 'Отмечено как просмотренное!' : 'Возвращено в планы');
     }
 
+    function moveItemToWaiting(id) {
+      triggerHaptic('medium');
+      const idx = mediaItems.findIndex(i => i.id === id);
+      if (idx === -1) return;
+      const item = mediaItems[idx];
+      const origType = item.type === 'anime' ? 'anime' : 'series';
+      item.type = 'waiting';
+      item.waitingSubtype = origType;
+      item.expectedSeason = (Number(item.currentSeason) || 1) + 1;
+      item.releaseDate = 'Жду анонс';
+      item.updatedAt = Date.now();
+      saveToStorage();
+      renderItems();
+      showToast(`⏳ «${item.title}» перенесён в Ожидание`);
+    }
+
     function releaseWaitingItem(id) {
       triggerHaptic('medium');
       const idx = mediaItems.findIndex(i => i.id === id);
       if (idx === -1) return;
       const item = mediaItems[idx];
-
       const targetType = ['movie', 'series', 'anime'].includes(item.waitingSubtype) ? item.waitingSubtype : 'series';
       item.type = targetType;
 
       if (targetType === 'movie') {
         item.status = 'planned';
       } else {
-        const newSeason = Number(item.expectedSeason) || ((item.currentSeason || 1) + 1);
         item.status = 'watching';
-        item.currentSeason = newSeason;
+        item.currentSeason = Number(item.expectedSeason) || ((item.currentSeason || 1) + 1);
         item.currentEpisode = 1;
-        if (!Array.isArray(item.seasons)) item.seasons = [];
-        if (!item.seasons.some(s => Number(s.season) === newSeason)) {
-          item.seasons.push({ season: newSeason, rating: 0 });
-        }
       }
 
       delete item.waitingSubtype;
@@ -1339,7 +1090,7 @@
     }
 
     // ==========================================
-    // 8. ADD / EDIT MODAL + IN-MODAL TYPE SWITCHER
+    // 6. ADD / EDIT MODAL LOGIC
     // ==========================================
     function openAddModal() {
       triggerHaptic('light');
@@ -1350,18 +1101,22 @@
       document.getElementById('autocomplete-dropdown').classList.add('hidden');
       document.getElementById('btn-delete-modal').classList.add('hidden');
       document.getElementById('api-spinner').classList.add('hidden');
+      document.getElementById('total-episodes-hint').textContent = '';
+      modalTotalEpisodes = null;
       updatePosterPreview('');
 
       if (currentTab === 'waiting') {
         modalMediaType = 'series';
         modalIsWaiting = true;
+      } else if (currentTab === 'all') {
+        modalMediaType = 'movie';
+        modalIsWaiting = false;
       } else {
         modalMediaType = currentTab;
         modalIsWaiting = false;
       }
 
-      modalMovieRating = 0;
-      modalSeasons = [{ season: 1, rating: 0 }];
+      modalRating = 0;
       modalSelectedStatus = modalMediaType === 'movie' ? 'completed' : 'watching';
 
       document.getElementById('input-cur-season').value = 1;
@@ -1389,6 +1144,8 @@
       document.getElementById('autocomplete-dropdown').classList.add('hidden');
       document.getElementById('btn-delete-modal').classList.remove('hidden');
       document.getElementById('api-spinner').classList.add('hidden');
+      modalTotalEpisodes = item.totalEpisodes || null;
+      document.getElementById('total-episodes-hint').textContent = modalTotalEpisodes ? `Всего серий: ${modalTotalEpisodes}` : '';
       updatePosterPreview(item.poster || '');
 
       if (item.type === 'waiting') {
@@ -1399,10 +1156,7 @@
         modalMediaType = item.type || 'movie';
       }
 
-      modalMovieRating = Number(item.rating) || 0;
-      modalSeasons = Array.isArray(item.seasons) && item.seasons.length > 0
-        ? item.seasons.map(s => ({ season: Number(s.season) || 1, rating: Number(s.rating) || 0 }))
-        : [{ season: 1, rating: 0 }];
+      modalRating = Number(item.rating) || 0;
       modalSelectedStatus = item.status || (modalMediaType === 'movie' ? 'completed' : 'watching');
 
       document.getElementById('input-cur-season').value = item.currentSeason || 1;
@@ -1422,9 +1176,6 @@
       triggerHaptic('light');
       if (modalMediaType === newType) return;
       modalMediaType = newType;
-      if (newType === 'movie' && modalSelectedStatus === 'watching') {
-        modalSelectedStatus = 'completed';
-      }
       syncModalUI();
 
       const currentQuery = document.getElementById('input-title').value.trim();
@@ -1461,7 +1212,7 @@
         if (!btn) return;
         btn.className = t === modalMediaType
           ? `py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1 ${typeStyles[t]}`
-          : 'py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1 bg-[#1f2126] border-[#2a2d35] text-zinc-400 hover:text-zinc-200';
+          : 'py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1 bg-[#181b20] border-[#252932] text-zinc-400 hover:text-zinc-200';
       });
 
       const waitBtn = document.getElementById('modal-waiting-toggle');
@@ -1470,69 +1221,60 @@
         waitBtn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-rose-500/25 border-rose-500 text-rose-300';
       } else {
         waitBtn.textContent = 'Выкл';
-        waitBtn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-[#1f2126] border-[#2a2d35] text-zinc-400';
+        waitBtn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-[#181b20] border-[#252932] text-zinc-400';
       }
 
       const waitDetSec = document.getElementById('waiting-details-section');
       const waitSeasonBox = document.getElementById('waiting-season-box');
-      const movieRatSec = document.getElementById('movie-rating-section');
       const serProgSec = document.getElementById('series-progress-section');
-      const seaRatSec = document.getElementById('seasons-ratings-section');
       const statusWrap = document.getElementById('modal-status-wrapper');
+      const ratingLabel = document.getElementById('rating-section-label');
 
       waitDetSec.classList.add('hidden');
-      movieRatSec.classList.add('hidden');
       serProgSec.classList.add('hidden');
-      seaRatSec.classList.add('hidden');
       statusWrap.classList.remove('hidden');
+
+      ratingLabel.textContent = modalMediaType === 'movie'
+        ? 'ОЦЕНКА ФИЛЬМУ (1–10)'
+        : (modalMediaType === 'anime' ? 'ОЦЕНКА АНИМЕ (1–10)' : 'ОЦЕНКА СЕРИАЛУ (1–10)');
 
       if (modalIsWaiting) {
         waitDetSec.classList.remove('hidden');
         statusWrap.classList.add('hidden');
         if (modalMediaType === 'movie') {
           waitSeasonBox.classList.add('hidden');
-          movieRatSec.classList.remove('hidden');
-          renderMovieRatingPills();
         } else {
           waitSeasonBox.classList.remove('hidden');
-          seaRatSec.classList.remove('hidden');
-          renderSeasonsEditor();
         }
-      } else if (modalMediaType === 'movie') {
-        movieRatSec.classList.remove('hidden');
-        renderMovieRatingPills();
-        renderModalStatusButtons(['completed', 'planned'], modalSelectedStatus);
       } else {
-        serProgSec.classList.remove('hidden');
-        seaRatSec.classList.remove('hidden');
         renderModalStatusButtons(['watching', 'completed', 'planned'], modalSelectedStatus);
-        renderSeasonsEditor();
+        if (modalMediaType === 'series' || modalMediaType === 'anime' || modalSelectedStatus === 'watching') {
+          serProgSec.classList.remove('hidden');
+        }
       }
+
+      renderRatingPills();
     }
 
     function renderModalStatusButtons(allowedStatuses, current) {
       modalSelectedStatus = allowedStatuses.includes(current) ? current : allowedStatuses[0];
       const group = document.getElementById('modal-status-group');
       group.innerHTML = allowedStatuses.map(st => {
-        const label = st === 'completed' ? 'Просмотрено' : STATUS_LABELS[st].label;
+        const label = STATUS_LABELS[st].label;
         const active = st === modalSelectedStatus;
-        return `<button type="button" onclick="selectModalStatus('${st}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${active ? 'bg-white text-zinc-950 border-white' : 'bg-[#1f2126] text-zinc-400 border-[#2a2d35] hover:text-white'}">${label}</button>`;
+        return `<button type="button" onclick="selectModalStatus('${st}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${active ? 'bg-white text-zinc-950 border-white' : 'bg-[#181b20] text-zinc-400 border-[#252932] hover:text-white'}">${label}</button>`;
       }).join('');
     }
 
     function selectModalStatus(st) {
       triggerHaptic('light');
-      const allowed = modalMediaType === 'movie' ? ['completed', 'planned'] : ['watching', 'completed', 'planned'];
-      renderModalStatusButtons(allowed, st);
+      modalSelectedStatus = st;
+      syncModalUI();
     }
 
     function stepWaitingSeason(delta) {
       const inp = document.getElementById('input-waiting-season');
       inp.value = Math.max(1, (parseInt(inp.value, 10) || 1) + delta);
-    }
-
-    function setWaitingDatePreset(val) {
-      document.getElementById('input-waiting-date').value = val;
     }
 
     function stepProgress(field, delta) {
@@ -1541,56 +1283,28 @@
       inp.value = Math.max(min, (parseInt(inp.value, 10) || min) + delta);
     }
 
-    function renderMovieRatingPills() {
-      const container = document.getElementById('movie-rating-pills');
-      const display = document.getElementById('movie-rating-display');
-      display.textContent = modalMovieRating > 0 ? `★ ${modalMovieRating} / 10` : 'Без оценки';
+    function renderRatingPills() {
+      const container = document.getElementById('rating-pills');
+      const display = document.getElementById('rating-display');
+      display.textContent = modalRating > 0 ? `★ ${modalRating} / 10 (сбросить)` : 'Без оценки';
 
       const scores = [1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10];
       container.innerHTML = scores.map(sc => {
-        const active = Number(modalMovieRating) === sc;
-        return `<button type="button" onclick="setMovieRating(${sc})" class="py-1.5 rounded-lg text-xs font-extrabold border transition ${active ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-[#16171a] text-zinc-300 border-[#2a2d35] hover:border-zinc-500'}">${sc}</button>`;
+        const active = Number(modalRating) === sc;
+        return `<button type="button" onclick="setModalRating(${sc})" class="py-1.5 rounded-lg text-xs font-extrabold border transition ${active ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-[#0f1115] text-zinc-300 border-[#252932] hover:border-zinc-500'}">${sc}</button>`;
       }).join('');
     }
 
-    function setMovieRating(val) {
+    function setModalRating(val) {
       triggerHaptic('light');
-      modalMovieRating = (Number(modalMovieRating) === val) ? 0 : val;
-      renderMovieRatingPills();
+      modalRating = (Number(modalRating) === val) ? 0 : val;
+      renderRatingPills();
     }
 
-    function renderSeasonsEditor() {
-      const container = document.getElementById('seasons-list-editor');
-      container.innerHTML = modalSeasons.map((s, idx) => `
-        <div class="flex items-center justify-between gap-2 bg-[#1f2126] border border-[#2a2d35] rounded-xl px-2.5 py-1.5">
-          <span class="text-xs font-extrabold text-zinc-200 whitespace-nowrap">Сезон ${s.season}</span>
-          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
-            ${[6, 7, 8, 8.5, 9, 9.5, 10].map(r => `
-              <button type="button" onclick="setModalSeasonRating(${idx}, ${r})" class="px-1.5 py-1 rounded text-[10px] font-extrabold transition ${Number(s.rating) === r ? 'bg-amber-500 text-zinc-950' : 'bg-[#16171a] text-zinc-400 hover:text-white'}">${r}</button>
-            `).join('')}
-            ${modalSeasons.length > 1 ? `<button type="button" onclick="removeSeasonRow(${idx})" class="ml-1 text-rose-400 hover:text-rose-300 text-xs px-1">✕</button>` : ''}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function addSeasonRow() {
+    function clearModalRating() {
       triggerHaptic('light');
-      const nextNum = modalSeasons.length > 0 ? Math.max(...modalSeasons.map(s => s.season)) + 1 : 1;
-      modalSeasons.push({ season: nextNum, rating: 0 });
-      renderSeasonsEditor();
-    }
-
-    function removeSeasonRow(idx) {
-      modalSeasons.splice(idx, 1);
-      renderSeasonsEditor();
-    }
-
-    function setModalSeasonRating(idx, val) {
-      triggerHaptic('light');
-      if (!modalSeasons[idx]) return;
-      modalSeasons[idx].rating = Number(modalSeasons[idx].rating) === val ? 0 : val;
-      renderSeasonsEditor();
+      modalRating = 0;
+      renderRatingPills();
     }
 
     function closeModal() {
@@ -1624,24 +1338,21 @@
           item.title = title;
           item.poster = poster;
           item.note = note;
+          item.rating = modalRating;
+          if (modalTotalEpisodes) item.totalEpisodes = modalTotalEpisodes;
           item.updatedAt = Date.now();
 
           if (targetType === 'waiting') {
             item.waitingSubtype = modalMediaType;
             item.expectedSeason = parseInt(document.getElementById('input-waiting-season').value, 10) || 2;
             item.releaseDate = document.getElementById('input-waiting-date').value.trim() || 'Жду анонс';
-            if (modalMediaType === 'movie') item.rating = modalMovieRating;
-            else item.seasons = modalSeasons;
-          } else if (targetType === 'movie') {
-            item.status = modalSelectedStatus;
-            item.rating = modalMovieRating;
-            delete item.waitingSubtype;
           } else {
             item.status = modalSelectedStatus;
-            item.currentSeason = parseInt(document.getElementById('input-cur-season').value, 10) || 1;
-            item.currentEpisode = parseInt(document.getElementById('input-cur-episode').value, 10) || 0;
-            item.seasons = modalSeasons;
             delete item.waitingSubtype;
+            if (targetType === 'series' || targetType === 'anime' || modalSelectedStatus === 'watching') {
+              item.currentSeason = parseInt(document.getElementById('input-cur-season').value, 10) || 1;
+              item.currentEpisode = parseInt(document.getElementById('input-cur-episode').value, 10) || 0;
+            }
           }
           showToast('Изменения сохранены!');
         }
@@ -1652,33 +1363,26 @@
           title,
           poster,
           note,
+          rating: modalRating,
           updatedAt: Date.now()
         };
+        if (modalTotalEpisodes) newItem.totalEpisodes = modalTotalEpisodes;
 
         if (targetType === 'waiting') {
           newItem.waitingSubtype = modalMediaType;
           newItem.status = 'planned';
           newItem.expectedSeason = parseInt(document.getElementById('input-waiting-season').value, 10) || 2;
           newItem.releaseDate = document.getElementById('input-waiting-date').value.trim() || 'Жду анонс';
-          if (modalMediaType === 'movie') {
-            newItem.rating = modalMovieRating;
-          } else {
-            newItem.currentSeason = newItem.expectedSeason;
-            newItem.currentEpisode = 1;
-            newItem.seasons = modalSeasons;
-          }
-        } else if (targetType === 'movie') {
-          newItem.status = modalSelectedStatus;
-          newItem.rating = modalMovieRating;
         } else {
           newItem.status = modalSelectedStatus;
-          newItem.currentSeason = parseInt(document.getElementById('input-cur-season').value, 10) || 1;
-          newItem.currentEpisode = parseInt(document.getElementById('input-cur-episode').value, 10) || 1;
-          newItem.seasons = modalSeasons;
+          if (targetType === 'series' || targetType === 'anime' || modalSelectedStatus === 'watching') {
+            newItem.currentSeason = parseInt(document.getElementById('input-cur-season').value, 10) || 1;
+            newItem.currentEpisode = parseInt(document.getElementById('input-cur-episode').value, 10) || 1;
+          }
         }
 
         mediaItems.unshift(newItem);
-        if (currentTab !== targetType) {
+        if (currentTab !== 'all' && currentTab !== targetType) {
           switchTab(targetType);
         }
         showToast(`«${title}» добавлен!`);
@@ -1700,124 +1404,11 @@
     }
 
     // ==========================================
-    // 9. QUICK SEASON RATING & SEND TO WAITING
-    // ==========================================
-    function openSeasonQuickModal(id) {
-      triggerHaptic('light');
-      const item = mediaItems.find(i => i.id === id);
-      if (!item) return;
-      sqmItemId = id;
-      document.getElementById('sqm-title').textContent = item.title;
-      sqmTempSeasons = Array.isArray(item.seasons) && item.seasons.length > 0
-        ? item.seasons.map(s => ({ season: Number(s.season) || 1, rating: Number(s.rating) || 0 }))
-        : [{ season: 1, rating: 0 }];
-      renderSqmSeasons();
-      const modal = document.getElementById('season-quick-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      updateTgBackButton();
-    }
-
-    function renderSqmSeasons() {
-      const container = document.getElementById('sqm-seasons-container');
-      container.innerHTML = sqmTempSeasons.map((s, idx) => `
-        <div class="bg-[#16171a] border border-[#2a2d35] rounded-2xl p-2.5">
-          <div class="flex items-center justify-between mb-1.5">
-            <span class="text-xs font-extrabold text-white">Сезон ${s.season}</span>
-            <span class="text-xs font-bold text-amber-400">${s.rating > 0 ? '★ ' + s.rating : 'Без оценки'}</span>
-          </div>
-          <div class="grid grid-cols-5 gap-1">
-            ${[5, 6, 7, 7.5, 8, 8.5, 9, 9.5, 10].map(r => `
-              <button type="button" onclick="sqmSetRating(${idx}, ${r})" class="py-1 rounded-lg text-[11px] font-extrabold border transition ${Number(s.rating) === r ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-[#1f2126] text-zinc-300 border-[#2a2d35]'}">${r}</button>
-            `).join('')}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function sqmSetRating(idx, val) {
-      triggerHaptic('light');
-      if (!sqmTempSeasons[idx]) return;
-      sqmTempSeasons[idx].rating = Number(sqmTempSeasons[idx].rating) === val ? 0 : val;
-      renderSqmSeasons();
-    }
-
-    function sqmAddSeason() {
-      triggerHaptic('light');
-      const nextNum = sqmTempSeasons.length > 0 ? Math.max(...sqmTempSeasons.map(s => s.season)) + 1 : 1;
-      sqmTempSeasons.push({ season: nextNum, rating: 0 });
-      renderSqmSeasons();
-    }
-
-    function closeSeasonQuickModal() {
-      const modal = document.getElementById('season-quick-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      updateTgBackButton();
-    }
-
-    function saveSeasonQuickModal() {
-      triggerHaptic('medium');
-      const idx = mediaItems.findIndex(i => i.id === sqmItemId);
-      if (idx !== -1) {
-        mediaItems[idx].seasons = sqmTempSeasons;
-        mediaItems[idx].updatedAt = Date.now();
-        saveToStorage();
-        renderItems();
-        showToast('Оценки сезонов обновлены!');
-      }
-      closeSeasonQuickModal();
-    }
-
-    function openSendWaitingModal(id) {
-      triggerHaptic('light');
-      const item = mediaItems.find(i => i.id === id);
-      if (!item) return;
-      swmItemId = id;
-      document.getElementById('swm-title').textContent = item.title;
-      document.getElementById('swm-season-input').value = (Number(item.currentSeason) || 1) + 1;
-      document.getElementById('swm-date-input').value = 'Зима 2027';
-      const modal = document.getElementById('send-waiting-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      updateTgBackButton();
-    }
-
-    function stepSwmSeason(delta) {
-      const inp = document.getElementById('swm-season-input');
-      inp.value = Math.max(1, (parseInt(inp.value, 10) || 1) + delta);
-    }
-
-    function closeSendWaitingModal() {
-      const modal = document.getElementById('send-waiting-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      updateTgBackButton();
-    }
-
-    function confirmSendToWaiting() {
-      triggerHaptic('medium');
-      const idx = mediaItems.findIndex(i => i.id === swmItemId);
-      if (idx !== -1) {
-        const item = mediaItems[idx];
-        const origType = item.type === 'anime' ? 'anime' : 'series';
-        item.type = 'waiting';
-        item.waitingSubtype = origType;
-        item.expectedSeason = parseInt(document.getElementById('swm-season-input').value, 10) || 2;
-        item.releaseDate = document.getElementById('swm-date-input').value.trim() || 'Жду анонс';
-        item.updatedAt = Date.now();
-        saveToStorage();
-        renderItems();
-        showToast(`⏳ «${item.title}» отправлен в Ожидание!`);
-      }
-      closeSendWaitingModal();
-    }
-
-    // ==========================================
-    // 10. CORS-IMMUNE MULTI-SOURCE SEARCH ENGINE
-    //     - JSONP loader for iTunes (bypasses iOS Telegram WebView CORS)
-    //     - Dual RU Wikipedia + Wikidata Entity Search (resolves "Матрица" -> "The Matrix")
-    //     - Parallel pipelines with 3.0s AbortController & 3.5s spinner guard
+    // 7. ZERO-CORS RUSSIAN SEARCH ARCHITECTURE
+    //    - RU Wikipedia + Wikidata -> English langlinks
+    //    - IMDb CloudFront Suggestion CDN (v3.sg.media-imdb.com)
+    //    - TVMaze backup for Series
+    //    - Shikimori + AniList GraphQL for Anime
     // ==========================================
     function updatePosterPreview(url) {
       const img = document.getElementById('poster-preview');
@@ -1847,74 +1438,21 @@
       }
       searchDebounceTimer = setTimeout(() => {
         fetchPosterSuggestions(val.trim());
-      }, 450);
+      }, 500);
     }
 
     function triggerPosterSearch() {
       triggerHaptic('light');
       const val = document.getElementById('input-title').value.trim();
       if (val.length < 1) {
-        showToast('Сначала введи хотя бы пару букв названия', 'info');
+        showToast('Введи название для поиска', 'info');
         return;
       }
       clearTimeout(searchDebounceTimer);
       fetchPosterSuggestions(val);
     }
 
-    // Genuine <script> JSONP loader for iTunes Search API (100% immune to iOS WebView CORS blocks)
-    let jsonpCounter = 0;
-    function searchItunesJsonp(term, entity = 'movie', country = 'us') {
-      return new Promise((resolve) => {
-        if (!term || !term.trim()) {
-          resolve([]);
-          return;
-        }
-        const cbName = `__kb_itunes_cb_${Date.now()}_${++jsonpCounter}`;
-        const script = document.createElement('script');
-        let settled = false;
-
-        const cleanup = () => {
-          if (window[cbName]) {
-            try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
-          }
-          if (script.parentNode) {
-            script.parentNode.removeChild(script);
-          }
-        };
-
-        const timer = setTimeout(() => {
-          if (!settled) {
-            settled = true;
-            cleanup();
-            resolve([]);
-          }
-        }, 3500);
-
-        window[cbName] = (data) => {
-          if (settled) return;
-          settled = true;
-          clearTimeout(timer);
-          cleanup();
-          const results = Array.isArray(data?.results) ? data.results : [];
-          resolve(results);
-        };
-
-        script.onerror = () => {
-          if (settled) return;
-          settled = true;
-          clearTimeout(timer);
-          cleanup();
-          resolve([]);
-        };
-
-        const mediaParam = entity === 'tvSeason' ? 'tvShow' : 'movie';
-        script.src = `https://itunes.apple.com/search?term=${encodeURIComponent(term.trim())}&media=${mediaParam}&entity=${encodeURIComponent(entity)}&country=${encodeURIComponent(country)}&limit=20&callback=${cbName}`;
-        document.head.appendChild(script);
-      });
-    }
-
-    // Fetch wrapper with strict 3.0s AbortController timeout
-    async function fetchWithTimeout(url, options = {}, timeoutMs = 3000) {
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 4000) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
@@ -1942,6 +1480,10 @@
       return `${norm}_${year || 'ny'}`;
     }
 
+    function isLikelyLatin(str) {
+      return /[a-z]/i.test(str) && !/[а-яё]/i.test(str);
+    }
+
     function cleanWikiTitleAndYear(rawTitle, description = '') {
       let year = '';
       const parenYear = rawTitle.match(/\((?:[^)]*?\b)?(19\d{2}|20\d{2})\b[^)]*\)/);
@@ -1955,260 +1497,228 @@
       return { cleanTitle, year };
     }
 
-    // Russian-to-Original Title Resolver (Dual RU Wikipedia generator=search + Wikidata wbsearchentities)
-    async function resolveRuToOriginalPairs(query, mediaHint = 'movie') {
-      const hintWord = mediaHint === 'movie' ? ' фильм' : (mediaHint === 'series' ? ' телесериал' : ' аниме');
+    // Step B helper: Query IMDb open CloudFront suggestion CDN
+    async function searchImdbSuggestions(enQuery, mediaType = 'movie', ruTitleHint = '', yearHint = '') {
+      const sanitized = (enQuery || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (!sanitized) return [];
 
-      const wikiWithHintUrl = `https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query + hintWord)}&gsrlimit=8&prop=langlinks|pageprops&lllang=en&format=json&origin=*`;
-      const wikiDirectUrl = `https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=8&prop=langlinks|pageprops&lllang=en&format=json&origin=*`;
-      const wikidataSearchUrl = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(query)}&language=ru&uselang=ru&limit=8&format=json&origin=*`;
+      try {
+        const url = `https://v3.sg.media-imdb.com/suggestion/x/${encodeURIComponent(sanitized)}.json`;
+        const res = await fetchWithTimeout(url, {}, 4000);
+        const data = await res.json();
+        const list = Array.isArray(data?.d) ? data.d : [];
 
-      const fetchWikiPages = async (url) => {
+        return list
+          .filter(item => {
+            if (!item || !item.l || !item.id || !String(item.id).startsWith('tt')) return false;
+            const qType = (item.q || '').toLowerCase();
+            if (mediaType === 'series') {
+              return qType.includes('tv') || qType.includes('series') || !qType;
+            }
+            return !qType.includes('video game') && !qType.includes('podcast');
+          })
+          .slice(0, 8)
+          .map((item, idx) => {
+            const origName = item.l.trim();
+            const year = item.y ? String(item.y) : '';
+            let poster = item.i?.imageUrl || '';
+            if (poster && poster.includes('._V1_')) {
+              poster = poster.replace(/\._V1_.*\.jpg$/i, '._V1_UX400_.jpg');
+            }
+
+            // Pair Russian title with matching IMDb hit
+            const useRuHint = ruTitleHint && (idx === 0 || (yearHint && year === yearHint) || normalizeMatchKey(origName) === normalizeMatchKey(enQuery));
+            const displayTitle = (useRuHint && ruTitleHint.toLowerCase() !== origName.toLowerCase())
+              ? `${ruTitleHint} (${origName})`
+              : origName;
+
+            return {
+              id: `imdb_${item.id}`,
+              title: useRuHint ? ruTitleHint : origName,
+              originalTitle: origName,
+              displayTitle,
+              year,
+              poster,
+              source: item.q || 'IMDb',
+              priority: useRuHint ? 12 : 8
+            };
+          });
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // Step C helper: Query TVMaze for Series
+    async function searchTvMazeShows(enQuery, ruTitleHint = '') {
+      if (!enQuery || !enQuery.trim()) return [];
+      try {
+        const res = await fetchWithTimeout(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(enQuery.trim())}`, {}, 4000);
+        const data = await res.json();
+        if (!Array.isArray(data)) return [];
+        return data.slice(0, 8).map((entry, idx) => {
+          const s = entry.show;
+          if (!s || !s.name) return null;
+          const origName = s.name.trim();
+          const year = s.premiered ? String(s.premiered).slice(0, 4) : '';
+          const poster = s.image?.medium || s.image?.original || '';
+          const useRuHint = ruTitleHint && (idx === 0 || normalizeMatchKey(origName) === normalizeMatchKey(enQuery));
+          const displayTitle = (useRuHint && ruTitleHint.toLowerCase() !== origName.toLowerCase())
+            ? `${ruTitleHint} (${origName})`
+            : origName;
+          return {
+            id: s.id ? `tvmaze_${s.id}` : '',
+            title: useRuHint ? ruTitleHint : origName,
+            originalTitle: origName,
+            displayTitle,
+            year,
+            poster,
+            source: 'TVMaze',
+            priority: useRuHint ? 11 : 7
+          };
+        }).filter(Boolean);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // Step A + B + C Pipeline for FILMS and SERIES
+    async function searchFilmsAndSeriesPipeline(rawQuery, mediaType, onBatch) {
+      const hintSuffix = mediaType === 'series' ? ' телесериал' : ' фильм';
+      const wikiHintUrl = `https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(rawQuery + hintSuffix)}&gsrlimit=6&prop=langlinks|pageimages|extracts&lllang=en&piprop=thumbnail&pithumbsize=400&exintro=1&explaintext=1&exsentences=1&format=json&origin=*`;
+      const wikiDirectUrl = `https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(rawQuery)}&gsrlimit=6&prop=langlinks|pageimages|extracts&lllang=en&piprop=thumbnail&pithumbsize=400&exintro=1&explaintext=1&exsentences=1&format=json&origin=*`;
+      const wikidataUrl = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(rawQuery)}&language=ru&uselang=ru&limit=5&format=json&origin=*`;
+
+      // If query already contains Latin letters, immediately fire IMDb (+ TVMaze for series)
+      const directLatinPromises = [];
+      if (isLikelyLatin(rawQuery)) {
+        directLatinPromises.push(
+          searchImdbSuggestions(rawQuery, mediaType).then(items => {
+            if (items.length > 0) onBatch(items);
+          })
+        );
+        if (mediaType === 'series') {
+          directLatinPromises.push(
+            searchTvMazeShows(rawQuery).then(items => {
+              if (items.length > 0) onBatch(items);
+            })
+          );
+        }
+      }
+
+      const fetchWikiBatch = async (url, basePriority) => {
         try {
-          const res = await fetchWithTimeout(url, {}, 3000);
+          const res = await fetchWithTimeout(url, {}, 4000);
           const data = await res.json();
           const pages = Object.values(data?.query?.pages || {});
           pages.sort((a, b) => (a.index || 99) - (b.index || 99));
-          const out = [];
+
+          const wikiResults = [];
+          const posterEnrichmentTasks = [];
+
           for (const p of pages) {
+            const rawTitle = p.title || '';
+            if (!rawTitle || rawTitle.includes('(значения)')) continue;
+
+            const extract = p.extract || '';
+            const { cleanTitle, year } = cleanWikiTitleAndYear(rawTitle, extract);
             const rawEn = Array.isArray(p.langlinks) && p.langlinks[0] ? p.langlinks[0]['*'] : '';
-            if (!rawEn) continue;
-            const enClean = rawEn.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
-            const desc = p.pageprops?.['wikibase-shortdesc'] || '';
-            const { cleanTitle, year } = cleanWikiTitleAndYear(p.title || '', desc);
-            if (enClean && cleanTitle) {
-              out.push({ ruTitle: cleanTitle, enTitle: enClean, year });
+            const enClean = rawEn ? rawEn.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim() : '';
+            const wikiThumb = p.thumbnail?.source || '';
+
+            const displayTitle = (enClean && enClean.toLowerCase() !== cleanTitle.toLowerCase())
+              ? `${cleanTitle} (${enClean})`
+              : cleanTitle;
+
+            // Always push Wikipedia result immediately so list is NEVER empty
+            wikiResults.push({
+              id: `wiki_${p.pageid}`,
+              title: cleanTitle,
+              originalTitle: enClean || cleanTitle,
+              displayTitle,
+              year,
+              poster: wikiThumb,
+              source: 'Википедия',
+              priority: basePriority
+            });
+
+            // Step B & C: Enrich with high-res IMDb / TVMaze posters via English langlink
+            if (enClean) {
+              posterEnrichmentTasks.push(
+                searchImdbSuggestions(enClean, mediaType, cleanTitle, year).then(imdbItems => {
+                  if (imdbItems.length > 0) onBatch(imdbItems);
+                })
+              );
+              if (mediaType === 'series') {
+                posterEnrichmentTasks.push(
+                  searchTvMazeShows(enClean, cleanTitle).then(tvItems => {
+                    if (tvItems.length > 0) onBatch(tvItems);
+                  })
+                );
+              }
             }
           }
-          return out;
-        } catch (e) {
-          return [];
-        }
+
+          if (wikiResults.length > 0) onBatch(wikiResults);
+          if (posterEnrichmentTasks.length > 0) {
+            await Promise.allSettled(posterEnrichmentTasks);
+          }
+        } catch (e) {}
       };
 
-      const fetchWikidataEntities = async () => {
+      const fetchWikidataBatch = async () => {
         try {
-          const res = await fetchWithTimeout(wikidataSearchUrl, {}, 3000);
+          const res = await fetchWithTimeout(wikidataUrl, {}, 4000);
           const data = await res.json();
           const hits = Array.isArray(data?.search) ? data.search : [];
-          // Prioritize hits whose description mentions film/movie/series/anime or keep top hits
-          const mediaKeywords = /фильм|кино|сериал|мультфильм|аниме|франшиз|трилог|film|movie|series|anime/i;
-          const sortedHits = [...hits].sort((a, b) => {
-            const aIsMedia = mediaKeywords.test(a.description || '') ? 1 : 0;
-            const bIsMedia = mediaKeywords.test(b.description || '') ? 1 : 0;
-            return bIsMedia - aIsMedia;
-          });
-          const ids = sortedHits.slice(0, 6).map(h => h.id).filter(Boolean);
-          if (ids.length === 0) return [];
+          const ids = hits.slice(0, 5).map(h => h.id).filter(Boolean);
+          if (ids.length === 0) return;
 
           const getUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${ids.join('|')}&props=labels&languages=en|ru&format=json&origin=*`;
-          const getRes = await fetchWithTimeout(getUrl, {}, 3000);
+          const getRes = await fetchWithTimeout(getUrl, {}, 4000);
           const getData = await getRes.json();
           const entities = getData?.entities || {};
 
-          const out = [];
-          for (const h of sortedHits.slice(0, 6)) {
+          const wdEnrichTasks = [];
+          for (const h of hits.slice(0, 5)) {
             const ent = entities[h.id];
             if (!ent || !ent.labels) continue;
             const enLabel = (ent.labels.en?.value || '').trim();
             const ruLabel = (ent.labels.ru?.value || h.label || '').trim();
             if (!enLabel) continue;
             const yearMatch = (h.description || '').match(/\b(19\d{2}|20\d{2})\b/);
-            out.push({
-              ruTitle: ruLabel || enLabel,
-              enTitle: enLabel,
-              year: yearMatch ? yearMatch[1] : ''
-            });
+            const yr = yearMatch ? yearMatch[1] : '';
+
+            wdEnrichTasks.push(
+              searchImdbSuggestions(enLabel, mediaType, ruLabel, yr).then(items => {
+                if (items.length > 0) onBatch(items);
+              })
+            );
           }
-          return out;
-        } catch (e) {
-          return [];
-        }
+          if (wdEnrichTasks.length > 0) {
+            await Promise.allSettled(wdEnrichTasks);
+          }
+        } catch (e) {}
       };
 
-      const [r1, r2, r3] = await Promise.allSettled([
-        fetchWikiPages(wikiWithHintUrl),
-        fetchWikiPages(wikiDirectUrl),
-        fetchWikidataEntities()
+      await Promise.allSettled([
+        ...directLatinPromises,
+        fetchWikiBatch(wikiHintUrl, 6),
+        fetchWikiBatch(wikiDirectUrl, 5),
+        fetchWikidataBatch()
       ]);
-
-      const combined = [
-        ...(r1.status === 'fulfilled' ? r1.value : []),
-        ...(r3.status === 'fulfilled' ? r3.value : []),
-        ...(r2.status === 'fulfilled' ? r2.value : [])
-      ];
-
-      const uniquePairs = [];
-      const seenEn = new Set();
-      for (const pair of combined) {
-        const key = normalizeMatchKey(pair.enTitle);
-        if (!key || seenEn.has(key)) continue;
-        seenEn.add(key);
-        uniquePairs.push(pair);
-        if (uniquePairs.length >= 6) break;
-      }
-      return uniquePairs;
     }
 
-    // Format iTunes raw result into unified card object
-    function mapItunesMovieResult(item, resolvedPairs = [], priority = 6) {
-      const origName = (item.trackName || '').trim();
-      if (!origName) return null;
-      const year = item.releaseDate ? String(item.releaseDate).slice(0, 4) : '';
-      const poster = item.artworkUrl100 ? item.artworkUrl100.replace('100x100bb', '600x900bb') : '';
-
-      // Match specific Russian label from resolvedPairs without overwriting unrelated titles
-      const origKey = normalizeMatchKey(origName);
-      let matchedPair = resolvedPairs.find(p => {
-        const pk = normalizeMatchKey(p.enTitle);
-        if (!pk) return false;
-        if (pk === origKey) {
-          return !p.year || !year || p.year === year;
-        }
-        return false;
-      });
-      if (!matchedPair) {
-        matchedPair = resolvedPairs.find(p => {
-          const pk = normalizeMatchKey(p.enTitle);
-          return pk && pk === origKey;
-        });
-      }
-
-      const displayTitle = (matchedPair && matchedPair.ruTitle && matchedPair.ruTitle.toLowerCase() !== origName.toLowerCase())
-        ? `${matchedPair.ruTitle} (${origName})`
-        : origName;
-
-      return {
-        id: item.trackId ? `itunes_${item.trackId}` : '',
-        title: matchedPair ? matchedPair.ruTitle : origName,
-        originalTitle: origName,
-        displayTitle,
-        year,
-        poster,
-        source: item.primaryGenreName || 'Фильм',
-        priority
-      };
-    }
-
-    // MOVIE PIPELINE: Direct JSONP (US + RU) + Resolved RU->EN JSONP (US)
-    async function searchMoviesPipeline(rawQuery, onPartialResults) {
-      // 1. Fire direct iTunes JSONP immediately (works instantly for English or RU-localized store items)
-      const directUsPromise = searchItunesJsonp(rawQuery, 'movie', 'us').then(list => {
-        const mapped = list.map(m => mapItunesMovieResult(m, [], 7)).filter(Boolean);
-        if (mapped.length > 0) onPartialResults(mapped);
-        return mapped;
-      });
-
-      const directRuPromise = searchItunesJsonp(rawQuery, 'movie', 'ru').then(list => {
-        const mapped = list.map(m => mapItunesMovieResult(m, [], 8)).filter(Boolean);
-        if (mapped.length > 0) onPartialResults(mapped);
-        return mapped;
-      });
-
-      // 2. Resolve Russian title -> Original English titles via Wikipedia & Wikidata
-      const resolvedPromise = resolveRuToOriginalPairs(rawQuery, 'movie').then(async (pairs) => {
-        if (!pairs || pairs.length === 0) return [];
-        const topPairs = pairs.slice(0, 4);
-        const enSearches = topPairs.map(p =>
-          searchItunesJsonp(p.enTitle, 'movie', 'us').then(list =>
-            list.map(m => mapItunesMovieResult(m, pairs, 10)).filter(Boolean)
-          )
-        );
-        const settled = await Promise.allSettled(enSearches);
-        const allResolved = [];
-        for (const s of settled) {
-          if (s.status === 'fulfilled') allResolved.push(...s.value);
-        }
-        if (allResolved.length > 0) onPartialResults(allResolved);
-        return allResolved;
-      });
-
-      await Promise.allSettled([directUsPromise, directRuPromise, resolvedPromise]);
-    }
-
-    // SERIES PIPELINE: TVMaze (direct + resolved EN) + iTunes TV JSONP fallback
-    async function searchSeriesPipeline(rawQuery, onPartialResults) {
-      const fetchTvMaze = async (term, pairs = [], priority = 7) => {
-        try {
-          const res = await fetchWithTimeout(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(term)}`, {}, 3000);
-          const data = await res.json();
-          if (!Array.isArray(data)) return [];
-          return data.slice(0, 15).map(entry => {
-            const s = entry.show;
-            if (!s || !s.name) return null;
-            const origName = s.name.trim();
-            const year = s.premiered ? String(s.premiered).slice(0, 4) : '';
-            const poster = s.image?.medium || s.image?.original || '';
-            const origKey = normalizeMatchKey(origName);
-            const matchedPair = pairs.find(p => normalizeMatchKey(p.enTitle) === origKey);
-            const displayTitle = (matchedPair && matchedPair.ruTitle.toLowerCase() !== origName.toLowerCase())
-              ? `${matchedPair.ruTitle} (${origName})`
-              : origName;
-            return {
-              id: s.id ? `tvmaze_${s.id}` : '',
-              title: matchedPair ? matchedPair.ruTitle : origName,
-              originalTitle: origName,
-              displayTitle,
-              year,
-              poster,
-              source: s.status === 'Ended' ? 'Завершён' : 'Сериал',
-              priority
-            };
-          }).filter(Boolean);
-        } catch (e) {
-          return [];
-        }
-      };
-
-      const directTvPromise = fetchTvMaze(rawQuery, [], 7).then(items => {
-        if (items.length > 0) onPartialResults(items);
-        return items;
-      });
-
-      const directItunesTvPromise = searchItunesJsonp(rawQuery, 'tvSeason', 'us').then(list => {
-        const mapped = list.map(m => {
-          const name = (m.collectionName || m.artistName || '').trim();
-          if (!name) return null;
-          const year = m.releaseDate ? String(m.releaseDate).slice(0, 4) : '';
-          const poster = m.artworkUrl100 ? m.artworkUrl100.replace('100x100bb', '600x900bb') : '';
-          return {
-            id: m.collectionId ? `itunestv_${m.collectionId}` : '',
-            title: name,
-            originalTitle: name,
-            displayTitle: name,
-            year,
-            poster,
-            source: 'Сериал',
-            priority: 6
-          };
-        }).filter(Boolean);
-        if (mapped.length > 0) onPartialResults(mapped);
-        return mapped;
-      });
-
-      const resolvedSeriesPromise = resolveRuToOriginalPairs(rawQuery, 'series').then(async (pairs) => {
-        if (!pairs || pairs.length === 0) return [];
-        const topPairs = pairs.slice(0, 4);
-        const searches = topPairs.map(p => fetchTvMaze(p.enTitle, pairs, 10));
-        const settled = await Promise.allSettled(searches);
-        const all = [];
-        for (const s of settled) {
-          if (s.status === 'fulfilled') all.push(...s.value);
-        }
-        if (all.length > 0) onPartialResults(all);
-        return all;
-      });
-
-      await Promise.allSettled([directTvPromise, directItunesTvPromise, resolvedSeriesPromise]);
-    }
-
-    // ANIME PIPELINE: Shikimori + AniList GraphQL + Jikan in parallel
-    async function searchAnimePipeline(rawQuery, onPartialResults) {
+    // ANIME PIPELINE: Shikimori + AniList GraphQL in parallel
+    async function searchAnimePipeline(rawQuery, onBatch) {
       const shikiPromise = (async () => {
         try {
-          const res = await fetchWithTimeout(`https://shikimori.one/api/animes?search=${encodeURIComponent(rawQuery)}&limit=20`, {}, 3000);
+          const res = await fetchWithTimeout(`https://shikimori.one/api/animes?search=${encodeURIComponent(rawQuery)}&limit=8`, {}, 4000);
           const list = await res.json();
-          if (!Array.isArray(list)) return [];
+          if (!Array.isArray(list)) return;
           const mapped = list.map(item => {
             const ru = (item.russian || '').trim();
             const orig = (item.name || '').trim();
@@ -2228,23 +1738,21 @@
               displayTitle,
               year,
               poster,
+              totalEpisodes: item.episodes || null,
               source: `Shikimori • ${epText}`,
-              priority: 10
+              priority: 12
             };
           }).filter(Boolean);
-          if (mapped.length > 0) onPartialResults(mapped);
-          return mapped;
-        } catch (e) {
-          return [];
-        }
+          if (mapped.length > 0) onBatch(mapped);
+        } catch (e) {}
       })();
 
       const anilistPromise = (async () => {
         try {
           const graphqlQuery = `
-            query ($search: String) {
-              Page(page: 1, perPage: 15) {
-                media(search: $search, type: ANIME) {
+            query ($q: String) {
+              Page(page: 1, perPage: 8) {
+                media(search: $q, type: ANIME) {
                   id
                   title { romaji english }
                   startDate { year }
@@ -2257,66 +1765,37 @@
           const res = await fetchWithTimeout('https://graphql.anilist.co', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ query: graphqlQuery, variables: { search: rawQuery } })
-          }, 3000);
+            body: JSON.stringify({ query: graphqlQuery, variables: { q: rawQuery } })
+          }, 4000);
           const json = await res.json();
           const mediaList = json?.data?.Page?.media || [];
           const mapped = mediaList.map(m => {
-            const enName = (m.title?.english || m.title?.romaji || '').trim();
+            const romaji = (m.title?.romaji || '').trim();
+            const enName = (m.title?.english || romaji || '').trim();
             if (!enName) return null;
             const year = m.startDate?.year ? String(m.startDate.year) : '';
             const poster = m.coverImage?.large || m.coverImage?.medium || '';
             const epText = m.episodes ? `${m.episodes} эп.` : 'Аниме';
             return {
               id: m.id ? `anilist_${m.id}` : '',
-              title: enName,
-              originalTitle: m.title?.romaji || enName,
+              title: romaji || enName,
+              originalTitle: romaji || enName,
               displayTitle: enName,
               year,
               poster,
+              totalEpisodes: m.episodes || null,
               source: `AniList • ${epText}`,
-              priority: 8
+              priority: 9
             };
           }).filter(Boolean);
-          if (mapped.length > 0) onPartialResults(mapped);
-          return mapped;
-        } catch (e) {
-          return [];
-        }
+          if (mapped.length > 0) onBatch(mapped);
+        } catch (e) {}
       })();
 
-      const jikanPromise = (async () => {
-        try {
-          const res = await fetchWithTimeout(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(rawQuery)}&limit=15`, {}, 3000);
-          const json = await res.json();
-          const list = Array.isArray(json?.data) ? json.data : [];
-          const mapped = list.map(a => {
-            const title = (a.title_english || a.title || '').trim();
-            if (!title) return null;
-            const year = a.year ? String(a.year) : '';
-            const poster = a.images?.jpg?.large_image_url || a.images?.jpg?.image_url || '';
-            return {
-              id: a.mal_id ? `mal_${a.mal_id}` : '',
-              title,
-              originalTitle: a.title || title,
-              displayTitle: title,
-              year,
-              poster,
-              source: a.episodes ? `MAL • ${a.episodes} эп.` : 'MyAnimeList',
-              priority: 7
-            };
-          }).filter(Boolean);
-          if (mapped.length > 0) onPartialResults(mapped);
-          return mapped;
-        } catch (e) {
-          return [];
-        }
-      })();
-
-      await Promise.allSettled([shikiPromise, anilistPromise, jikanPromise]);
+      await Promise.allSettled([shikiPromise, anilistPromise]);
     }
 
-    // Main Search Orchestrator with 3.5s guaranteed spinner shutdown
+    // Master Search Orchestrator
     async function fetchPosterSuggestions(rawQuery) {
       const sessionId = ++activeSearchSessionId;
       const spinner = document.getElementById('api-spinner');
@@ -2331,17 +1810,17 @@
         if (sessionId === activeSearchSessionId) {
           spinner.classList.add('hidden');
         }
-      }, 3500);
+      }, 4200);
 
       const collected = [];
 
       const renderResultsList = (isFinal = false) => {
         if (sessionId !== activeSearchSessionId) return;
 
-        // Sort: items with posters and localized Russian+Original titles first
+        // Prioritize results with posters & Russian+Original pairing
         const sorted = [...collected].sort((a, b) => {
-          const aScore = (a.poster ? 30 : 0) + (a.displayTitle.includes('(') ? 10 : 0) + (a.priority || 0);
-          const bScore = (b.poster ? 30 : 0) + (b.displayTitle.includes('(') ? 10 : 0) + (b.priority || 0);
+          const aScore = (a.poster ? 40 : 0) + (a.displayTitle.includes('(') ? 15 : 0) + (a.priority || 0);
+          const bScore = (b.poster ? 40 : 0) + (b.displayTitle.includes('(') ? 15 : 0) + (b.priority || 0);
           return bScore - aScore;
         });
 
@@ -2358,12 +1837,12 @@
           seenKeys.add(keyOrig);
           seenKeys.add(keyTitle);
           uniqueList.push(item);
-          if (uniqueList.length >= 20) break;
+          if (uniqueList.length >= 16) break;
         }
 
         if (uniqueList.length === 0) {
           if (isFinal) {
-            dropdown.innerHTML = `<div class="p-3 text-xs text-zinc-400 text-center">Ничего не нашлось — попробуй переключить тип сверху или вставь ссылку на обложку</div>`;
+            dropdown.innerHTML = `<div class="p-3 text-xs text-zinc-400 text-center">Ничего не нашлось — проверь написание или вставь ссылку на обложку вручную</div>`;
             dropdown.classList.remove('hidden');
           }
           return;
@@ -2371,13 +1850,13 @@
 
         const svgFallback = getSvgFallbackDataUri(searchType);
         dropdown.innerHTML = uniqueList.map((r, i) => `
-          <button type="button" data-sug-idx="${i}" class="suggestion-row-btn w-full flex items-center gap-2.5 p-2 hover:bg-[#1f2126] transition text-left">
-            <img src="${escapeHtml(r.poster || svgFallback)}" referrerpolicy="no-referrer" class="w-9 h-12 object-cover rounded-lg bg-[#1f2126] flex-shrink-0 border border-[#2a2d35]" onerror="this.onerror=null;this.src='${svgFallback}'" />
+          <button type="button" data-sug-idx="${i}" class="suggestion-row-btn w-full flex items-center gap-2.5 p-2 hover:bg-[#181b20] transition text-left">
+            <img src="${escapeHtml(r.poster || svgFallback)}" referrerpolicy="no-referrer" class="w-9 h-12 object-cover rounded-lg bg-[#181b20] flex-shrink-0 border border-[#252932]" onerror="this.onerror=null;this.src='${svgFallback}'" />
             <div class="min-w-0 flex-1">
               <div class="text-xs font-bold text-white truncate">${escapeHtml(r.displayTitle)}</div>
               <div class="text-[10px] text-zinc-400 truncate">${[r.year, r.source].filter(Boolean).join(' • ')}</div>
             </div>
-            <span class="text-[10px] font-bold text-zinc-200 px-2 py-1 rounded-lg bg-[#272a31] border border-[#3a3e4b] flex-shrink-0">Выбрать</span>
+            <span class="text-[10px] font-bold text-zinc-200 px-2.5 py-1 rounded-lg bg-[#22262e] border border-[#323744] flex-shrink-0">Выбрать</span>
           </button>
         `).join('');
 
@@ -2401,13 +1880,11 @@
       try {
         if (searchType === 'anime') {
           await searchAnimePipeline(rawQuery, pushBatch);
-        } else if (searchType === 'movie') {
-          await searchMoviesPipeline(rawQuery, pushBatch);
         } else {
-          await searchSeriesPipeline(rawQuery, pushBatch);
+          await searchFilmsAndSeriesPipeline(rawQuery, searchType, pushBatch);
         }
       } catch (e) {
-        console.warn('Search pipeline note:', e);
+        console.warn('Search error:', e);
       } finally {
         clearTimeout(spinnerGuard);
         if (sessionId === activeSearchSessionId) {
@@ -2424,12 +1901,16 @@
         document.getElementById('input-poster').value = item.poster;
         updatePosterPreview(item.poster);
       }
+      if (item.totalEpisodes) {
+        modalTotalEpisodes = item.totalEpisodes;
+        document.getElementById('total-episodes-hint').textContent = `Всего серий: ${modalTotalEpisodes}`;
+      }
       document.getElementById('autocomplete-dropdown').classList.add('hidden');
       showToast('Название и обложка подставлены!');
     }
 
     // ==========================================
-    // 11. BACKUP EXPORT / IMPORT (JSON)
+    // 8. BACKUP EXPORT / IMPORT (JSON)
     // ==========================================
     function exportData() {
       triggerHaptic('light');
@@ -2485,7 +1966,7 @@
     }
 
     // ==========================================
-    // 12. SECURITY HELPER & BOOTSTRAP
+    // 9. SECURITY HELPER & BOOTSTRAP
     // ==========================================
     function escapeHtml(str) {
       if (!str) return '';
