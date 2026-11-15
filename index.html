@@ -1,0 +1,2426 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="referrer" content="no-referrer" />
+  <title>КиноБро — Трекер фильмов, сериалов и аниме</title>
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #18191d;
+      color: #f3f4f6;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: none;
+    }
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #18191d;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2f333d;
+      border-radius: 9999px;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.16s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-amber-500/30 selection:text-white">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 left-4 sm:left-auto z-50 flex flex-col items-end gap-2 pointer-events-none"></div>
+
+  <!-- Top Navigation & Header -->
+  <header class="sticky top-0 z-30 bg-[#18191d]/95 backdrop-blur-xl border-b border-[#2e313a]">
+    <div class="max-w-[560px] mx-auto px-3 py-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <!-- Brand Logo & Cloud Sync Indicator -->
+        <div class="flex items-center gap-2">
+          <div id="brand-icon" class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow text-zinc-950 font-black text-base transition-all duration-300">
+            🎬
+          </div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-base font-extrabold tracking-tight text-white">КиноБро</h1>
+            <span id="sync-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#22242a] text-zinc-400 border border-[#2e313a]">
+              💾 Local
+            </span>
+          </div>
+        </div>
+
+        <!-- Global Actions & Backup Controls -->
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="handleClearOrDemoClick()" id="btn-demo-toggle" title="Очистить список или загрузить примеры" class="px-2 py-1.5 rounded-xl bg-[#22242a] hover:bg-[#2b2e36] border border-[#2e313a] text-zinc-300 hover:text-white transition text-[11px] font-bold flex items-center gap-1 active:scale-95">
+            <span id="btn-demo-icon">🧹</span>
+            <span id="btn-demo-label">Очистить всё</span>
+          </button>
+
+          <!-- JSON Export -->
+          <button type="button" onclick="exportData()" title="Скачать / скопировать бэкап (JSON)" class="p-1.5 rounded-xl bg-[#22242a] hover:bg-[#2b2e36] border border-[#2e313a] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          </button>
+
+          <!-- JSON Import -->
+          <label title="Загрузить из файла (JSON)" class="cursor-pointer p-1.5 rounded-xl bg-[#22242a] hover:bg-[#2b2e36] border border-[#2e313a] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            <input type="file" accept=".json" onchange="importData(event)" class="hidden" />
+          </label>
+
+          <!-- Main Add Button -->
+          <button type="button" id="btn-add-main" onclick="openAddModal()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold text-xs shadow transition-all flex items-center gap-1 active:scale-95">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            <span>Добавить</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2x2 Category Grid -->
+      <div class="mt-2.5 grid grid-cols-2 gap-1.5">
+        <button type="button" onclick="switchTab('movie')" id="tab-movie" class="tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border">
+          <span>🎬</span>
+          <span>Фильмы</span>
+          <span id="count-movie" class="text-[10px] px-1.5 py-0.5 rounded-full bg-black/30">0</span>
+        </button>
+        <button type="button" onclick="switchTab('series')" id="tab-series" class="tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border">
+          <span>📺</span>
+          <span>Сериалы</span>
+          <span id="count-series" class="text-[10px] px-1.5 py-0.5 rounded-full bg-black/30">0</span>
+        </button>
+        <button type="button" onclick="switchTab('anime')" id="tab-anime" class="tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border">
+          <span>⛩️</span>
+          <span>Аниме</span>
+          <span id="count-anime" class="text-[10px] px-1.5 py-0.5 rounded-full bg-black/30">0</span>
+        </button>
+        <button type="button" onclick="switchTab('waiting')" id="tab-waiting" class="tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border">
+          <span>⏳</span>
+          <span>Ожидание</span>
+          <span id="count-waiting" class="text-[10px] px-1.5 py-0.5 rounded-full bg-black/30">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-[560px] w-full mx-auto px-3 py-3">
+    
+    <!-- 3-Column Stats Bar -->
+    <div class="grid grid-cols-3 gap-2 mb-3 bg-[#22242a] border border-[#2e313a] rounded-2xl p-2 text-center">
+      <div>
+        <div id="stat-total-label" class="text-[10px] text-zinc-400">В разделе</div>
+        <div id="stat-total" class="font-extrabold text-white text-sm">0</div>
+      </div>
+      <div class="border-x border-[#2e313a]">
+        <div id="stat-second-label" class="text-[10px] text-zinc-400">Просмотрено</div>
+        <div id="stat-completed" class="font-extrabold text-emerald-400 text-sm">0</div>
+      </div>
+      <div>
+        <div class="text-[10px] text-zinc-400">Средний балл</div>
+        <div id="stat-avg" class="font-extrabold text-amber-400 text-sm">—</div>
+      </div>
+    </div>
+
+    <!-- Search, Filter & Sort Controls -->
+    <div class="flex flex-col gap-2 mb-3">
+      <div class="relative flex-1">
+        <svg class="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input id="search-input" type="text" oninput="renderItems()" placeholder="Быстрый поиск по названию..." class="w-full pl-8 pr-7 py-2 rounded-xl bg-[#22242a] border border-[#2e313a] focus:border-amber-500/60 focus:outline-none text-xs text-white placeholder-zinc-500 transition" />
+        <button type="button" id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs px-1">✕</button>
+      </div>
+
+      <div class="flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar">
+        <!-- Status Pills -->
+        <div id="standard-filters" class="flex items-center gap-1">
+          <button type="button" onclick="setStatusFilter('all')" data-status="all" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border">Все</button>
+          <button type="button" onclick="setStatusFilter('watching')" data-status="watching" id="filter-watching-btn" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">Смотрю</button>
+          <button type="button" onclick="setStatusFilter('completed')" data-status="completed" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">Глянул</button>
+          <button type="button" onclick="setStatusFilter('planned')" data-status="planned" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">В планах</button>
+        </div>
+
+        <!-- Waiting Type Pills -->
+        <div id="waiting-filters" class="hidden items-center gap-1">
+          <button type="button" onclick="setWaitingTypeFilter('all')" data-wtype="all" class="wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border">Все</button>
+          <button type="button" onclick="setWaitingTypeFilter('movie')" data-wtype="movie" class="wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">🎬 Фильмы</button>
+          <button type="button" onclick="setWaitingTypeFilter('series')" data-wtype="series" class="wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">📺 Сериалы</button>
+          <button type="button" onclick="setWaitingTypeFilter('anime')" data-wtype="anime" class="wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">⛩️ Аниме</button>
+        </div>
+
+        <select id="sort-select" onchange="renderItems()" class="px-2 py-1.5 rounded-xl bg-[#22242a] border border-[#2e313a] text-[11px] font-semibold text-zinc-300 focus:outline-none">
+          <option value="recent">Новые</option>
+          <option value="rating">Высокий рейтинг</option>
+          <option value="title">По названию</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Cards Grid: Strictly 2 columns on mobile (gap 10px) -->
+    <div id="items-grid" class="grid grid-cols-2 gap-[10px]">
+      <!-- Dynamic cards injected here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden flex-col items-center justify-center text-center py-10 px-4 bg-[#22242a] border border-dashed border-[#343844] rounded-3xl">
+      <div id="empty-icon" class="text-4xl mb-2">🍿</div>
+      <h3 id="empty-title" class="text-sm font-bold text-white mb-1">Пока тут пустовато</h3>
+      <p id="empty-desc" class="text-xs text-zinc-400 max-w-xs mb-4">Добавь свой первый тайтл или загрузи стартовые примеры.</p>
+      <div class="flex flex-wrap justify-center gap-2">
+        <button type="button" onclick="openAddModal()" class="px-4 py-2 rounded-xl bg-amber-500 text-zinc-950 font-extrabold text-xs hover:bg-amber-400 transition active:scale-95">
+          + Добавить тайтл
+        </button>
+        <button type="button" onclick="restoreDemoItems()" class="px-4 py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] text-zinc-200 border border-[#3c404d] font-bold text-xs transition active:scale-95">
+          ✨ Примеры
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ADD / EDIT MODAL -->
+  <div id="item-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-[#22242a] border border-[#2e313a] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden my-auto animate-fade-in">
+      <!-- Modal Header -->
+      <div class="px-4 py-3 border-b border-[#2e313a] flex items-center justify-between bg-[#18191d]">
+        <div class="flex items-center gap-2">
+          <span id="modal-category-badge" class="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide bg-amber-500/20 text-amber-300">Фильм</span>
+          <h2 id="modal-title" class="text-sm font-extrabold text-white">Добавить тайтл</h2>
+        </div>
+        <button type="button" onclick="closeModal()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center transition">✕</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 space-y-3.5 max-h-[84vh] overflow-y-auto">
+        <input type="hidden" id="edit-item-id" />
+
+        <!-- IN-MODAL TYPE SWITCHER PILL BAR -->
+        <div class="bg-[#18191d] border border-[#2e313a] rounded-2xl p-1.5">
+          <div class="grid grid-cols-3 gap-1">
+            <button type="button" id="modal-type-movie" onclick="switchModalMediaType('movie')" class="py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1">
+              <span>🎬</span>
+              <span>Фильм</span>
+            </button>
+            <button type="button" id="modal-type-series" onclick="switchModalMediaType('series')" class="py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1">
+              <span>📺</span>
+              <span>Сериал</span>
+            </button>
+            <button type="button" id="modal-type-anime" onclick="switchModalMediaType('anime')" class="py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1">
+              <span>⛩️</span>
+              <span>Аниме</span>
+            </button>
+          </div>
+          <!-- Optional Wishlist Toggle -->
+          <div class="mt-1.5 pt-1.5 border-t border-[#262932] flex items-center justify-between px-1.5">
+            <span class="text-[11px] font-semibold text-zinc-400 flex items-center gap-1">
+              <span>⏳</span>
+              <span>В список ожидания (ещё не вышел)</span>
+            </span>
+            <button type="button" id="modal-waiting-toggle" onclick="toggleModalWaitingFlag()" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-[#22242a] border-[#2e313a] text-zinc-400">
+              Выкл
+            </button>
+          </div>
+        </div>
+
+        <!-- Title + Multi-Source Auto Cover Search -->
+        <div class="relative">
+          <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            Название (по-русски или на английском)
+          </label>
+          <div class="flex gap-1.5">
+            <div class="relative flex-1">
+              <input id="input-title" type="text" autocomplete="off" oninput="handleTitleInput(this.value)" placeholder="Например: Код гиас, Мстители, Пацаны..." class="w-full px-3 py-2 pr-8 rounded-xl bg-[#18191d] border border-[#2e313a] focus:border-amber-500/70 focus:outline-none text-white text-xs font-medium" />
+              <div id="api-spinner" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg class="animate-spin h-4 w-4 text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </div>
+            </div>
+            <button type="button" onclick="triggerPosterSearch()" class="px-3 py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] border border-[#3c404d] text-zinc-100 text-xs font-bold transition whitespace-nowrap active:scale-95">
+              🔍 Постер
+            </button>
+          </div>
+
+          <!-- Scrollable Autocomplete Results Dropdown -->
+          <div id="autocomplete-dropdown" class="hidden mt-2 bg-[#18191d] border border-[#343844] rounded-2xl overflow-hidden shadow-2xl max-h-[260px] overflow-y-auto divide-y divide-[#252831]"></div>
+        </div>
+
+        <!-- Poster Preview + Manual URL + Status Pills -->
+        <div class="flex gap-3 items-start bg-[#18191d] p-2.5 rounded-2xl border border-[#2e313a]">
+          <div class="w-16 h-24 rounded-xl overflow-hidden bg-[#22242a] flex-shrink-0 border border-[#343844] relative">
+            <img id="poster-preview" src="" referrerpolicy="no-referrer" alt="Постер" class="w-full h-full object-cover hidden" onerror="handlePosterPreviewError()" />
+            <div id="poster-placeholder" class="w-full h-full flex flex-col items-center justify-center text-center p-1 bg-gradient-to-br from-[#272a33] to-[#1b1d22] text-zinc-500">
+              <span class="text-lg">🖼️</span>
+              <span class="text-[9px] leading-tight">Нет фото</span>
+            </div>
+          </div>
+          <div class="flex-1 w-full space-y-2">
+            <div>
+              <label class="block text-[10px] font-semibold text-zinc-400 mb-1">Ссылка на обложку</label>
+              <input id="input-poster" type="url" oninput="updatePosterPreview(this.value)" placeholder="https://..." class="w-full px-2.5 py-1.5 rounded-xl bg-[#22242a] border border-[#2e313a] focus:border-amber-500/70 focus:outline-none text-xs text-zinc-300" />
+            </div>
+            <div id="modal-status-wrapper" class="flex flex-wrap items-center gap-1">
+              <span class="text-[10px] text-zinc-500 mr-1">Статус:</span>
+              <div class="flex flex-wrap gap-1" id="modal-status-group"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WAITING DETAILS SECTION -->
+        <div id="waiting-details-section" class="hidden bg-[#18191d] border border-rose-500/30 rounded-2xl p-3 space-y-2.5">
+          <label class="block text-[10px] font-semibold uppercase tracking-wider text-rose-300">
+            ⏳ Детали выхода в «Ожидание»
+          </label>
+          <div class="grid grid-cols-2 gap-2">
+            <div id="waiting-season-box">
+              <span class="block text-[10px] text-zinc-400 mb-1">Какой сезон ждём</span>
+              <div class="flex items-center bg-[#22242a] border border-[#2e313a] rounded-xl overflow-hidden">
+                <button type="button" onclick="stepWaitingSeason(-1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
+                <input id="input-waiting-season" type="number" min="1" value="2" class="w-full text-center bg-transparent text-white font-extrabold text-xs focus:outline-none" />
+                <button type="button" onclick="stepWaitingSeason(1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
+              </div>
+            </div>
+            <div id="waiting-date-box">
+              <span class="block text-[10px] text-zinc-400 mb-1">Когда выходит</span>
+              <input id="input-waiting-date" type="text" placeholder="Зима 2027, Жду анонс..." class="w-full px-2.5 py-1.5 rounded-xl bg-[#22242a] border border-[#2e313a] focus:border-rose-400 focus:outline-none text-xs text-white placeholder-zinc-600" />
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-1">
+            <button type="button" onclick="setWaitingDatePreset('Зима 2027')" class="px-2 py-1 rounded-lg bg-[#22242a] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Зима 2027</button>
+            <button type="button" onclick="setWaitingDatePreset('Весна 2027')" class="px-2 py-1 rounded-lg bg-[#22242a] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Весна 2027</button>
+            <button type="button" onclick="setWaitingDatePreset('Осень 2027')" class="px-2 py-1 rounded-lg bg-[#22242a] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Осень 2027</button>
+            <button type="button" onclick="setWaitingDatePreset('Жду анонс')" class="px-2 py-1 rounded-lg bg-[#22242a] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Жду анонс</button>
+          </div>
+        </div>
+
+        <!-- MOVIE RATING SECTION (1-10 including 8.5, 9.5) -->
+        <div id="movie-rating-section" class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Оценка фильму (1–10)</label>
+            <span id="movie-rating-display" class="text-xs font-extrabold text-amber-400">Без оценки</span>
+          </div>
+          <div id="movie-rating-pills" class="grid grid-cols-6 gap-1"></div>
+        </div>
+
+        <!-- SERIES & ANIME PROGRESS SECTION -->
+        <div id="series-progress-section" class="hidden bg-[#18191d] border border-[#2e313a] rounded-2xl p-3">
+          <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+            📍 Где остановился сейчас
+          </label>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="block text-[10px] text-zinc-400 mb-1">Текущий сезон</span>
+              <div class="flex items-center bg-[#22242a] border border-[#2e313a] rounded-xl overflow-hidden">
+                <button type="button" onclick="stepProgress('season', -1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
+                <input id="input-cur-season" type="number" min="1" value="1" class="w-full text-center bg-transparent text-white font-bold text-xs focus:outline-none" />
+                <button type="button" onclick="stepProgress('season', 1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
+              </div>
+            </div>
+            <div>
+              <span class="block text-[10px] text-zinc-400 mb-1">Текущая серия</span>
+              <div class="flex items-center bg-[#22242a] border border-[#2e313a] rounded-xl overflow-hidden">
+                <button type="button" onclick="stepProgress('episode', -1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
+                <input id="input-cur-episode" type="number" min="0" value="1" class="w-full text-center bg-transparent text-white font-bold text-xs focus:outline-none" />
+                <button type="button" onclick="stepProgress('episode', 1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PER-SEASON RATINGS MANAGER -->
+        <div id="seasons-ratings-section" class="hidden bg-[#18191d] border border-[#2e313a] rounded-2xl p-3 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+              ⭐ Оценки по сезонам (1–10)
+            </label>
+            <button type="button" onclick="addSeasonRow()" class="px-2 py-1 rounded-lg bg-[#2b2e36] hover:bg-[#353944] text-zinc-200 border border-[#3c404d] text-[11px] font-bold transition">
+              + Сезон
+            </button>
+          </div>
+          <div id="seasons-list-editor" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+        </div>
+
+        <!-- Personal Note -->
+        <div>
+          <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">Заметка (необязательно)</label>
+          <input id="input-note" type="text" placeholder="Короткий коммент для себя..." class="w-full px-3 py-2 rounded-xl bg-[#18191d] border border-[#2e313a] focus:border-amber-500/70 focus:outline-none text-xs text-zinc-200 placeholder-zinc-600" />
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-4 py-3 bg-[#18191d] border-t border-[#2e313a] flex items-center justify-between gap-2">
+        <button id="btn-delete-modal" type="button" onclick="deleteCurrentEditingItem()" class="hidden px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 text-xs font-bold transition">
+          Удалить
+        </button>
+        <div class="flex items-center gap-2 ml-auto">
+          <button type="button" onclick="closeModal()" class="px-3 py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] text-zinc-300 text-xs font-semibold transition">
+            Отмена
+          </button>
+          <button type="button" onclick="saveItem()" id="btn-save-modal" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-extrabold shadow transition active:scale-95">
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM CLEAR ALL MODAL -->
+  <div id="confirm-clear-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="bg-[#22242a] border border-[#2e313a] rounded-3xl w-full max-w-xs p-5 shadow-2xl text-center animate-fade-in">
+      <div class="text-3xl mb-2">🧹</div>
+      <h3 class="text-sm font-extrabold text-white mb-1">Очистить всю коллекцию?</h3>
+      <p class="text-xs text-zinc-400 mb-4">Все сохранённые фильмы, сериалы и аниме будут удалены из локального кэша и облака.</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" onclick="closeConfirmClearModal()" class="py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] text-zinc-300 text-xs font-bold">Отмена</button>
+        <button type="button" onclick="executeClearAll()" class="py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-xs font-extrabold">Очистить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK SEASON RATING MODAL -->
+  <div id="season-quick-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm">
+    <div class="bg-[#22242a] border border-[#2e313a] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+      <div class="px-4 py-3 border-b border-[#2e313a] flex items-center justify-between bg-[#18191d]">
+        <h3 id="sqm-title" class="font-extrabold text-white text-sm truncate pr-3">Оценки сезонов</h3>
+        <button type="button" onclick="closeSeasonQuickModal()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+      <div class="p-3.5 space-y-2 max-h-[68vh] overflow-y-auto">
+        <div id="sqm-seasons-container" class="space-y-2"></div>
+        <button type="button" onclick="sqmAddSeason()" class="w-full py-2 rounded-xl border border-dashed border-[#3c404d] hover:border-zinc-400 text-zinc-300 text-xs font-bold transition">
+          + Добавить ещё сезон
+        </button>
+      </div>
+      <div class="px-4 py-3 bg-[#18191d] border-t border-[#2e313a] flex justify-end gap-2">
+        <button type="button" onclick="closeSeasonQuickModal()" class="px-3 py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] text-zinc-300 text-xs font-semibold">Закрыть</button>
+        <button type="button" onclick="saveSeasonQuickModal()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-extrabold">Готово</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEND TO WAITING MODAL -->
+  <div id="send-waiting-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm">
+    <div class="bg-[#22242a] border border-[#2e313a] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+      <div class="px-4 py-3 border-b border-[#2e313a] flex items-center justify-between bg-[#18191d]">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="text-base">⏳</span>
+          <h3 id="swm-title" class="font-extrabold text-white text-sm truncate">В ожидание продолжения</h3>
+        </div>
+        <button type="button" onclick="closeSendWaitingModal()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+      <div class="p-4 space-y-3">
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          Тайтл переедет во вкладку <span class="text-rose-400 font-bold">«Ожидание»</span> со всеми прошлыми оценками и постером.
+        </p>
+
+        <div>
+          <label class="block text-xs font-semibold text-zinc-300 mb-1">Какой сезон ждём?</label>
+          <div class="flex items-center bg-[#18191d] border border-[#2e313a] rounded-xl overflow-hidden">
+            <button type="button" onclick="stepSwmSeason(-1)" class="px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
+            <input id="swm-season-input" type="number" min="1" value="2" class="w-full text-center bg-transparent text-white font-extrabold text-sm focus:outline-none" />
+            <button type="button" onclick="stepSwmSeason(1)" class="px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-zinc-300 mb-1">Когда выходит</label>
+          <input id="swm-date-input" type="text" placeholder="Зима 2027, Осень 2026, Жду анонс..." class="w-full px-3 py-2 rounded-xl bg-[#18191d] border border-[#2e313a] focus:border-rose-400 focus:outline-none text-xs text-white placeholder-zinc-600" />
+          <div class="flex flex-wrap gap-1 mt-2">
+            <button type="button" onclick="document.getElementById('swm-date-input').value='Зима 2027'" class="px-2 py-1 rounded-lg bg-[#18191d] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Зима 2027</button>
+            <button type="button" onclick="document.getElementById('swm-date-input').value='Весна 2027'" class="px-2 py-1 rounded-lg bg-[#18191d] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Весна 2027</button>
+            <button type="button" onclick="document.getElementById('swm-date-input').value='Осень 2027'" class="px-2 py-1 rounded-lg bg-[#18191d] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Осень 2027</button>
+            <button type="button" onclick="document.getElementById('swm-date-input').value='Жду анонс'" class="px-2 py-1 rounded-lg bg-[#18191d] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Жду анонс</button>
+          </div>
+        </div>
+      </div>
+      <div class="px-4 py-3 bg-[#18191d] border-t border-[#2e313a] flex justify-end gap-2">
+        <button type="button" onclick="closeSendWaitingModal()" class="px-3 py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] text-zinc-300 text-xs font-semibold">Отмена</button>
+        <button type="button" onclick="confirmSendToWaiting()" class="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-xs font-extrabold">
+          ⏳ В ожидание
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. TELEGRAM MINI APP SDK INTEGRATION
+    // ==========================================
+    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+    const hasTgCloudStorage = Boolean(
+      tg &&
+      tg.CloudStorage &&
+      typeof tg.isVersionAtLeast === 'function' &&
+      tg.isVersionAtLeast('6.9')
+    );
+
+    function initTelegramWebApp() {
+      if (!tg) return;
+      try {
+        tg.ready();
+        tg.expand();
+        if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#18191d');
+        if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#18191d');
+        if (tg.BackButton) {
+          tg.BackButton.onClick(() => {
+            if (!document.getElementById('item-modal').classList.contains('hidden')) closeModal();
+            else if (!document.getElementById('season-quick-modal').classList.contains('hidden')) closeSeasonQuickModal();
+            else if (!document.getElementById('send-waiting-modal').classList.contains('hidden')) closeSendWaitingModal();
+            else if (!document.getElementById('confirm-clear-modal').classList.contains('hidden')) closeConfirmClearModal();
+          });
+        }
+      } catch (e) {
+        console.warn('TG SDK note:', e);
+      }
+      updateSyncBadge();
+    }
+
+    function updateTgBackButton() {
+      if (!tg || !tg.BackButton) return;
+      const anyModalOpen =
+        !document.getElementById('item-modal').classList.contains('hidden') ||
+        !document.getElementById('season-quick-modal').classList.contains('hidden') ||
+        !document.getElementById('send-waiting-modal').classList.contains('hidden') ||
+        !document.getElementById('confirm-clear-modal').classList.contains('hidden');
+      try {
+        if (anyModalOpen) tg.BackButton.show();
+        else tg.BackButton.hide();
+      } catch (e) {}
+    }
+
+    function triggerHaptic(style = 'light') {
+      try {
+        if (tg && tg.HapticFeedback) {
+          tg.HapticFeedback.impactOccurred(style);
+        }
+      } catch (e) {}
+    }
+
+    function updateSyncBadge(customText = null) {
+      const badge = document.getElementById('sync-badge');
+      if (!badge) return;
+      if (customText) {
+        badge.textContent = customText;
+        return;
+      }
+      if (hasTgCloudStorage) {
+        badge.textContent = '☁️ TG Cloud';
+        badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30';
+      } else {
+        badge.textContent = '💾 Local';
+        badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#22242a] text-zinc-400 border border-[#2e313a]';
+      }
+    }
+
+    // ==========================================
+    // 2. STATE & 4 DEFAULT DEMO CARDS
+    // ==========================================
+    const STORAGE_KEY = 'kinobro_v3_gray_demo';
+    const CLOUD_META_KEY = 'kinobro_v3_gray_demo_meta';
+    const CLOUD_CHUNK_PREFIX = 'kinobro_v3_gray_demo_c_';
+    const CLOUD_CHUNK_SIZE = 3800;
+
+    let mediaItems = [];
+    let currentTab = 'movie';
+    let currentStatusFilter = 'all';
+    let currentWaitingTypeFilter = 'all';
+
+    // Modal state
+    let modalMediaType = 'movie';
+    let modalIsWaiting = false;
+    let modalMovieRating = 0;
+    let modalSeasons = [];
+    let modalSelectedStatus = 'watching';
+    let searchDebounceTimer = null;
+    let activeSearchSessionId = 0;
+
+    // Quick modals state
+    let sqmItemId = null;
+    let sqmTempSeasons = [];
+    let swmItemId = null;
+
+    const CATEGORY_META = {
+      movie: {
+        singular: 'Фильм',
+        plural: 'Фильмы',
+        icon: '🎬',
+        accentBtn: 'bg-amber-500 hover:bg-amber-400 text-zinc-950',
+        badgeClass: 'bg-amber-500/20 text-amber-300',
+        tabActive: 'bg-amber-500/15 border-amber-500/50 text-amber-300',
+        brandGrad: 'from-amber-500 to-orange-600'
+      },
+      series: {
+        singular: 'Сериал',
+        plural: 'Сериалы',
+        icon: '📺',
+        accentBtn: 'bg-blue-500 hover:bg-blue-400 text-white',
+        badgeClass: 'bg-blue-500/20 text-blue-300',
+        tabActive: 'bg-blue-500/15 border-blue-500/50 text-blue-300',
+        brandGrad: 'from-blue-500 to-indigo-600'
+      },
+      anime: {
+        singular: 'Аниме',
+        plural: 'Аниме',
+        icon: '⛩️',
+        accentBtn: 'bg-emerald-500 hover:bg-emerald-400 text-zinc-950',
+        badgeClass: 'bg-emerald-500/20 text-emerald-300',
+        tabActive: 'bg-emerald-500/15 border-emerald-500/50 text-emerald-300',
+        brandGrad: 'from-emerald-500 to-teal-600'
+      },
+      waiting: {
+        singular: 'Ожидание',
+        plural: 'Ожидание',
+        icon: '⏳',
+        accentBtn: 'bg-rose-500 hover:bg-rose-400 text-white',
+        badgeClass: 'bg-rose-500/20 text-rose-300',
+        tabActive: 'bg-rose-500/15 border-rose-500/50 text-rose-300',
+        brandGrad: 'from-rose-500 to-pink-600'
+      }
+    };
+
+    const STATUS_LABELS = {
+      watching: { label: 'Смотрю', class: 'bg-blue-500/90 text-white border-blue-400/40' },
+      completed: { label: 'Глянул', class: 'bg-emerald-500/90 text-zinc-950 border-emerald-300/40' },
+      planned: { label: 'В планах', class: 'bg-zinc-900/90 text-zinc-200 border-zinc-700/60' }
+    };
+
+    function getSvgFallbackDataUri(type = 'movie') {
+      const emojiMap = { movie: '🎬', series: '📺', anime: '⛩️', waiting: '⏳' };
+      const emoji = emojiMap[type] || '🎬';
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a2d36"/><stop offset="100%" stop-color="#18191d"/></linearGradient></defs><rect width="300" height="450" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="64">${emoji}</text></svg>`;
+      return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+    }
+
+    function getDefaultDemoItems() {
+      const now = Date.now();
+      return [
+        {
+          id: 'demo_m1',
+          type: 'movie',
+          title: 'Интерстеллар (Interstellar)',
+          poster: 'https://is1-ssl.mzstatic.com/image/thumb/Video125/v4/67/43/7d/67437d57-0a68-66a3-f984-26e78e1b66c5/pr_source.lsr/600x900bb.jpg',
+          status: 'completed',
+          rating: 10,
+          note: 'Шедевр Нолана, музыка Циммера до мурашек',
+          updatedAt: now - 1000
+        },
+        {
+          id: 'demo_s1',
+          type: 'series',
+          title: 'Во все тяжкие (Breaking Bad)',
+          poster: 'https://static.tvmaze.com/uploads/images/medium_portrait/501/1253519.jpg',
+          status: 'completed',
+          currentSeason: 5,
+          currentEpisode: 16,
+          seasons: [
+            { season: 1, rating: 9 },
+            { season: 2, rating: 9.5 },
+            { season: 3, rating: 9.5 },
+            { season: 4, rating: 10 },
+            { season: 5, rating: 10 }
+          ],
+          note: 'Эталон сериалов от начала до конца',
+          updatedAt: now - 2000
+        },
+        {
+          id: 'demo_a1',
+          type: 'anime',
+          title: 'Код Гиас: Восставший Лелуш (Code Geass)',
+          poster: 'https://shikimori.one/system/animes/original/1575.jpg',
+          status: 'watching',
+          currentSeason: 2,
+          currentEpisode: 25,
+          seasons: [
+            { season: 1, rating: 9.5 },
+            { season: 2, rating: 10 }
+          ],
+          note: 'Лелуш Британский — гений тактики',
+          updatedAt: now - 3000
+        },
+        {
+          id: 'demo_w1',
+          type: 'waiting',
+          waitingSubtype: 'series',
+          title: 'Пацаны — Финал (The Boys)',
+          poster: 'https://static.tvmaze.com/uploads/images/medium_portrait/516/1291562.jpg',
+          status: 'planned',
+          expectedSeason: 5,
+          releaseDate: 'Лето 2026',
+          currentSeason: 5,
+          currentEpisode: 1,
+          seasons: [
+            { season: 1, rating: 9 },
+            { season: 2, rating: 8.5 },
+            { season: 3, rating: 9 },
+            { season: 4, rating: 8 }
+          ],
+          note: 'Финальный сезон, не пропустить!',
+          updatedAt: now - 4000
+        }
+      ];
+    }
+
+    // ==========================================
+    // 3. HYBRID STORAGE (LOCALSTORAGE + TG CLOUD)
+    // ==========================================
+    function saveToLocal(items) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      } catch (e) {
+        console.warn('localStorage write error:', e);
+      }
+    }
+
+    function loadFromLocal() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw === null) return null;
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveToTgCloud(items) {
+      if (!hasTgCloudStorage) return;
+      try {
+        const jsonStr = JSON.stringify(items);
+        if (jsonStr.length <= CLOUD_CHUNK_SIZE) {
+          updateSyncBadge('☁️ Синхр...');
+          tg.CloudStorage.setItem(STORAGE_KEY, jsonStr, (err) => {
+            if (err) {
+              updateSyncBadge('💾 Local');
+              return;
+            }
+            tg.CloudStorage.setItem(CLOUD_META_KEY, '0', () => {
+              updateSyncBadge('☁️ TG Cloud');
+            });
+          });
+        } else {
+          const chunks = [];
+          for (let i = 0; i < jsonStr.length; i += CLOUD_CHUNK_SIZE) {
+            chunks.push(jsonStr.slice(i, i + CLOUD_CHUNK_SIZE));
+          }
+          updateSyncBadge('☁️ Синхр...');
+          tg.CloudStorage.setItem(CLOUD_META_KEY, String(chunks.length), (err) => {
+            if (err) {
+              updateSyncBadge('💾 Local');
+              return;
+            }
+            let done = 0;
+            chunks.forEach((chunk, idx) => {
+              tg.CloudStorage.setItem(CLOUD_CHUNK_PREFIX + idx, chunk, () => {
+                done++;
+                if (done === chunks.length) {
+                  updateSyncBadge('☁️ TG Cloud');
+                }
+              });
+            });
+          });
+        }
+      } catch (e) {
+        updateSyncBadge('💾 Local');
+      }
+    }
+
+    function loadFromTgCloud(callback) {
+      if (!hasTgCloudStorage) {
+        callback(null);
+        return;
+      }
+      try {
+        tg.CloudStorage.getItems([STORAGE_KEY, CLOUD_META_KEY, 'kb_meta'], (err, vals) => {
+          if (err || !vals) {
+            callback(null);
+            return;
+          }
+          const chunkCount = parseInt(vals[CLOUD_META_KEY] || '0', 10);
+          if (chunkCount > 0) {
+            const keys = [];
+            for (let i = 0; i < chunkCount; i++) keys.push(CLOUD_CHUNK_PREFIX + i);
+            tg.CloudStorage.getItems(keys, (err2, cVals) => {
+              if (err2 || !cVals) {
+                callback(null);
+                return;
+              }
+              let full = '';
+              for (let i = 0; i < chunkCount; i++) full += (cVals[CLOUD_CHUNK_PREFIX + i] || '');
+              try {
+                const parsed = JSON.parse(full);
+                callback(Array.isArray(parsed) ? parsed : null);
+              } catch (e) {
+                callback(null);
+              }
+            });
+            return;
+          }
+          if (vals[STORAGE_KEY]) {
+            try {
+              const parsed = JSON.parse(vals[STORAGE_KEY]);
+              callback(Array.isArray(parsed) ? parsed : null);
+              return;
+            } catch (e) {}
+          }
+          callback(null);
+        });
+      } catch (e) {
+        callback(null);
+      }
+    }
+
+    function saveToStorage() {
+      saveToLocal(mediaItems);
+      saveToTgCloud(mediaItems);
+      updateDemoToggleButton();
+    }
+
+    function loadItemsAsync() {
+      const localItems = loadFromLocal();
+      if (localItems !== null) {
+        mediaItems = localItems;
+      } else {
+        mediaItems = getDefaultDemoItems();
+        saveToLocal(mediaItems);
+      }
+      switchTab('movie');
+
+      if (hasTgCloudStorage) {
+        loadFromTgCloud((cloudItems) => {
+          if (cloudItems !== null && cloudItems.length > 0) {
+            mediaItems = cloudItems;
+            saveToLocal(mediaItems);
+            renderItems();
+            updateDemoToggleButton();
+          } else if (mediaItems.length > 0) {
+            saveToTgCloud(mediaItems);
+          }
+        });
+      }
+      updateDemoToggleButton();
+    }
+
+    function updateDemoToggleButton() {
+      const btnLabel = document.getElementById('btn-demo-label');
+      const btnIcon = document.getElementById('btn-demo-icon');
+      if (!btnLabel || !btnIcon) return;
+      if (mediaItems.length === 0) {
+        btnIcon.textContent = '✨';
+        btnLabel.textContent = 'Примеры';
+      } else {
+        btnIcon.textContent = '🧹';
+        btnLabel.textContent = 'Очистить всё';
+      }
+    }
+
+    function handleClearOrDemoClick() {
+      triggerHaptic('light');
+      if (mediaItems.length === 0) {
+        restoreDemoItems();
+      } else {
+        const modal = document.getElementById('confirm-clear-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        updateTgBackButton();
+      }
+    }
+
+    function closeConfirmClearModal() {
+      const modal = document.getElementById('confirm-clear-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      updateTgBackButton();
+    }
+
+    function executeClearAll() {
+      triggerHaptic('medium');
+      mediaItems = [];
+      saveToStorage();
+      closeConfirmClearModal();
+      renderItems();
+      showToast('Коллекция очищена!');
+    }
+
+    function restoreDemoItems() {
+      triggerHaptic('light');
+      mediaItems = getDefaultDemoItems();
+      saveToStorage();
+      renderItems();
+      showToast('Загружены 4 стартовых примера!');
+    }
+
+    // ==========================================
+    // 4. RATINGS & TOASTS
+    // ==========================================
+    function getEffectiveRating(item) {
+      if (item.type === 'movie' || item.waitingSubtype === 'movie') {
+        return Number(item.rating) || 0;
+      }
+      if (!Array.isArray(item.seasons) || item.seasons.length === 0) return 0;
+      const rated = item.seasons.filter(s => Number(s.rating) > 0);
+      if (rated.length === 0) return 0;
+      const sum = rated.reduce((acc, s) => acc + Number(s.rating), 0);
+      return Number((sum / rated.length).toFixed(1));
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const el = document.createElement('div');
+      const colors = {
+        success: 'bg-[#22242a] border-emerald-500/40 text-emerald-300',
+        info: 'bg-[#22242a] border-blue-500/40 text-blue-300',
+        error: 'bg-[#22242a] border-rose-500/40 text-rose-300'
+      };
+      el.className = `px-3.5 py-2 rounded-2xl border shadow-xl text-xs font-bold backdrop-blur-md animate-fade-in ${colors[type] || colors.success}`;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => el.remove(), 220);
+      }, 2400);
+    }
+
+    // ==========================================
+    // 5. NAVIGATION, TABS & FILTERS
+    // ==========================================
+    function switchTab(tab) {
+      triggerHaptic('light');
+      currentTab = tab;
+      currentStatusFilter = 'all';
+      currentWaitingTypeFilter = 'all';
+
+      const meta = CATEGORY_META[tab];
+      const brandIcon = document.getElementById('brand-icon');
+      if (brandIcon) {
+        brandIcon.textContent = meta.icon;
+        brandIcon.className = `w-8 h-8 rounded-xl bg-gradient-to-br ${meta.brandGrad} flex items-center justify-center shadow text-white font-black text-base transition-all duration-300`;
+      }
+
+      const addBtn = document.getElementById('btn-add-main');
+      if (addBtn) {
+        addBtn.className = `px-3 py-1.5 rounded-xl ${meta.accentBtn} font-extrabold text-xs shadow transition-all flex items-center gap-1 active:scale-95`;
+      }
+
+      ['movie', 'series', 'anime', 'waiting'].forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        if (!el) return;
+        if (t === tab) {
+          el.className = `tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border ${CATEGORY_META[t].tabActive}`;
+        } else {
+          el.className = 'tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border bg-[#22242a] border-[#2e313a] text-zinc-400 hover:text-zinc-200';
+        }
+      });
+
+      const stdFilters = document.getElementById('standard-filters');
+      const waitFilters = document.getElementById('waiting-filters');
+      const watchingBtn = document.getElementById('filter-watching-btn');
+
+      if (tab === 'waiting') {
+        stdFilters.classList.add('hidden');
+        waitFilters.classList.remove('hidden');
+        waitFilters.classList.add('flex');
+      } else {
+        waitFilters.classList.add('hidden');
+        waitFilters.classList.remove('flex');
+        stdFilters.classList.remove('hidden');
+        if (watchingBtn) {
+          watchingBtn.style.display = tab === 'movie' ? 'none' : 'inline-block';
+        }
+      }
+
+      updateFilterPillsUI();
+      renderItems();
+    }
+
+    function setStatusFilter(status) {
+      triggerHaptic('light');
+      currentStatusFilter = status;
+      updateFilterPillsUI();
+      renderItems();
+    }
+
+    function setWaitingTypeFilter(wtype) {
+      triggerHaptic('light');
+      currentWaitingTypeFilter = wtype;
+      updateFilterPillsUI();
+      renderItems();
+    }
+
+    function updateFilterPillsUI() {
+      document.querySelectorAll('.status-pill').forEach(btn => {
+        const st = btn.getAttribute('data-status');
+        if (st === currentStatusFilter) {
+          btn.className = 'status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border bg-zinc-200 text-zinc-950 border-white';
+        } else {
+          btn.className = 'status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#22242a] border-[#2e313a] text-zinc-400 hover:text-white';
+        }
+      });
+
+      document.querySelectorAll('.wtype-pill').forEach(btn => {
+        const wt = btn.getAttribute('data-wtype');
+        if (wt === currentWaitingTypeFilter) {
+          btn.className = 'wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border bg-rose-500/20 text-rose-300 border-rose-500/50';
+        } else {
+          btn.className = 'wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#22242a] border-[#2e313a] text-zinc-400 hover:text-white';
+        }
+      });
+    }
+
+    function clearSearch() {
+      const inp = document.getElementById('search-input');
+      if (inp) inp.value = '';
+      renderItems();
+    }
+
+    // ==========================================
+    // 6. CARDS & STATS RENDERING
+    // ==========================================
+    function renderItems() {
+      const grid = document.getElementById('items-grid');
+      const emptyState = document.getElementById('empty-state');
+      const searchInput = document.getElementById('search-input');
+      const clearBtn = document.getElementById('clear-search-btn');
+      const sortVal = document.getElementById('sort-select')?.value || 'recent';
+
+      const query = (searchInput?.value || '').trim().toLowerCase();
+      if (clearBtn) {
+        if (query.length > 0) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+
+      ['movie', 'series', 'anime', 'waiting'].forEach(t => {
+        const cEl = document.getElementById(`count-${t}`);
+        if (cEl) cEl.textContent = mediaItems.filter(i => i.type === t).length;
+      });
+
+      const tabItems = mediaItems.filter(i => i.type === currentTab);
+
+      const statTotalLabel = document.getElementById('stat-total-label');
+      const statTotal = document.getElementById('stat-total');
+      const statSecondLabel = document.getElementById('stat-second-label');
+      const statCompleted = document.getElementById('stat-completed');
+      const statAvg = document.getElementById('stat-avg');
+
+      if (currentTab === 'waiting') {
+        statTotalLabel.textContent = 'В ожидании';
+        statTotal.textContent = tabItems.length;
+        const sCount = tabItems.filter(i => i.waitingSubtype !== 'anime').length;
+        const aCount = tabItems.filter(i => i.waitingSubtype === 'anime').length;
+        statSecondLabel.textContent = 'Сер. / Аниме';
+        statCompleted.textContent = `${sCount} / ${aCount}`;
+      } else {
+        statTotalLabel.textContent = 'В разделе';
+        statTotal.textContent = tabItems.length;
+        statSecondLabel.textContent = 'Просмотрено';
+        statCompleted.textContent = tabItems.filter(i => i.status === 'completed').length;
+      }
+
+      const ratedItems = tabItems.map(getEffectiveRating).filter(r => r > 0);
+      if (ratedItems.length > 0) {
+        const avg = (ratedItems.reduce((a, b) => a + b, 0) / ratedItems.length).toFixed(1);
+        statAvg.textContent = `${avg} / 10`;
+      } else {
+        statAvg.textContent = '—';
+      }
+
+      let filtered = tabItems.filter(item => {
+        if (query && !item.title.toLowerCase().includes(query) && !(item.note || '').toLowerCase().includes(query)) {
+          return false;
+        }
+        if (currentTab === 'waiting') {
+          if (currentWaitingTypeFilter !== 'all') {
+            const sub = item.waitingSubtype || 'series';
+            if (sub !== currentWaitingTypeFilter) return false;
+          }
+        } else {
+          if (currentStatusFilter !== 'all' && item.status !== currentStatusFilter) {
+            return false;
+          }
+        }
+        return true;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortVal === 'rating') return getEffectiveRating(b) - getEffectiveRating(a);
+        if (sortVal === 'title') return a.title.localeCompare(b.title, 'ru');
+        return (b.updatedAt || 0) - (a.updatedAt || 0);
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+        const meta = CATEGORY_META[currentTab];
+        document.getElementById('empty-icon').textContent = meta.icon;
+        document.getElementById('empty-title').textContent = query ? 'Ничего не найдено' : `Раздел «${meta.plural}» пуст`;
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+      grid.innerHTML = filtered.map(item => renderCardHTML(item)).join('');
+    }
+
+    function renderCardHTML(item) {
+      const rating = getEffectiveRating(item);
+      const effectiveCategory = item.type === 'waiting' ? (item.waitingSubtype || 'series') : item.type;
+      const svgFallback = getSvgFallbackDataUri(effectiveCategory);
+      const posterSrc = item.poster && item.poster.trim() ? item.poster.trim() : svgFallback;
+      const ratingBadge = rating > 0
+        ? `<span class="px-1.5 py-0.5 rounded-lg bg-black/80 backdrop-blur-md border border-amber-400/40 text-amber-300 font-extrabold text-[10px]">★ ${rating}</span>`
+        : '';
+
+      if (item.type === 'waiting') {
+        const subMap = { movie: '🎬 Фильм', series: '📺 Сериал', anime: '⛩️ Аниме' };
+        const sub = subMap[item.waitingSubtype] || '📺 Сериал';
+        const expSeason = item.expectedSeason || 2;
+        const relDate = item.releaseDate || 'Жду анонс';
+        const isMovieWait = item.waitingSubtype === 'movie';
+
+        const seasonPills = !isMovieWait && Array.isArray(item.seasons) && item.seasons.length > 0
+          ? item.seasons.slice(-3).map(s => `<span class="px-1.5 py-0.5 rounded bg-[#18191d] text-[9px] font-bold text-zinc-300 border border-[#2e313a]">С${s.season}:${s.rating || '—'}</span>`).join('')
+          : '';
+
+        return `
+          <div class="bg-[#22242a] border border-[#2e313a] hover:border-rose-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
+            <div>
+              <div class="relative aspect-[2/3] w-full bg-[#18191d] overflow-hidden">
+                <img src="${escapeHtml(posterSrc)}" referrerpolicy="no-referrer" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.onerror=null;this.src='${svgFallback}'" />
+                <div class="absolute inset-0 bg-gradient-to-t from-[#22242a] via-transparent to-black/45"></div>
+                <div class="absolute top-2 left-2 right-2 flex items-center justify-between gap-1">
+                  <span class="px-1.5 py-0.5 rounded-lg bg-black/80 backdrop-blur-md border border-white/15 text-zinc-200 font-bold text-[10px]">${sub}</span>
+                  ${ratingBadge}
+                </div>
+                <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="absolute bottom-2 right-2 w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
+                  ✎
+                </button>
+              </div>
+
+              <div class="p-2.5 pb-1.5">
+                <h3 class="font-extrabold text-white text-xs leading-snug line-clamp-2 min-h-[2rem]" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</h3>
+                ${item.note ? `<p class="text-[10px] text-zinc-400 italic truncate mt-0.5">«${escapeHtml(item.note)}»</p>` : ''}
+                
+                <div class="mt-2 bg-[#18191d] border border-rose-500/25 rounded-xl px-2 py-1.5 flex items-center justify-between gap-1">
+                  <span class="text-[10px] font-extrabold text-rose-300">${isMovieWait ? 'Премьера' : 'Сезон ' + expSeason}</span>
+                  <span class="text-[10px] font-semibold text-zinc-300 truncate">${escapeHtml(relDate)}</span>
+                </div>
+
+                ${seasonPills ? `<div class="mt-1.5 flex flex-wrap gap-1">${seasonPills}</div>` : ''}
+              </div>
+            </div>
+
+            <div class="p-2.5 pt-1.5">
+              <button type="button" onclick="releaseWaitingItem('${item.id}')" class="w-full py-1.5 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500 text-emerald-300 hover:text-zinc-950 border border-emerald-500/40 font-extrabold text-[11px] transition flex items-center justify-center gap-1 active:scale-95">
+                <span>🚀</span>
+                <span>Вышел! Смотреть</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      const stInfo = STATUS_LABELS[item.status] || STATUS_LABELS.planned;
+
+      if (item.type === 'movie') {
+        const nextStatus = item.status === 'completed' ? 'planned' : 'completed';
+        const toggleLabel = item.status === 'completed' ? '↩ В планы' : '✓ Глянул';
+
+        return `
+          <div class="bg-[#22242a] border border-[#2e313a] hover:border-amber-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
+            <div>
+              <div class="relative aspect-[2/3] w-full bg-[#18191d] overflow-hidden">
+                <img src="${escapeHtml(posterSrc)}" referrerpolicy="no-referrer" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.onerror=null;this.src='${svgFallback}'" />
+                <div class="absolute inset-0 bg-gradient-to-t from-[#22242a] via-transparent to-black/45"></div>
+                <div class="absolute top-2 left-2 right-2 flex items-center justify-between gap-1">
+                  <span class="px-1.5 py-0.5 rounded-lg border backdrop-blur-md font-bold text-[10px] ${stInfo.class}">${stInfo.label}</span>
+                  ${ratingBadge}
+                </div>
+                <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="absolute bottom-2 right-2 w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
+                  ✎
+                </button>
+              </div>
+
+              <div class="p-2.5 pb-1.5">
+                <h3 class="font-extrabold text-white text-xs leading-snug line-clamp-2 min-h-[2rem]" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</h3>
+                ${item.note ? `<p class="text-[10px] text-zinc-400 italic line-clamp-2 mt-1">«${escapeHtml(item.note)}»</p>` : '<p class="text-[10px] text-zinc-600 mt-1">Без заметки</p>'}
+              </div>
+            </div>
+
+            <div class="p-2.5 pt-1.5 grid grid-cols-2 gap-1.5">
+              <button type="button" onclick="quickToggleMovieStatus('${item.id}', '${nextStatus}')" class="py-1.5 px-2 rounded-xl bg-[#18191d] hover:bg-[#2b2e36] border border-[#2e313a] text-[10px] font-bold text-zinc-200 transition active:scale-95">
+                ${toggleLabel}
+              </button>
+              <button type="button" onclick="openEditModal('${item.id}')" class="py-1.5 px-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-[10px] font-extrabold text-amber-300 transition active:scale-95">
+                ⭐ Оценить
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // SERIES OR ANIME CARD
+      const curS = item.currentSeason || 1;
+      const curE = item.currentEpisode || 1;
+      const seasonPills = Array.isArray(item.seasons) && item.seasons.length > 0
+        ? item.seasons.map(s => `<span class="px-1.5 py-0.5 rounded bg-[#18191d] text-[9px] font-bold text-zinc-300 border border-[#2e313a]">С${s.season}:${s.rating || '—'}</span>`).join('')
+        : '<span class="text-[9px] text-zinc-500">Оценок сезонов нет</span>';
+
+      return `
+        <div class="bg-[#22242a] border border-[#2e313a] hover:border-blue-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
+          <div>
+            <div class="relative aspect-[2/3] w-full bg-[#18191d] overflow-hidden">
+              <img src="${escapeHtml(posterSrc)}" referrerpolicy="no-referrer" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.onerror=null;this.src='${svgFallback}'" />
+              <div class="absolute inset-0 bg-gradient-to-t from-[#22242a] via-transparent to-black/45"></div>
+              <div class="absolute top-2 left-2 right-2 flex items-center justify-between gap-1">
+                <span class="px-1.5 py-0.5 rounded-lg border backdrop-blur-md font-bold text-[10px] ${stInfo.class}">${stInfo.label}</span>
+                ${ratingBadge}
+              </div>
+              <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="absolute bottom-2 right-2 w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
+                ✎
+              </button>
+            </div>
+
+            <div class="p-2.5 pb-1.5">
+              <h3 class="font-extrabold text-white text-xs leading-snug line-clamp-2 min-h-[2rem]" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</h3>
+              ${item.note ? `<p class="text-[10px] text-zinc-400 italic truncate mt-0.5">«${escapeHtml(item.note)}»</p>` : ''}
+
+              <!-- Compact Progress Row: С1 • Э5 with +1 buttons -->
+              <div class="mt-2 bg-[#18191d] border border-[#2e313a] rounded-xl px-2 py-1.5 flex items-center justify-between gap-1">
+                <span class="text-[11px] font-extrabold text-white tracking-tight">С${curS} • Э${curE}</span>
+                <div class="flex items-center gap-1">
+                  <button type="button" onclick="incrementProgress('${item.id}', 'episode')" class="px-1.5 py-0.5 rounded-md bg-[#2b2e36] hover:bg-blue-500 hover:text-white text-[10px] font-extrabold text-zinc-200 transition active:scale-90">+1 эп</button>
+                  <button type="button" onclick="incrementProgress('${item.id}', 'season')" class="px-1.5 py-0.5 rounded-md bg-[#2b2e36] hover:bg-emerald-500 hover:text-zinc-950 text-[10px] font-extrabold text-zinc-200 transition active:scale-90">+1 сез</button>
+                </div>
+              </div>
+
+              <div class="mt-1.5 flex flex-wrap gap-1 max-h-10 overflow-hidden">
+                ${seasonPills}
+              </div>
+            </div>
+          </div>
+
+          <div class="p-2.5 pt-1.5 grid grid-cols-2 gap-1.5">
+            <button type="button" onclick="openSeasonQuickModal('${item.id}')" class="py-1.5 px-1.5 rounded-xl bg-[#18191d] hover:bg-[#2b2e36] border border-[#2e313a] text-[10px] font-bold text-amber-300 transition active:scale-95 truncate">
+              ⭐ Оценки
+            </button>
+            <button type="button" onclick="openSendWaitingModal('${item.id}')" class="py-1.5 px-1.5 rounded-xl bg-[#18191d] hover:bg-rose-500/20 border border-[#2e313a] hover:border-rose-500/40 text-[10px] font-bold text-rose-300 transition active:scale-95 truncate">
+              ⏳ Ждать
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // 7. QUICK CARD ACTIONS
+    // ==========================================
+    function incrementProgress(id, field) {
+      triggerHaptic('light');
+      const idx = mediaItems.findIndex(i => i.id === id);
+      if (idx === -1) return;
+      const item = mediaItems[idx];
+
+      if (field === 'episode') {
+        item.currentEpisode = (Number(item.currentEpisode) || 0) + 1;
+        if (item.status === 'planned') item.status = 'watching';
+        showToast(`${item.title}: Сезон ${item.currentSeason || 1}, Серия ${item.currentEpisode}`);
+      } else if (field === 'season') {
+        item.currentSeason = (Number(item.currentSeason) || 1) + 1;
+        item.currentEpisode = 1;
+        if (!Array.isArray(item.seasons)) item.seasons = [];
+        if (!item.seasons.some(s => Number(s.season) === item.currentSeason)) {
+          item.seasons.push({ season: item.currentSeason, rating: 0 });
+        }
+        if (item.status === 'planned') item.status = 'watching';
+        showToast(`${item.title}: Перешли на ${item.currentSeason} сезон!`);
+      }
+
+      item.updatedAt = Date.now();
+      saveToStorage();
+      renderItems();
+    }
+
+    function quickToggleMovieStatus(id, newStatus) {
+      triggerHaptic('light');
+      const idx = mediaItems.findIndex(i => i.id === id);
+      if (idx === -1) return;
+      mediaItems[idx].status = newStatus;
+      mediaItems[idx].updatedAt = Date.now();
+      saveToStorage();
+      renderItems();
+      showToast(newStatus === 'completed' ? 'Отмечено как просмотренное!' : 'Возвращено в планы');
+    }
+
+    function releaseWaitingItem(id) {
+      triggerHaptic('medium');
+      const idx = mediaItems.findIndex(i => i.id === id);
+      if (idx === -1) return;
+      const item = mediaItems[idx];
+
+      const targetType = ['movie', 'series', 'anime'].includes(item.waitingSubtype) ? item.waitingSubtype : 'series';
+      item.type = targetType;
+
+      if (targetType === 'movie') {
+        item.status = 'planned';
+      } else {
+        const newSeason = Number(item.expectedSeason) || ((item.currentSeason || 1) + 1);
+        item.status = 'watching';
+        item.currentSeason = newSeason;
+        item.currentEpisode = 1;
+        if (!Array.isArray(item.seasons)) item.seasons = [];
+        if (!item.seasons.some(s => Number(s.season) === newSeason)) {
+          item.seasons.push({ season: newSeason, rating: 0 });
+        }
+      }
+
+      delete item.waitingSubtype;
+      delete item.expectedSeason;
+      delete item.releaseDate;
+      item.updatedAt = Date.now();
+
+      saveToStorage();
+      switchTab(targetType);
+      showToast(`🚀 «${item.title}» перенесён в ${CATEGORY_META[targetType].plural}!`);
+    }
+
+    // ==========================================
+    // 8. ADD / EDIT MODAL + IN-MODAL TYPE SWITCHER
+    // ==========================================
+    function openAddModal() {
+      triggerHaptic('light');
+      document.getElementById('edit-item-id').value = '';
+      document.getElementById('input-title').value = '';
+      document.getElementById('input-poster').value = '';
+      document.getElementById('input-note').value = '';
+      document.getElementById('autocomplete-dropdown').classList.add('hidden');
+      document.getElementById('btn-delete-modal').classList.add('hidden');
+      document.getElementById('api-spinner').classList.add('hidden');
+      updatePosterPreview('');
+
+      if (currentTab === 'waiting') {
+        modalMediaType = 'series';
+        modalIsWaiting = true;
+      } else {
+        modalMediaType = currentTab;
+        modalIsWaiting = false;
+      }
+
+      modalMovieRating = 0;
+      modalSeasons = [{ season: 1, rating: 0 }];
+      modalSelectedStatus = modalMediaType === 'movie' ? 'completed' : 'watching';
+
+      document.getElementById('input-cur-season').value = 1;
+      document.getElementById('input-cur-episode').value = 1;
+      document.getElementById('input-waiting-season').value = 2;
+      document.getElementById('input-waiting-date').value = 'Зима 2027';
+
+      syncModalUI();
+
+      const modal = document.getElementById('item-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      updateTgBackButton();
+    }
+
+    function openEditModal(id) {
+      triggerHaptic('light');
+      const item = mediaItems.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById('edit-item-id').value = item.id;
+      document.getElementById('input-title').value = item.title || '';
+      document.getElementById('input-poster').value = item.poster || '';
+      document.getElementById('input-note').value = item.note || '';
+      document.getElementById('autocomplete-dropdown').classList.add('hidden');
+      document.getElementById('btn-delete-modal').classList.remove('hidden');
+      document.getElementById('api-spinner').classList.add('hidden');
+      updatePosterPreview(item.poster || '');
+
+      if (item.type === 'waiting') {
+        modalIsWaiting = true;
+        modalMediaType = ['movie', 'series', 'anime'].includes(item.waitingSubtype) ? item.waitingSubtype : 'series';
+      } else {
+        modalIsWaiting = false;
+        modalMediaType = item.type || 'movie';
+      }
+
+      modalMovieRating = Number(item.rating) || 0;
+      modalSeasons = Array.isArray(item.seasons) && item.seasons.length > 0
+        ? item.seasons.map(s => ({ season: Number(s.season) || 1, rating: Number(s.rating) || 0 }))
+        : [{ season: 1, rating: 0 }];
+      modalSelectedStatus = item.status || (modalMediaType === 'movie' ? 'completed' : 'watching');
+
+      document.getElementById('input-cur-season').value = item.currentSeason || 1;
+      document.getElementById('input-cur-episode').value = item.currentEpisode || 1;
+      document.getElementById('input-waiting-season').value = item.expectedSeason || 2;
+      document.getElementById('input-waiting-date').value = item.releaseDate || '';
+
+      syncModalUI();
+
+      const modal = document.getElementById('item-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      updateTgBackButton();
+    }
+
+    function switchModalMediaType(newType) {
+      triggerHaptic('light');
+      if (modalMediaType === newType) return;
+      modalMediaType = newType;
+      if (newType === 'movie' && modalSelectedStatus === 'watching') {
+        modalSelectedStatus = 'completed';
+      }
+      syncModalUI();
+
+      const currentQuery = document.getElementById('input-title').value.trim();
+      if (currentQuery.length >= 2) {
+        clearTimeout(searchDebounceTimer);
+        fetchPosterSuggestions(currentQuery);
+      }
+    }
+
+    function toggleModalWaitingFlag() {
+      triggerHaptic('light');
+      modalIsWaiting = !modalIsWaiting;
+      syncModalUI();
+    }
+
+    function syncModalUI() {
+      const isEdit = Boolean(document.getElementById('edit-item-id').value);
+      const activeMeta = modalIsWaiting ? CATEGORY_META.waiting : CATEGORY_META[modalMediaType];
+
+      document.getElementById('modal-category-badge').textContent = activeMeta.singular;
+      document.getElementById('modal-category-badge').className = `px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide ${activeMeta.badgeClass}`;
+      document.getElementById('modal-title').textContent = isEdit
+        ? `Редактировать: ${CATEGORY_META[modalMediaType].singular}`
+        : `Добавить: ${CATEGORY_META[modalMediaType].singular}`;
+      document.getElementById('btn-save-modal').className = `px-4 py-2 rounded-xl ${activeMeta.accentBtn} text-xs font-extrabold shadow transition active:scale-95`;
+
+      const typeStyles = {
+        movie: 'bg-amber-500/20 border-amber-500 text-amber-300',
+        series: 'bg-blue-500/20 border-blue-500 text-blue-300',
+        anime: 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
+      };
+      ['movie', 'series', 'anime'].forEach(t => {
+        const btn = document.getElementById(`modal-type-${t}`);
+        if (!btn) return;
+        btn.className = t === modalMediaType
+          ? `py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1 ${typeStyles[t]}`
+          : 'py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1 bg-[#22242a] border-[#2e313a] text-zinc-400 hover:text-zinc-200';
+      });
+
+      const waitBtn = document.getElementById('modal-waiting-toggle');
+      if (modalIsWaiting) {
+        waitBtn.textContent = 'Вкл ⏳';
+        waitBtn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-rose-500/25 border-rose-500 text-rose-300';
+      } else {
+        waitBtn.textContent = 'Выкл';
+        waitBtn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-[#22242a] border-[#2e313a] text-zinc-400';
+      }
+
+      const waitDetSec = document.getElementById('waiting-details-section');
+      const waitSeasonBox = document.getElementById('waiting-season-box');
+      const movieRatSec = document.getElementById('movie-rating-section');
+      const serProgSec = document.getElementById('series-progress-section');
+      const seaRatSec = document.getElementById('seasons-ratings-section');
+      const statusWrap = document.getElementById('modal-status-wrapper');
+
+      waitDetSec.classList.add('hidden');
+      movieRatSec.classList.add('hidden');
+      serProgSec.classList.add('hidden');
+      seaRatSec.classList.add('hidden');
+      statusWrap.classList.remove('hidden');
+
+      if (modalIsWaiting) {
+        waitDetSec.classList.remove('hidden');
+        statusWrap.classList.add('hidden');
+        if (modalMediaType === 'movie') {
+          waitSeasonBox.classList.add('hidden');
+          movieRatSec.classList.remove('hidden');
+          renderMovieRatingPills();
+        } else {
+          waitSeasonBox.classList.remove('hidden');
+          seaRatSec.classList.remove('hidden');
+          renderSeasonsEditor();
+        }
+      } else if (modalMediaType === 'movie') {
+        movieRatSec.classList.remove('hidden');
+        renderMovieRatingPills();
+        renderModalStatusButtons(['completed', 'planned'], modalSelectedStatus);
+      } else {
+        serProgSec.classList.remove('hidden');
+        seaRatSec.classList.remove('hidden');
+        renderModalStatusButtons(['watching', 'completed', 'planned'], modalSelectedStatus);
+        renderSeasonsEditor();
+      }
+    }
+
+    function renderModalStatusButtons(allowedStatuses, current) {
+      modalSelectedStatus = allowedStatuses.includes(current) ? current : allowedStatuses[0];
+      const group = document.getElementById('modal-status-group');
+      group.innerHTML = allowedStatuses.map(st => {
+        const label = st === 'completed' ? 'Просмотрено' : STATUS_LABELS[st].label;
+        const active = st === modalSelectedStatus;
+        return `<button type="button" onclick="selectModalStatus('${st}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${active ? 'bg-white text-zinc-950 border-white' : 'bg-[#22242a] text-zinc-400 border-[#2e313a] hover:text-white'}">${label}</button>`;
+      }).join('');
+    }
+
+    function selectModalStatus(st) {
+      triggerHaptic('light');
+      const allowed = modalMediaType === 'movie' ? ['completed', 'planned'] : ['watching', 'completed', 'planned'];
+      renderModalStatusButtons(allowed, st);
+    }
+
+    function stepWaitingSeason(delta) {
+      const inp = document.getElementById('input-waiting-season');
+      inp.value = Math.max(1, (parseInt(inp.value, 10) || 1) + delta);
+    }
+
+    function setWaitingDatePreset(val) {
+      document.getElementById('input-waiting-date').value = val;
+    }
+
+    function stepProgress(field, delta) {
+      const inp = document.getElementById(field === 'season' ? 'input-cur-season' : 'input-cur-episode');
+      const min = field === 'season' ? 1 : 0;
+      inp.value = Math.max(min, (parseInt(inp.value, 10) || min) + delta);
+    }
+
+    function renderMovieRatingPills() {
+      const container = document.getElementById('movie-rating-pills');
+      const display = document.getElementById('movie-rating-display');
+      display.textContent = modalMovieRating > 0 ? `★ ${modalMovieRating} / 10` : 'Без оценки';
+
+      const scores = [1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10];
+      container.innerHTML = scores.map(sc => {
+        const active = Number(modalMovieRating) === sc;
+        return `<button type="button" onclick="setMovieRating(${sc})" class="py-1.5 rounded-lg text-xs font-extrabold border transition ${active ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-[#18191d] text-zinc-300 border-[#2e313a] hover:border-zinc-500'}">${sc}</button>`;
+      }).join('');
+    }
+
+    function setMovieRating(val) {
+      triggerHaptic('light');
+      modalMovieRating = (Number(modalMovieRating) === val) ? 0 : val;
+      renderMovieRatingPills();
+    }
+
+    function renderSeasonsEditor() {
+      const container = document.getElementById('seasons-list-editor');
+      container.innerHTML = modalSeasons.map((s, idx) => `
+        <div class="flex items-center justify-between gap-2 bg-[#22242a] border border-[#2e313a] rounded-xl px-2.5 py-1.5">
+          <span class="text-xs font-extrabold text-zinc-200 whitespace-nowrap">Сезон ${s.season}</span>
+          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
+            ${[6, 7, 8, 8.5, 9, 9.5, 10].map(r => `
+              <button type="button" onclick="setModalSeasonRating(${idx}, ${r})" class="px-1.5 py-1 rounded text-[10px] font-extrabold transition ${Number(s.rating) === r ? 'bg-amber-500 text-zinc-950' : 'bg-[#18191d] text-zinc-400 hover:text-white'}">${r}</button>
+            `).join('')}
+            ${modalSeasons.length > 1 ? `<button type="button" onclick="removeSeasonRow(${idx})" class="ml-1 text-rose-400 hover:text-rose-300 text-xs px-1">✕</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addSeasonRow() {
+      triggerHaptic('light');
+      const nextNum = modalSeasons.length > 0 ? Math.max(...modalSeasons.map(s => s.season)) + 1 : 1;
+      modalSeasons.push({ season: nextNum, rating: 0 });
+      renderSeasonsEditor();
+    }
+
+    function removeSeasonRow(idx) {
+      modalSeasons.splice(idx, 1);
+      renderSeasonsEditor();
+    }
+
+    function setModalSeasonRating(idx, val) {
+      triggerHaptic('light');
+      if (!modalSeasons[idx]) return;
+      modalSeasons[idx].rating = Number(modalSeasons[idx].rating) === val ? 0 : val;
+      renderSeasonsEditor();
+    }
+
+    function closeModal() {
+      activeSearchSessionId++;
+      clearTimeout(searchDebounceTimer);
+      document.getElementById('api-spinner').classList.add('hidden');
+      const modal = document.getElementById('item-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      updateTgBackButton();
+    }
+
+    function saveItem() {
+      triggerHaptic('medium');
+      const title = document.getElementById('input-title').value.trim();
+      if (!title) {
+        showToast('Введи название тайтла!', 'error');
+        return;
+      }
+
+      const editId = document.getElementById('edit-item-id').value;
+      const poster = document.getElementById('input-poster').value.trim();
+      const note = document.getElementById('input-note').value.trim();
+      const targetType = modalIsWaiting ? 'waiting' : modalMediaType;
+
+      if (editId) {
+        const idx = mediaItems.findIndex(i => i.id === editId);
+        if (idx !== -1) {
+          const item = mediaItems[idx];
+          item.type = targetType;
+          item.title = title;
+          item.poster = poster;
+          item.note = note;
+          item.updatedAt = Date.now();
+
+          if (targetType === 'waiting') {
+            item.waitingSubtype = modalMediaType;
+            item.expectedSeason = parseInt(document.getElementById('input-waiting-season').value, 10) || 2;
+            item.releaseDate = document.getElementById('input-waiting-date').value.trim() || 'Жду анонс';
+            if (modalMediaType === 'movie') item.rating = modalMovieRating;
+            else item.seasons = modalSeasons;
+          } else if (targetType === 'movie') {
+            item.status = modalSelectedStatus;
+            item.rating = modalMovieRating;
+            delete item.waitingSubtype;
+          } else {
+            item.status = modalSelectedStatus;
+            item.currentSeason = parseInt(document.getElementById('input-cur-season').value, 10) || 1;
+            item.currentEpisode = parseInt(document.getElementById('input-cur-episode').value, 10) || 0;
+            item.seasons = modalSeasons;
+            delete item.waitingSubtype;
+          }
+          showToast('Изменения сохранены!');
+        }
+      } else {
+        const newItem = {
+          id: 'kb_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          type: targetType,
+          title,
+          poster,
+          note,
+          updatedAt: Date.now()
+        };
+
+        if (targetType === 'waiting') {
+          newItem.waitingSubtype = modalMediaType;
+          newItem.status = 'planned';
+          newItem.expectedSeason = parseInt(document.getElementById('input-waiting-season').value, 10) || 2;
+          newItem.releaseDate = document.getElementById('input-waiting-date').value.trim() || 'Жду анонс';
+          if (modalMediaType === 'movie') {
+            newItem.rating = modalMovieRating;
+          } else {
+            newItem.currentSeason = newItem.expectedSeason;
+            newItem.currentEpisode = 1;
+            newItem.seasons = modalSeasons;
+          }
+        } else if (targetType === 'movie') {
+          newItem.status = modalSelectedStatus;
+          newItem.rating = modalMovieRating;
+        } else {
+          newItem.status = modalSelectedStatus;
+          newItem.currentSeason = parseInt(document.getElementById('input-cur-season').value, 10) || 1;
+          newItem.currentEpisode = parseInt(document.getElementById('input-cur-episode').value, 10) || 1;
+          newItem.seasons = modalSeasons;
+        }
+
+        mediaItems.unshift(newItem);
+        if (currentTab !== targetType) {
+          switchTab(targetType);
+        }
+        showToast(`«${title}» добавлен!`);
+      }
+
+      saveToStorage();
+      closeModal();
+      renderItems();
+    }
+
+    function deleteCurrentEditingItem() {
+      const editId = document.getElementById('edit-item-id').value;
+      if (!editId) return;
+      mediaItems = mediaItems.filter(i => i.id !== editId);
+      saveToStorage();
+      closeModal();
+      renderItems();
+      showToast('Тайтл удалён');
+    }
+
+    // ==========================================
+    // 9. QUICK SEASON RATING & SEND TO WAITING
+    // ==========================================
+    function openSeasonQuickModal(id) {
+      triggerHaptic('light');
+      const item = mediaItems.find(i => i.id === id);
+      if (!item) return;
+      sqmItemId = id;
+      document.getElementById('sqm-title').textContent = item.title;
+      sqmTempSeasons = Array.isArray(item.seasons) && item.seasons.length > 0
+        ? item.seasons.map(s => ({ season: Number(s.season) || 1, rating: Number(s.rating) || 0 }))
+        : [{ season: 1, rating: 0 }];
+      renderSqmSeasons();
+      const modal = document.getElementById('season-quick-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      updateTgBackButton();
+    }
+
+    function renderSqmSeasons() {
+      const container = document.getElementById('sqm-seasons-container');
+      container.innerHTML = sqmTempSeasons.map((s, idx) => `
+        <div class="bg-[#18191d] border border-[#2e313a] rounded-2xl p-2.5">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-extrabold text-white">Сезон ${s.season}</span>
+            <span class="text-xs font-bold text-amber-400">${s.rating > 0 ? '★ ' + s.rating : 'Без оценки'}</span>
+          </div>
+          <div class="grid grid-cols-5 gap-1">
+            ${[5, 6, 7, 7.5, 8, 8.5, 9, 9.5, 10].map(r => `
+              <button type="button" onclick="sqmSetRating(${idx}, ${r})" class="py-1 rounded-lg text-[11px] font-extrabold border transition ${Number(s.rating) === r ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-[#22242a] text-zinc-300 border-[#2e313a]'}">${r}</button>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function sqmSetRating(idx, val) {
+      triggerHaptic('light');
+      if (!sqmTempSeasons[idx]) return;
+      sqmTempSeasons[idx].rating = Number(sqmTempSeasons[idx].rating) === val ? 0 : val;
+      renderSqmSeasons();
+    }
+
+    function sqmAddSeason() {
+      triggerHaptic('light');
+      const nextNum = sqmTempSeasons.length > 0 ? Math.max(...sqmTempSeasons.map(s => s.season)) + 1 : 1;
+      sqmTempSeasons.push({ season: nextNum, rating: 0 });
+      renderSqmSeasons();
+    }
+
+    function closeSeasonQuickModal() {
+      const modal = document.getElementById('season-quick-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      updateTgBackButton();
+    }
+
+    function saveSeasonQuickModal() {
+      triggerHaptic('medium');
+      const idx = mediaItems.findIndex(i => i.id === sqmItemId);
+      if (idx !== -1) {
+        mediaItems[idx].seasons = sqmTempSeasons;
+        mediaItems[idx].updatedAt = Date.now();
+        saveToStorage();
+        renderItems();
+        showToast('Оценки сезонов обновлены!');
+      }
+      closeSeasonQuickModal();
+    }
+
+    function openSendWaitingModal(id) {
+      triggerHaptic('light');
+      const item = mediaItems.find(i => i.id === id);
+      if (!item) return;
+      swmItemId = id;
+      document.getElementById('swm-title').textContent = item.title;
+      document.getElementById('swm-season-input').value = (Number(item.currentSeason) || 1) + 1;
+      document.getElementById('swm-date-input').value = 'Зима 2027';
+      const modal = document.getElementById('send-waiting-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      updateTgBackButton();
+    }
+
+    function stepSwmSeason(delta) {
+      const inp = document.getElementById('swm-season-input');
+      inp.value = Math.max(1, (parseInt(inp.value, 10) || 1) + delta);
+    }
+
+    function closeSendWaitingModal() {
+      const modal = document.getElementById('send-waiting-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      updateTgBackButton();
+    }
+
+    function confirmSendToWaiting() {
+      triggerHaptic('medium');
+      const idx = mediaItems.findIndex(i => i.id === swmItemId);
+      if (idx !== -1) {
+        const item = mediaItems[idx];
+        const origType = item.type === 'anime' ? 'anime' : 'series';
+        item.type = 'waiting';
+        item.waitingSubtype = origType;
+        item.expectedSeason = parseInt(document.getElementById('swm-season-input').value, 10) || 2;
+        item.releaseDate = document.getElementById('swm-date-input').value.trim() || 'Жду анонс';
+        item.updatedAt = Date.now();
+        saveToStorage();
+        renderItems();
+        showToast(`⏳ «${item.title}» отправлен в Ожидание!`);
+      }
+      closeSendWaitingModal();
+    }
+
+    // ==========================================
+    // 10. FAST NON-BLOCKING PARALLEL SEARCH ENGINE
+    //     - Strict 2500ms AbortController timeout per request
+    //     - Progressive rendering via Promise.allSettled()
+    //     - Anime: Shikimori (primary RU/EN) + Wiki->AniList/Jikan
+    //     - Movies: RU Wiki batch langlinks -> US iTunes + Direct US/RU iTunes
+    //     - Series: RU Wiki batch langlinks -> TVMaze + Direct TVMaze
+    // ==========================================
+    function updatePosterPreview(url) {
+      const img = document.getElementById('poster-preview');
+      const placeholder = document.getElementById('poster-placeholder');
+      if (url && url.trim()) {
+        img.src = url.trim();
+        img.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+      } else {
+        img.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+      }
+    }
+
+    function handlePosterPreviewError() {
+      document.getElementById('poster-preview').classList.add('hidden');
+      document.getElementById('poster-placeholder').classList.remove('hidden');
+    }
+
+    function handleTitleInput(val) {
+      clearTimeout(searchDebounceTimer);
+      if (val.trim().length < 2) {
+        activeSearchSessionId++;
+        document.getElementById('api-spinner').classList.add('hidden');
+        document.getElementById('autocomplete-dropdown').classList.add('hidden');
+        return;
+      }
+      searchDebounceTimer = setTimeout(() => {
+        fetchPosterSuggestions(val.trim());
+      }, 360);
+    }
+
+    function triggerPosterSearch() {
+      triggerHaptic('light');
+      const val = document.getElementById('input-title').value.trim();
+      if (val.length < 1) {
+        showToast('Сначала введи хотя бы пару букв названия', 'info');
+        return;
+      }
+      clearTimeout(searchDebounceTimer);
+      fetchPosterSuggestions(val);
+    }
+
+    // Strict timeout wrapper: guarantees every fetch finishes or aborts within timeoutMs (2500ms)
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 2500) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return response;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    function normalizeDedupeKey(title, year) {
+      const norm = (title || '')
+        .toLowerCase()
+        .replace(/\(.*?\)/g, '')
+        .replace(/[^a-zа-яё0-9]/gi, '');
+      return `${norm}_${year || 'ny'}`;
+    }
+
+    function normalizeMatchKey(str) {
+      return (str || '')
+        .toLowerCase()
+        .replace(/\(.*?\)/g, '')
+        .replace(/\b(the|a|an|movie|film|series|season)\b/gi, '')
+        .replace(/[^a-zа-яё0-9]/gi, '');
+    }
+
+    function parseWikiCleanTitleAndYear(rawTitle, snippet = '') {
+      let year = '';
+      const parenMatch = rawTitle.match(/\((?:[^)]*?\b)?(19\d{2}|20\d{2})\b[^)]*\)/);
+      if (parenMatch) {
+        year = parenMatch[1];
+      } else if (snippet) {
+        const cleanSnip = snippet.replace(/<[^>]+>/g, '');
+        const descMatch = cleanSnip.match(/\b(19\d{2}|20\d{2})\b/);
+        if (descMatch) year = descMatch[1];
+      }
+      const cleanTitle = rawTitle.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+      return { cleanTitle, year };
+    }
+
+    // Helper: RU Wikipedia srsearch -> single batched prop=langlinks&lllang=en request
+    async function fetchWikiRuToEnPairs(query, suffix, limit = 10) {
+      try {
+        const searchUrl = `https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query + suffix)}&srlimit=${limit}&format=json&origin=*`;
+        const searchRes = await fetchWithTimeout(searchUrl, {}, 2500);
+        const searchData = await searchRes.json();
+        const results = Array.isArray(searchData?.query?.search) ? searchData.query.search : [];
+        if (results.length === 0) return [];
+
+        const pageIds = results.map(r => r.pageid).filter(Boolean);
+        const langUrl = `https://ru.wikipedia.org/w/api.php?action=query&pageids=${pageIds.join('|')}&prop=langlinks&lllang=en&lllimit=50&format=json&origin=*`;
+        const langRes = await fetchWithTimeout(langUrl, {}, 2500);
+        const langData = await langRes.json();
+        const pagesObj = langData?.query?.pages || {};
+
+        const pairs = [];
+        for (const r of results) {
+          const { cleanTitle, year } = parseWikiCleanTitleAndYear(r.title || '', r.snippet || '');
+          if (!cleanTitle) continue;
+          const pInfo = pagesObj[r.pageid];
+          const rawEn = Array.isArray(pInfo?.langlinks) && pInfo.langlinks[0] ? pInfo.langlinks[0]['*'] : '';
+          const enTitle = rawEn.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+          pairs.push({
+            ruTitle: cleanTitle,
+            enTitle,
+            year
+          });
+        }
+        return pairs;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // ANIME SOURCE 1: Shikimori API (Instant RU/EN search + direct posters)
+    async function fetchAnimeFromShikimori(q) {
+      try {
+        const url = `https://shikimori.one/api/animes?search=${encodeURIComponent(q)}&limit=15`;
+        const res = await fetchWithTimeout(url, {
+          headers: { 'User-Agent': 'KinoBroApp' }
+        }, 2500);
+        const list = await res.json();
+        if (!Array.isArray(list)) return [];
+
+        return list.map(item => {
+          const ru = (item.russian || '').trim();
+          const orig = (item.name || '').trim();
+          const mainName = ru || orig;
+          if (!mainName) return null;
+
+          const displayTitle = (ru && orig && ru.toLowerCase() !== orig.toLowerCase())
+            ? `${ru} (${orig})`
+            : mainName;
+          const year = item.aired_on ? String(item.aired_on).slice(0, 4) : '';
+          const imgPath = item.image?.original || item.image?.preview || '';
+          const poster = imgPath
+            ? (imgPath.startsWith('http') ? imgPath : `https://shikimori.one${imgPath}`)
+            : '';
+          const epText = item.episodes ? `${item.episodes} эп.` : (item.status === 'ongoing' ? 'Онгоинг' : 'Аниме');
+
+          return {
+            title: mainName,
+            originalTitle: orig || mainName,
+            displayTitle,
+            year,
+            poster,
+            source: `Shikimori • ${epText}`,
+            type: 'anime',
+            priority: 10
+          };
+        }).filter(Boolean);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // ANIME SOURCE 2: RU Wikipedia -> EN -> AniList GraphQL (with Jikan fallback)
+    async function fetchAnimeFromWikiAndAniList(q) {
+      try {
+        const pairs = await fetchWikiRuToEnPairs(q, ' аниме', 6);
+        const enCandidates = Array.from(new Set([
+          ...pairs.map(p => p.enTitle).filter(Boolean),
+          q
+        ])).slice(0, 3);
+
+        const anilistPromises = enCandidates.map(async (term) => {
+          const graphqlQuery = `
+            query ($search: String) {
+              Page(page: 1, perPage: 10) {
+                media(search: $search, type: ANIME) {
+                  title { romaji english native }
+                  startDate { year }
+                  episodes
+                  coverImage { large medium }
+                }
+              }
+            }
+          `;
+          const res = await fetchWithTimeout('https://graphql.anilist.co', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ query: graphqlQuery, variables: { search: term } })
+          }, 2500);
+          const json = await res.json();
+          const mediaList = json?.data?.Page?.media || [];
+
+          return mediaList.map(m => {
+            const enName = (m.title?.english || m.title?.romaji || '').trim();
+            if (!enName) return null;
+            const matchedPair = pairs.find(p => {
+              const pk = normalizeMatchKey(p.enTitle);
+              const ek = normalizeMatchKey(enName);
+              const rk = normalizeMatchKey(m.title?.romaji || '');
+              return pk && (pk === ek || pk === rk);
+            });
+            const displayTitle = matchedPair && matchedPair.ruTitle.toLowerCase() !== enName.toLowerCase()
+              ? `${matchedPair.ruTitle} (${enName})`
+              : enName;
+            const year = m.startDate?.year ? String(m.startDate.year) : (matchedPair?.year || '');
+            const poster = m.coverImage?.large || m.coverImage?.medium || '';
+            const epText = m.episodes ? `${m.episodes} эп.` : 'Аниме';
+
+            return {
+              title: enName,
+              originalTitle: m.title?.romaji || enName,
+              displayTitle,
+              year,
+              poster,
+              source: `AniList • ${epText}`,
+              type: 'anime',
+              priority: 7
+            };
+          }).filter(Boolean);
+        });
+
+        const settled = await Promise.allSettled(anilistPromises);
+        const items = [];
+        for (const r of settled) {
+          if (r.status === 'fulfilled' && Array.isArray(r.value)) {
+            items.push(...r.value);
+          }
+        }
+        return items;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // MOVIES SOURCE 1: Direct iTunes (US + RU in parallel)
+    async function fetchMoviesDirectItunes(q) {
+      const urls = [
+        `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&country=us&media=movie&entity=movie&limit=15`,
+        `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&country=ru&lang=ru_ru&media=movie&entity=movie&limit=15`
+      ];
+
+      const settled = await Promise.allSettled(urls.map(async (u) => {
+        const res = await fetchWithTimeout(u, {}, 2500);
+        const data = await res.json();
+        return (data.results || []).map(m => {
+          const name = (m.trackName || '').trim();
+          if (!name) return null;
+          const year = m.releaseDate ? String(m.releaseDate).slice(0, 4) : '';
+          const poster = m.artworkUrl100 ? m.artworkUrl100.replace('100x100bb', '600x900bb') : '';
+          return {
+            title: name,
+            originalTitle: name,
+            displayTitle: name,
+            year,
+            poster,
+            source: m.primaryGenreName || 'Фильм',
+            type: 'movie',
+            priority: 6
+          };
+        }).filter(Boolean);
+      }));
+
+      const items = [];
+      for (const r of settled) {
+        if (r.status === 'fulfilled') items.push(...r.value);
+      }
+      return items;
+    }
+
+    // MOVIES SOURCE 2: RU Wikipedia -> Batched langlinks=en -> Parallel US iTunes for top 5 EN titles
+    async function fetchMoviesViaWikiAndUsItunes(q) {
+      try {
+        const pairs = await fetchWikiRuToEnPairs(q, ' фильм', 10);
+        const pairsWithEn = pairs.filter(p => p.enTitle && p.enTitle.length >= 2);
+        const top5Pairs = pairsWithEn.slice(0, 5);
+
+        const itunesPromises = top5Pairs.map(async (pair) => {
+          const url = `https://itunes.apple.com/search?term=${encodeURIComponent(pair.enTitle)}&country=us&media=movie&entity=movie&limit=3`;
+          const res = await fetchWithTimeout(url, {}, 2500);
+          const data = await res.json();
+          const results = data.results || [];
+          if (results.length === 0) return [];
+
+          // Find best matching movie from US iTunes for this Wikipedia pair
+          let best = results[0];
+          let bestScore = -1;
+          const targetKey = normalizeMatchKey(pair.enTitle);
+
+          for (const candidate of results) {
+            const cName = (candidate.trackName || '').trim();
+            const cYear = candidate.releaseDate ? String(candidate.releaseDate).slice(0, 4) : '';
+            const cKey = normalizeMatchKey(cName);
+            let score = 0;
+            if (cKey === targetKey) score += 10;
+            else if (cKey.includes(targetKey) || targetKey.includes(cKey)) score += 5;
+            if (pair.year && cYear && pair.year === cYear) score += 8;
+            if (score > bestScore) {
+              bestScore = score;
+              best = candidate;
+            }
+          }
+
+          const bestOrig = (best.trackName || pair.enTitle).trim();
+          const bestYear = (best.releaseDate ? String(best.releaseDate).slice(0, 4) : '') || pair.year;
+          const poster = best.artworkUrl100 ? best.artworkUrl100.replace('100x100bb', '600x900bb') : '';
+          const displayTitle = pair.ruTitle.toLowerCase() !== bestOrig.toLowerCase()
+            ? `${pair.ruTitle} (${bestOrig})`
+            : pair.ruTitle;
+
+          return [{
+            title: pair.ruTitle,
+            originalTitle: bestOrig,
+            displayTitle,
+            year: bestYear,
+            poster,
+            source: best.primaryGenreName || 'Фильм',
+            type: 'movie',
+            priority: 10
+          }];
+        });
+
+        const settled = await Promise.allSettled(itunesPromises);
+        const items = [];
+        for (const r of settled) {
+          if (r.status === 'fulfilled') items.push(...r.value);
+        }
+        return items;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // SERIES SOURCE 1: Direct TVMaze
+    async function fetchSeriesDirectTvMaze(q) {
+      try {
+        const res = await fetchWithTimeout(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(q)}`, {}, 2500);
+        const data = await res.json();
+        return (data || []).slice(0, 15).map(entry => {
+          const s = entry.show;
+          if (!s || !s.name) return null;
+          const year = s.premiered ? String(s.premiered).slice(0, 4) : '';
+          const poster = s.image?.medium || s.image?.original || '';
+          return {
+            title: s.name,
+            originalTitle: s.name,
+            displayTitle: s.name,
+            year,
+            poster,
+            source: s.status === 'Ended' ? 'Завершён' : 'Сериал',
+            type: 'series',
+            priority: 6
+          };
+        }).filter(Boolean);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // SERIES SOURCE 2: RU Wikipedia -> Batched langlinks=en -> Parallel TVMaze for top 5 EN titles
+    async function fetchSeriesViaWikiAndTvMaze(q) {
+      try {
+        const pairs = await fetchWikiRuToEnPairs(q, ' телесериал', 10);
+        const top5Pairs = pairs.filter(p => p.enTitle && p.enTitle.length >= 2).slice(0, 5);
+
+        const tvPromises = top5Pairs.map(async (pair) => {
+          const res = await fetchWithTimeout(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(pair.enTitle)}`, {}, 2500);
+          const data = await res.json();
+          if (!Array.isArray(data) || data.length === 0) return [];
+
+          let bestShow = data[0].show;
+          let bestScore = -1;
+          const targetKey = normalizeMatchKey(pair.enTitle);
+
+          for (const entry of data.slice(0, 5)) {
+            const s = entry.show;
+            if (!s || !s.name) continue;
+            const sKey = normalizeMatchKey(s.name);
+            const sYear = s.premiered ? String(s.premiered).slice(0, 4) : '';
+            let score = 0;
+            if (sKey === targetKey) score += 10;
+            else if (sKey.includes(targetKey) || targetKey.includes(sKey)) score += 5;
+            if (pair.year && sYear && pair.year === sYear) score += 8;
+            if (score > bestScore) {
+              bestScore = score;
+              bestShow = s;
+            }
+          }
+
+          if (!bestShow || !bestShow.name) return [];
+          const origName = bestShow.name.trim();
+          const bestYear = (bestShow.premiered ? String(bestShow.premiered).slice(0, 4) : '') || pair.year;
+          const poster = bestShow.image?.medium || bestShow.image?.original || '';
+          const displayTitle = pair.ruTitle.toLowerCase() !== origName.toLowerCase()
+            ? `${pair.ruTitle} (${origName})`
+            : pair.ruTitle;
+
+          return [{
+            title: pair.ruTitle,
+            originalTitle: origName,
+            displayTitle,
+            year: bestYear,
+            poster,
+            source: bestShow.status === 'Ended' ? 'Завершён' : 'Сериал',
+            type: 'series',
+            priority: 10
+          }];
+        });
+
+        const settled = await Promise.allSettled(tvPromises);
+        const items = [];
+        for (const r of settled) {
+          if (r.status === 'fulfilled') items.push(...r.value);
+        }
+        return items;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // Progressive Search Orchestrator with guaranteed <= 3000ms spinner shutdown
+    async function fetchPosterSuggestions(rawQuery) {
+      const sessionId = ++activeSearchSessionId;
+      const spinner = document.getElementById('api-spinner');
+      const dropdown = document.getElementById('autocomplete-dropdown');
+      const searchType = modalMediaType;
+
+      spinner.classList.remove('hidden');
+      dropdown.innerHTML = `<div class="p-3 text-xs text-zinc-400 text-center flex items-center justify-center gap-2"><span class="animate-pulse">🔎</span><span>Ищу «${escapeHtml(rawQuery)}»...</span></div>`;
+      dropdown.classList.remove('hidden');
+
+      // Hard safety guard: never leave spinner spinning beyond 3000ms under any circumstance
+      const hardSpinnerGuard = setTimeout(() => {
+        if (sessionId === activeSearchSessionId) {
+          spinner.classList.add('hidden');
+        }
+      }, 3000);
+
+      const collectedItems = [];
+
+      const renderProgressiveDropdown = (isFinal = false) => {
+        if (sessionId !== activeSearchSessionId) return;
+
+        // Sort: higher priority & items with posters first
+        const sorted = [...collectedItems].sort((a, b) => {
+          const aScore = (a.poster ? 20 : 0) + (a.priority || 0);
+          const bScore = (b.poster ? 20 : 0) + (b.priority || 0);
+          return bScore - aScore;
+        });
+
+        const uniqueList = [];
+        const seen = new Set();
+        for (const item of sorted) {
+          const keyOrig = normalizeDedupeKey(item.originalTitle || item.title, item.year);
+          const keyTitle = normalizeDedupeKey(item.title, item.year);
+          if (seen.has(keyOrig) || seen.has(keyTitle)) continue;
+          seen.add(keyOrig);
+          seen.add(keyTitle);
+          uniqueList.push(item);
+          if (uniqueList.length >= 20) break;
+        }
+
+        if (uniqueList.length === 0) {
+          if (isFinal) {
+            dropdown.innerHTML = `<div class="p-3 text-xs text-zinc-400 text-center">Ничего не нашлось — попробуй переключить тип сверху или вставь ссылку на обложку</div>`;
+            dropdown.classList.remove('hidden');
+          }
+          return;
+        }
+
+        const svgFallback = getSvgFallbackDataUri(searchType);
+        dropdown.innerHTML = uniqueList.map((r, i) => `
+          <button type="button" data-sug-idx="${i}" class="suggestion-row-btn w-full flex items-center gap-2.5 p-2 hover:bg-[#22242a] transition text-left">
+            <img src="${escapeHtml(r.poster || svgFallback)}" referrerpolicy="no-referrer" class="w-9 h-12 object-cover rounded-lg bg-[#22242a] flex-shrink-0 border border-[#2e313a]" onerror="this.onerror=null;this.src='${svgFallback}'" />
+            <div class="min-w-0 flex-1">
+              <div class="text-xs font-bold text-white truncate">${escapeHtml(r.displayTitle)}</div>
+              <div class="text-[10px] text-zinc-400 truncate">${[r.year, r.source].filter(Boolean).join(' • ')}</div>
+            </div>
+            <span class="text-[10px] font-bold text-zinc-200 px-2 py-1 rounded-lg bg-[#2b2e36] border border-[#3c404d] flex-shrink-0">Выбрать</span>
+          </button>
+        `).join('');
+
+        dropdown.querySelectorAll('.suggestion-row-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.getAttribute('data-sug-idx'), 10);
+            if (!isNaN(idx) && uniqueList[idx]) {
+              applySuggestion(uniqueList[idx]);
+            }
+          });
+        });
+        dropdown.classList.remove('hidden');
+      };
+
+      try {
+        let tasks = [];
+        if (searchType === 'anime') {
+          tasks = [
+            fetchAnimeFromShikimori(rawQuery),
+            fetchAnimeFromWikiAndAniList(rawQuery)
+          ];
+        } else if (searchType === 'movie') {
+          tasks = [
+            fetchMoviesViaWikiAndUsItunes(rawQuery),
+            fetchMoviesDirectItunes(rawQuery)
+          ];
+        } else {
+          tasks = [
+            fetchSeriesViaWikiAndTvMaze(rawQuery),
+            fetchSeriesDirectTvMaze(rawQuery)
+          ];
+        }
+
+        // Render progressively as soon as EACH parallel source resolves
+        const wrappedTasks = tasks.map(promise =>
+          promise.then(resItems => {
+            if (sessionId === activeSearchSessionId && Array.isArray(resItems) && resItems.length > 0) {
+              collectedItems.push(...resItems);
+              renderProgressiveDropdown(false);
+            }
+            return resItems;
+          })
+        );
+
+        await Promise.allSettled(wrappedTasks);
+      } catch (e) {
+        console.warn('Search catch:', e);
+      } finally {
+        clearTimeout(hardSpinnerGuard);
+        if (sessionId === activeSearchSessionId) {
+          spinner.classList.add('hidden');
+          renderProgressiveDropdown(true);
+        }
+      }
+    }
+
+    function applySuggestion(item) {
+      triggerHaptic('light');
+      document.getElementById('input-title').value = item.displayTitle || item.title;
+      if (item.poster) {
+        document.getElementById('input-poster').value = item.poster;
+        updatePosterPreview(item.poster);
+      }
+      document.getElementById('autocomplete-dropdown').classList.add('hidden');
+      showToast('Название и обложка подставлены!');
+    }
+
+    // ==========================================
+    // 11. BACKUP EXPORT / IMPORT (JSON)
+    // ==========================================
+    function exportData() {
+      triggerHaptic('light');
+      const dataStr = JSON.stringify(mediaItems, null, 2);
+
+      try {
+        const tempArea = document.createElement('textarea');
+        tempArea.value = dataStr;
+        tempArea.style.position = 'fixed';
+        tempArea.style.opacity = '0';
+        document.body.appendChild(tempArea);
+        tempArea.select();
+        document.execCommand('copy');
+        tempArea.remove();
+      } catch (e) {}
+
+      try {
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `kinobro_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch (e) {}
+
+      showToast('Бэкап скачан и скопирован в буфер!');
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (Array.isArray(parsed)) {
+            mediaItems = parsed;
+            saveToStorage();
+            renderItems();
+            showToast(`Загружено тайтлов: ${parsed.length}`);
+          } else {
+            showToast('Неверный формат файла бэкапа', 'error');
+          }
+        } catch (err) {
+          showToast('Ошибка чтения JSON файла', 'error');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    // ==========================================
+    // 12. SECURITY HELPER & BOOTSTRAP
+    // ==========================================
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        initTelegramWebApp();
+        loadItemsAsync();
+      } catch (e) {
+        console.error('Boot error:', e);
+      }
+    });
+  </script>
+</body>
+</html>
