@@ -1026,10 +1026,11 @@ function render() {
     const wo = item.watchOrder || [];
     const woDone = wo.filter(w => w.state === 'done').length;
     const woWait = wo.filter(w => w.state === 'wait').length;
+    const woLabel = item.type === 'series' ? `Сезоны: ${woDone}/${wo.length}` : `Порядок: ${woDone}/${wo.length}`;
     const woBadgeHtml = wo.length
-      ? `<button class="wo-pill" onclick="openWatchOrderModal('${item.id}')">📋 Порядок: ${woDone}/${wo.length}${woWait ? ' • ⏳' + woWait : ''}</button>`
+      ? `<button class="wo-pill" onclick="openWatchOrderModal('${item.id}')">📋 ${woLabel}${woWait ? ' • ⏳' + woWait : ''}</button>`
       : (item.type === 'anime' || item.type === 'series'
-          ? `<button class="wo-pill dim" onclick="openWatchOrderModal('${item.id}')">📋 Порядок / Сезоны</button>`
+          ? `<button class="wo-pill dim" onclick="openWatchOrderModal('${item.id}')">📋 ${item.type === 'series' ? 'Сезоны (Кинопоиск)' : 'Порядок просмотра'}</button>`
           : '');
 
     return `<div class="card">` +
@@ -1174,6 +1175,56 @@ async function fetchYummyWatchOrder(title, defaultState) {
   }
 }
 
+
+// Fetch seasons list from Kinopoisk Unofficial API (/api/v2.2/films/{id}/seasons)
+async function fetchKpSeasons(title, watchedSeasonNum, isWatchedStatus) {
+  if (!kpApiKey) return 'NO_KEY';
+  const cleanQ = title.replace(/\([^)]*\)/g, '').trim();
+  try {
+    const res = await fetch('https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword=' + encodeURIComponent(cleanQ) + '&page=1', {
+      headers: { 'X-API-KEY': kpApiKey, 'Content-Type': 'application/json' }
+    });
+    if (res.status === 402 || res.status === 429) return 'RATE_LIMIT';
+    if (!res.ok) return [];
+    const data = await res.json();
+    const films = data.films || [];
+    if (!films.length) return [];
+    const seriesMatch = films.find(f => f.type === 'TV_SERIES' || f.type === 'MINI_SERIES') || films[0];
+    const kpId = seriesMatch.filmId;
+    if (!kpId) return [];
+
+    const sRes = await fetch('https://kinopoiskapiunofficial.tech/api/v2.2/films/' + kpId + '/seasons', {
+      headers: { 'X-API-KEY': kpApiKey, 'Content-Type': 'application/json' }
+    });
+    if (sRes.status === 402 || sRes.status === 429) return 'RATE_LIMIT';
+    if (!sRes.ok) return [];
+    const sData = await sRes.json();
+    const itemsArr = Array.isArray(sData.items) ? sData.items : [];
+    if (!itemsArr.length) return [];
+
+    return itemsArr.map(function(s) {
+      const num = s.number || 1;
+      const eps = Array.isArray(s.episodes) ? s.episodes : [];
+      const epCnt = eps.length;
+      const firstDate = eps.length && eps[0].releaseDate ? eps[0].releaseDate.slice(0, 4) : '';
+      const meta = [epCnt ? (epCnt + ' эп.') : '', firstDate, 'Кинопоиск'].filter(Boolean).join(', ');
+      let st = 'none';
+      if (isWatchedStatus && num <= (watchedSeasonNum || 1)) {
+        st = 'done';
+      } else if (!isWatchedStatus && num < (watchedSeasonNum || 1)) {
+        st = 'done';
+      }
+      return {
+        title: num + ' сезон',
+        meta: meta,
+        state: st
+      };
+    });
+  } catch (e) {
+    return [];
+  }
+}
+
 // Watch Order Modal with 3 states: 🟢 done -> ⏳ wait -> 🔴 none
 let activeWoItemId = null;
 
@@ -1183,7 +1234,16 @@ window.openWatchOrderModal = function(id) {
   activeWoItemId = id;
   if (!Array.isArray(it.watchOrder)) it.watchOrder = [];
   document.getElementById('woModalTitle').textContent = '📋 ' + it.title;
-  document.getElementById('woFetchBtn').style.display = (it.type === 'anime') ? 'inline-flex' : 'none';
+  const fetchBtn = document.getElementById('woFetchBtn');
+  if (it.type === 'anime') {
+    fetchBtn.style.display = 'inline-flex';
+    fetchBtn.textContent = '🔄 С YummyAnime';
+  } else if (it.type === 'series') {
+    fetchBtn.style.display = 'inline-flex';
+    fetchBtn.textContent = '🔄 С Кинопоиска';
+  } else {
+    fetchBtn.style.display = 'none';
+  }
   renderWatchOrderList();
   document.getElementById('watchOrderModal').classList.add('open');
 };
@@ -1195,7 +1255,8 @@ function renderWatchOrderList() {
   const wo = it.watchOrder || [];
 
   if (!wo.length) {
-    listEl.innerHTML = `<div class="sr-msg">Список порядка просмотра пока пуст.<br>${it.type==='anime' ? 'Нажми <b>«🔄 С YummyAnime»</b> или добавь' : 'Добавь'} сезон / часть ниже!</div>`;
+    const hintSrc = it.type === 'anime' ? 'Нажми <b>«🔄 С YummyAnime»</b> или добавь' : (it.type === 'series' ? 'Нажми <b>«🔄 С Кинопоиска»</b> или добавь' : 'Добавь');
+    listEl.innerHTML = `<div class="sr-msg">Список сезонов / частей пока пуст.<br>${hintSrc} вручную ниже!</div>`;
     return;
   }
 
@@ -1279,6 +1340,34 @@ document.getElementById('woFetchBtn').onclick = async function() {
   const orig = btn.textContent;
   btn.textContent = '⏳ Загрузка...';
   btn.disabled = true;
+
+  if (it.type === 'series') {
+    const fetched = await fetchKpSeasons(it.title, it.season || 1, it.status === 'watched');
+    btn.textContent = orig;
+    btn.disabled = false;
+    if (fetched === 'NO_KEY') {
+      showToast('Сначала добавь API-ключ Кинопоиска в ⚙️');
+      return;
+    }
+    if (fetched === 'RATE_LIMIT') {
+      showToast('Лимит запросов Кинопоиска на сегодня исчерпан');
+      return;
+    }
+    if (!Array.isArray(fetched) || !fetched.length) {
+      showToast('Сезоны на Кинопоиске не найдены');
+      return;
+    }
+    it.watchOrder = fetched;
+    if (!it.note || /^\d+\s*сез\.?$/.test(it.note.trim())) {
+      it.note = fetched.length + ' сез.';
+    }
+    saveItems();
+    renderWatchOrderList();
+    render();
+    showToast('Загружено сезонов с Кинопоиска: ' + fetched.length);
+    return;
+  }
+
   const fetched = await fetchYummyWatchOrder(it.title, it.status === 'watched' ? 'done' : 'none');
   btn.textContent = orig;
   btn.disabled = false;
@@ -1546,6 +1635,12 @@ window.pickApiResult = async function(idx) {
       formWatchOrder = wo;
       if (wo.some(w => w.state === 'wait')) formWaiting = true;
       showToast('Подтянут порядок просмотра (' + wo.length + ' ч.)');
+    }
+  } else if (formType === 'series' && kpApiKey && (!formWatchOrder || !formWatchOrder.length)) {
+    const kpSeasons = await fetchKpSeasons(r.title, formSeason, formStatus === 'watched');
+    if (Array.isArray(kpSeasons) && kpSeasons.length) {
+      formWatchOrder = kpSeasons;
+      showToast('Подтянуты сезоны с Кинопоиска (' + kpSeasons.length + ' сез.)');
     }
   }
 };
