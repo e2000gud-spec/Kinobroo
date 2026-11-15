@@ -842,7 +842,12 @@ let stopCoversFlag = false;
 
 const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
 if (tg) {
-  try { tg.ready(); tg.expand(); } catch (e) {}
+  try {
+    tg.ready();
+    tg.expand();
+    if (tg.setHeaderColor) tg.setHeaderColor('#0e0e12');
+    if (tg.setBackgroundColor) tg.setBackgroundColor('#0e0e12');
+  } catch (e) {}
 }
 
 function showToast(msg) {
