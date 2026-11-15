@@ -7,6 +7,7 @@
   <title>КиноБро — Трекер фильмов, сериалов и аниме</title>
   <!-- Telegram Mini App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,7 +26,7 @@
   </script>
   <style>
     body {
-      background-color: #18191d;
+      background-color: #16171a;
       color: #f3f4f6;
       font-family: 'Inter', sans-serif;
       -webkit-tap-highlight-color: transparent;
@@ -36,7 +37,7 @@
       height: 4px;
     }
     ::-webkit-scrollbar-track {
-      background: #18191d;
+      background: #16171a;
     }
     ::-webkit-scrollbar-thumb {
       background: #2f333d;
@@ -64,7 +65,7 @@
   <div id="toast-container" class="fixed bottom-4 right-4 left-4 sm:left-auto z-50 flex flex-col items-end gap-2 pointer-events-none"></div>
 
   <!-- Top Navigation & Header -->
-  <header class="sticky top-0 z-30 bg-[#18191d]/95 backdrop-blur-xl border-b border-[#2e313a]">
+  <header class="sticky top-0 z-30 bg-[#16171a]/95 backdrop-blur-xl border-b border-[#2a2d35]">
     <div class="max-w-[560px] mx-auto px-3 py-2.5">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <!-- Brand Logo & Cloud Sync Indicator -->
@@ -74,7 +75,7 @@
           </div>
           <div class="flex items-center gap-1.5">
             <h1 class="text-base font-extrabold tracking-tight text-white">КиноБро</h1>
-            <span id="sync-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#22242a] text-zinc-400 border border-[#2e313a]">
+            <span id="sync-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#1f2126] text-zinc-400 border border-[#2a2d35]">
               💾 Local
             </span>
           </div>
@@ -82,18 +83,18 @@
 
         <!-- Global Actions & Backup Controls -->
         <div class="flex items-center gap-1.5">
-          <button type="button" onclick="handleClearOrDemoClick()" id="btn-demo-toggle" title="Очистить список или загрузить примеры" class="px-2 py-1.5 rounded-xl bg-[#22242a] hover:bg-[#2b2e36] border border-[#2e313a] text-zinc-300 hover:text-white transition text-[11px] font-bold flex items-center gap-1 active:scale-95">
+          <button type="button" onclick="handleClearOrDemoClick()" id="btn-demo-toggle" title="Очистить список или загрузить примеры" class="px-2 py-1.5 rounded-xl bg-[#1f2126] hover:bg-[#272a31] border border-[#2a2d35] text-zinc-300 hover:text-white transition text-[11px] font-bold flex items-center gap-1 active:scale-95">
             <span id="btn-demo-icon">🧹</span>
             <span id="btn-demo-label">Очистить всё</span>
           </button>
 
           <!-- JSON Export -->
-          <button type="button" onclick="exportData()" title="Скачать / скопировать бэкап (JSON)" class="p-1.5 rounded-xl bg-[#22242a] hover:bg-[#2b2e36] border border-[#2e313a] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
+          <button type="button" onclick="exportData()" title="Скачать / скопировать бэкап (JSON)" class="p-1.5 rounded-xl bg-[#1f2126] hover:bg-[#272a31] border border-[#2a2d35] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           </button>
 
           <!-- JSON Import -->
-          <label title="Загрузить из файла (JSON)" class="cursor-pointer p-1.5 rounded-xl bg-[#22242a] hover:bg-[#2b2e36] border border-[#2e313a] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
+          <label title="Загрузить из файла (JSON)" class="cursor-pointer p-1.5 rounded-xl bg-[#1f2126] hover:bg-[#272a31] border border-[#2a2d35] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
             <input type="file" accept=".json" onchange="importData(event)" class="hidden" />
           </label>
@@ -136,12 +137,12 @@
   <main class="flex-1 max-w-[560px] w-full mx-auto px-3 py-3">
     
     <!-- 3-Column Stats Bar -->
-    <div class="grid grid-cols-3 gap-2 mb-3 bg-[#22242a] border border-[#2e313a] rounded-2xl p-2 text-center">
+    <div class="grid grid-cols-3 gap-2 mb-3 bg-[#1f2126] border border-[#2a2d35] rounded-2xl p-2 text-center">
       <div>
         <div id="stat-total-label" class="text-[10px] text-zinc-400">В разделе</div>
         <div id="stat-total" class="font-extrabold text-white text-sm">0</div>
       </div>
-      <div class="border-x border-[#2e313a]">
+      <div class="border-x border-[#2a2d35]">
         <div id="stat-second-label" class="text-[10px] text-zinc-400">Просмотрено</div>
         <div id="stat-completed" class="font-extrabold text-emerald-400 text-sm">0</div>
       </div>
@@ -155,7 +156,7 @@
     <div class="flex flex-col gap-2 mb-3">
       <div class="relative flex-1">
         <svg class="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        <input id="search-input" type="text" oninput="renderItems()" placeholder="Быстрый поиск по названию..." class="w-full pl-8 pr-7 py-2 rounded-xl bg-[#22242a] border border-[#2e313a] focus:border-amber-500/60 focus:outline-none text-xs text-white placeholder-zinc-500 transition" />
+        <input id="search-input" type="text" oninput="renderItems()" placeholder="Быстрый поиск по названию..." class="w-full pl-8 pr-7 py-2 rounded-xl bg-[#1f2126] border border-[#2a2d35] focus:border-amber-500/60 focus:outline-none text-xs text-white placeholder-zinc-500 transition" />
         <button type="button" id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs px-1">✕</button>
       </div>
 
@@ -176,21 +177,21 @@
           <button type="button" onclick="setWaitingTypeFilter('anime')" data-wtype="anime" class="wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">⛩️ Аниме</button>
         </div>
 
-        <select id="sort-select" onchange="renderItems()" class="px-2 py-1.5 rounded-xl bg-[#22242a] border border-[#2e313a] text-[11px] font-semibold text-zinc-300 focus:outline-none">
+        <select id="sort-select" onchange="renderItems()" class="px-2 py-1.5 rounded-xl bg-[#1f2126] border border-[#2a2d35] text-[11px] font-semibold text-zinc-300 focus:outline-none">
           <option value="recent">Новые</option>
-          <option value="rating">Высокий рейтинг</option>
+          <option value="rating">По оценке</option>
           <option value="title">По названию</option>
         </select>
       </div>
     </div>
 
-    <!-- Cards Grid: Strictly 2 columns on mobile (gap 10px) -->
-    <div id="items-grid" class="grid grid-cols-2 gap-[10px]">
+    <!-- Cards Grid: 2 columns on mobile (gap-3) -->
+    <div id="items-grid" class="grid grid-cols-2 gap-3">
       <!-- Dynamic cards injected here -->
     </div>
 
     <!-- Empty State -->
-    <div id="empty-state" class="hidden flex-col items-center justify-center text-center py-10 px-4 bg-[#22242a] border border-dashed border-[#343844] rounded-3xl">
+    <div id="empty-state" class="hidden flex-col items-center justify-center text-center py-10 px-4 bg-[#1f2126] border border-dashed border-[#343844] rounded-3xl">
       <div id="empty-icon" class="text-4xl mb-2">🍿</div>
       <h3 id="empty-title" class="text-sm font-bold text-white mb-1">Пока тут пустовато</h3>
       <p id="empty-desc" class="text-xs text-zinc-400 max-w-xs mb-4">Добавь свой первый тайтл или загрузи стартовые примеры.</p>
@@ -198,7 +199,7 @@
         <button type="button" onclick="openAddModal()" class="px-4 py-2 rounded-xl bg-amber-500 text-zinc-950 font-extrabold text-xs hover:bg-amber-400 transition active:scale-95">
           + Добавить тайтл
         </button>
-        <button type="button" onclick="restoreDemoItems()" class="px-4 py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] text-zinc-200 border border-[#3c404d] font-bold text-xs transition active:scale-95">
+        <button type="button" onclick="restoreDemoItems()" class="px-4 py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] text-zinc-200 border border-[#3a3e4b] font-bold text-xs transition active:scale-95">
           ✨ Примеры
         </button>
       </div>
@@ -207,9 +208,9 @@
 
   <!-- ADD / EDIT MODAL -->
   <div id="item-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm overflow-y-auto">
-    <div class="bg-[#22242a] border border-[#2e313a] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden my-auto animate-fade-in">
+    <div class="bg-[#1f2126] border border-[#2a2d35] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden my-auto animate-fade-in">
       <!-- Modal Header -->
-      <div class="px-4 py-3 border-b border-[#2e313a] flex items-center justify-between bg-[#18191d]">
+      <div class="px-4 py-3 border-b border-[#2a2d35] flex items-center justify-between bg-[#16171a]">
         <div class="flex items-center gap-2">
           <span id="modal-category-badge" class="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide bg-amber-500/20 text-amber-300">Фильм</span>
           <h2 id="modal-title" class="text-sm font-extrabold text-white">Добавить тайтл</h2>
@@ -222,7 +223,7 @@
         <input type="hidden" id="edit-item-id" />
 
         <!-- IN-MODAL TYPE SWITCHER PILL BAR -->
-        <div class="bg-[#18191d] border border-[#2e313a] rounded-2xl p-1.5">
+        <div class="bg-[#16171a] border border-[#2a2d35] rounded-2xl p-1.5">
           <div class="grid grid-cols-3 gap-1">
             <button type="button" id="modal-type-movie" onclick="switchModalMediaType('movie')" class="py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1">
               <span>🎬</span>
@@ -238,25 +239,25 @@
             </button>
           </div>
           <!-- Optional Wishlist Toggle -->
-          <div class="mt-1.5 pt-1.5 border-t border-[#262932] flex items-center justify-between px-1.5">
+          <div class="mt-1.5 pt-1.5 border-t border-[#242730] flex items-center justify-between px-1.5">
             <span class="text-[11px] font-semibold text-zinc-400 flex items-center gap-1">
               <span>⏳</span>
               <span>В список ожидания (ещё не вышел)</span>
             </span>
-            <button type="button" id="modal-waiting-toggle" onclick="toggleModalWaitingFlag()" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-[#22242a] border-[#2e313a] text-zinc-400">
+            <button type="button" id="modal-waiting-toggle" onclick="toggleModalWaitingFlag()" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-[#1f2126] border-[#2a2d35] text-zinc-400">
               Выкл
             </button>
           </div>
         </div>
 
-        <!-- Title + Multi-Source Auto Cover Search -->
+        <!-- Title + Multi-Source CORS-Immune Auto Cover Search -->
         <div class="relative">
           <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-            Название (по-русски или на английском)
+            Название по-русски или на английском
           </label>
           <div class="flex gap-1.5">
             <div class="relative flex-1">
-              <input id="input-title" type="text" autocomplete="off" oninput="handleTitleInput(this.value)" placeholder="Например: Код гиас, Мстители, Пацаны..." class="w-full px-3 py-2 pr-8 rounded-xl bg-[#18191d] border border-[#2e313a] focus:border-amber-500/70 focus:outline-none text-white text-xs font-medium" />
+              <input id="input-title" type="text" autocomplete="off" oninput="handleTitleInput(this.value)" placeholder="Матрица, Начало, Мстители, Код гиас..." class="w-full px-3 py-2 pr-8 rounded-xl bg-[#16171a] border border-[#2a2d35] focus:border-amber-500/70 focus:outline-none text-white text-xs font-medium" />
               <div id="api-spinner" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
                 <svg class="animate-spin h-4 w-4 text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -264,20 +265,20 @@
                 </svg>
               </div>
             </div>
-            <button type="button" onclick="triggerPosterSearch()" class="px-3 py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] border border-[#3c404d] text-zinc-100 text-xs font-bold transition whitespace-nowrap active:scale-95">
+            <button type="button" onclick="triggerPosterSearch()" class="px-3 py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] border border-[#3a3e4b] text-zinc-100 text-xs font-bold transition whitespace-nowrap active:scale-95">
               🔍 Постер
             </button>
           </div>
 
-          <!-- Scrollable Autocomplete Results Dropdown -->
-          <div id="autocomplete-dropdown" class="hidden mt-2 bg-[#18191d] border border-[#343844] rounded-2xl overflow-hidden shadow-2xl max-h-[260px] overflow-y-auto divide-y divide-[#252831]"></div>
+          <!-- Scrollable Autocomplete Results Dropdown (max-h-64) -->
+          <div id="autocomplete-dropdown" class="hidden mt-2 bg-[#16171a] border border-[#343844] rounded-2xl overflow-hidden shadow-2xl max-h-64 overflow-y-auto divide-y divide-[#242730]"></div>
         </div>
 
         <!-- Poster Preview + Manual URL + Status Pills -->
-        <div class="flex gap-3 items-start bg-[#18191d] p-2.5 rounded-2xl border border-[#2e313a]">
-          <div class="w-16 h-24 rounded-xl overflow-hidden bg-[#22242a] flex-shrink-0 border border-[#343844] relative">
+        <div class="flex gap-3 items-start bg-[#16171a] p-2.5 rounded-2xl border border-[#2a2d35]">
+          <div class="w-16 h-24 rounded-xl overflow-hidden bg-[#1f2126] flex-shrink-0 border border-[#343844] relative">
             <img id="poster-preview" src="" referrerpolicy="no-referrer" alt="Постер" class="w-full h-full object-cover hidden" onerror="handlePosterPreviewError()" />
-            <div id="poster-placeholder" class="w-full h-full flex flex-col items-center justify-center text-center p-1 bg-gradient-to-br from-[#272a33] to-[#1b1d22] text-zinc-500">
+            <div id="poster-placeholder" class="w-full h-full flex flex-col items-center justify-center text-center p-1 bg-gradient-to-br from-[#272a33] to-[#16171a] text-zinc-500">
               <span class="text-lg">🖼️</span>
               <span class="text-[9px] leading-tight">Нет фото</span>
             </div>
@@ -285,7 +286,7 @@
           <div class="flex-1 w-full space-y-2">
             <div>
               <label class="block text-[10px] font-semibold text-zinc-400 mb-1">Ссылка на обложку</label>
-              <input id="input-poster" type="url" oninput="updatePosterPreview(this.value)" placeholder="https://..." class="w-full px-2.5 py-1.5 rounded-xl bg-[#22242a] border border-[#2e313a] focus:border-amber-500/70 focus:outline-none text-xs text-zinc-300" />
+              <input id="input-poster" type="url" oninput="updatePosterPreview(this.value)" placeholder="https://..." class="w-full px-2.5 py-1.5 rounded-xl bg-[#1f2126] border border-[#2a2d35] focus:border-amber-500/70 focus:outline-none text-xs text-zinc-300" />
             </div>
             <div id="modal-status-wrapper" class="flex flex-wrap items-center gap-1">
               <span class="text-[10px] text-zinc-500 mr-1">Статус:</span>
@@ -295,14 +296,14 @@
         </div>
 
         <!-- WAITING DETAILS SECTION -->
-        <div id="waiting-details-section" class="hidden bg-[#18191d] border border-rose-500/30 rounded-2xl p-3 space-y-2.5">
+        <div id="waiting-details-section" class="hidden bg-[#16171a] border border-rose-500/30 rounded-2xl p-3 space-y-2.5">
           <label class="block text-[10px] font-semibold uppercase tracking-wider text-rose-300">
             ⏳ Детали выхода в «Ожидание»
           </label>
           <div class="grid grid-cols-2 gap-2">
             <div id="waiting-season-box">
               <span class="block text-[10px] text-zinc-400 mb-1">Какой сезон ждём</span>
-              <div class="flex items-center bg-[#22242a] border border-[#2e313a] rounded-xl overflow-hidden">
+              <div class="flex items-center bg-[#1f2126] border border-[#2a2d35] rounded-xl overflow-hidden">
                 <button type="button" onclick="stepWaitingSeason(-1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
                 <input id="input-waiting-season" type="number" min="1" value="2" class="w-full text-center bg-transparent text-white font-extrabold text-xs focus:outline-none" />
                 <button type="button" onclick="stepWaitingSeason(1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
@@ -310,14 +311,14 @@
             </div>
             <div id="waiting-date-box">
               <span class="block text-[10px] text-zinc-400 mb-1">Когда выходит</span>
-              <input id="input-waiting-date" type="text" placeholder="Зима 2027, Жду анонс..." class="w-full px-2.5 py-1.5 rounded-xl bg-[#22242a] border border-[#2e313a] focus:border-rose-400 focus:outline-none text-xs text-white placeholder-zinc-600" />
+              <input id="input-waiting-date" type="text" placeholder="Зима 2027, Жду анонс..." class="w-full px-2.5 py-1.5 rounded-xl bg-[#1f2126] border border-[#2a2d35] focus:border-rose-400 focus:outline-none text-xs text-white placeholder-zinc-600" />
             </div>
           </div>
           <div class="flex flex-wrap gap-1">
-            <button type="button" onclick="setWaitingDatePreset('Зима 2027')" class="px-2 py-1 rounded-lg bg-[#22242a] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Зима 2027</button>
-            <button type="button" onclick="setWaitingDatePreset('Весна 2027')" class="px-2 py-1 rounded-lg bg-[#22242a] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Весна 2027</button>
-            <button type="button" onclick="setWaitingDatePreset('Осень 2027')" class="px-2 py-1 rounded-lg bg-[#22242a] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Осень 2027</button>
-            <button type="button" onclick="setWaitingDatePreset('Жду анонс')" class="px-2 py-1 rounded-lg bg-[#22242a] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Жду анонс</button>
+            <button type="button" onclick="setWaitingDatePreset('Зима 2027')" class="px-2 py-1 rounded-lg bg-[#1f2126] hover:bg-[#272a31] text-[10px] text-zinc-300">Зима 2027</button>
+            <button type="button" onclick="setWaitingDatePreset('Весна 2027')" class="px-2 py-1 rounded-lg bg-[#1f2126] hover:bg-[#272a31] text-[10px] text-zinc-300">Весна 2027</button>
+            <button type="button" onclick="setWaitingDatePreset('Осень 2027')" class="px-2 py-1 rounded-lg bg-[#1f2126] hover:bg-[#272a31] text-[10px] text-zinc-300">Осень 2027</button>
+            <button type="button" onclick="setWaitingDatePreset('Жду анонс')" class="px-2 py-1 rounded-lg bg-[#1f2126] hover:bg-[#272a31] text-[10px] text-zinc-300">Жду анонс</button>
           </div>
         </div>
 
@@ -331,14 +332,14 @@
         </div>
 
         <!-- SERIES & ANIME PROGRESS SECTION -->
-        <div id="series-progress-section" class="hidden bg-[#18191d] border border-[#2e313a] rounded-2xl p-3">
+        <div id="series-progress-section" class="hidden bg-[#16171a] border border-[#2a2d35] rounded-2xl p-3">
           <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-2">
             📍 Где остановился сейчас
           </label>
           <div class="grid grid-cols-2 gap-2">
             <div>
               <span class="block text-[10px] text-zinc-400 mb-1">Текущий сезон</span>
-              <div class="flex items-center bg-[#22242a] border border-[#2e313a] rounded-xl overflow-hidden">
+              <div class="flex items-center bg-[#1f2126] border border-[#2a2d35] rounded-xl overflow-hidden">
                 <button type="button" onclick="stepProgress('season', -1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
                 <input id="input-cur-season" type="number" min="1" value="1" class="w-full text-center bg-transparent text-white font-bold text-xs focus:outline-none" />
                 <button type="button" onclick="stepProgress('season', 1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
@@ -346,7 +347,7 @@
             </div>
             <div>
               <span class="block text-[10px] text-zinc-400 mb-1">Текущая серия</span>
-              <div class="flex items-center bg-[#22242a] border border-[#2e313a] rounded-xl overflow-hidden">
+              <div class="flex items-center bg-[#1f2126] border border-[#2a2d35] rounded-xl overflow-hidden">
                 <button type="button" onclick="stepProgress('episode', -1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
                 <input id="input-cur-episode" type="number" min="0" value="1" class="w-full text-center bg-transparent text-white font-bold text-xs focus:outline-none" />
                 <button type="button" onclick="stepProgress('episode', 1)" class="px-2.5 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
@@ -356,12 +357,12 @@
         </div>
 
         <!-- PER-SEASON RATINGS MANAGER -->
-        <div id="seasons-ratings-section" class="hidden bg-[#18191d] border border-[#2e313a] rounded-2xl p-3 space-y-2">
+        <div id="seasons-ratings-section" class="hidden bg-[#16171a] border border-[#2a2d35] rounded-2xl p-3 space-y-2">
           <div class="flex items-center justify-between">
             <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
               ⭐ Оценки по сезонам (1–10)
             </label>
-            <button type="button" onclick="addSeasonRow()" class="px-2 py-1 rounded-lg bg-[#2b2e36] hover:bg-[#353944] text-zinc-200 border border-[#3c404d] text-[11px] font-bold transition">
+            <button type="button" onclick="addSeasonRow()" class="px-2 py-1 rounded-lg bg-[#272a31] hover:bg-[#323640] text-zinc-200 border border-[#3a3e4b] text-[11px] font-bold transition">
               + Сезон
             </button>
           </div>
@@ -371,17 +372,17 @@
         <!-- Personal Note -->
         <div>
           <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">Заметка (необязательно)</label>
-          <input id="input-note" type="text" placeholder="Короткий коммент для себя..." class="w-full px-3 py-2 rounded-xl bg-[#18191d] border border-[#2e313a] focus:border-amber-500/70 focus:outline-none text-xs text-zinc-200 placeholder-zinc-600" />
+          <input id="input-note" type="text" placeholder="Короткий коммент для себя..." class="w-full px-3 py-2 rounded-xl bg-[#16171a] border border-[#2a2d35] focus:border-amber-500/70 focus:outline-none text-xs text-zinc-200 placeholder-zinc-600" />
         </div>
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-4 py-3 bg-[#18191d] border-t border-[#2e313a] flex items-center justify-between gap-2">
+      <div class="px-4 py-3 bg-[#16171a] border-t border-[#2a2d35] flex items-center justify-between gap-2">
         <button id="btn-delete-modal" type="button" onclick="deleteCurrentEditingItem()" class="hidden px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 text-xs font-bold transition">
           Удалить
         </button>
         <div class="flex items-center gap-2 ml-auto">
-          <button type="button" onclick="closeModal()" class="px-3 py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] text-zinc-300 text-xs font-semibold transition">
+          <button type="button" onclick="closeModal()" class="px-3 py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] text-zinc-300 text-xs font-semibold transition">
             Отмена
           </button>
           <button type="button" onclick="saveItem()" id="btn-save-modal" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-extrabold shadow transition active:scale-95">
@@ -394,12 +395,12 @@
 
   <!-- CONFIRM CLEAR ALL MODAL -->
   <div id="confirm-clear-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-    <div class="bg-[#22242a] border border-[#2e313a] rounded-3xl w-full max-w-xs p-5 shadow-2xl text-center animate-fade-in">
+    <div class="bg-[#1f2126] border border-[#2a2d35] rounded-3xl w-full max-w-xs p-5 shadow-2xl text-center animate-fade-in">
       <div class="text-3xl mb-2">🧹</div>
       <h3 class="text-sm font-extrabold text-white mb-1">Очистить всю коллекцию?</h3>
       <p class="text-xs text-zinc-400 mb-4">Все сохранённые фильмы, сериалы и аниме будут удалены из локального кэша и облака.</p>
       <div class="grid grid-cols-2 gap-2">
-        <button type="button" onclick="closeConfirmClearModal()" class="py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] text-zinc-300 text-xs font-bold">Отмена</button>
+        <button type="button" onclick="closeConfirmClearModal()" class="py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] text-zinc-300 text-xs font-bold">Отмена</button>
         <button type="button" onclick="executeClearAll()" class="py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-xs font-extrabold">Очистить</button>
       </div>
     </div>
@@ -407,19 +408,19 @@
 
   <!-- QUICK SEASON RATING MODAL -->
   <div id="season-quick-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm">
-    <div class="bg-[#22242a] border border-[#2e313a] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
-      <div class="px-4 py-3 border-b border-[#2e313a] flex items-center justify-between bg-[#18191d]">
+    <div class="bg-[#1f2126] border border-[#2a2d35] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+      <div class="px-4 py-3 border-b border-[#2a2d35] flex items-center justify-between bg-[#16171a]">
         <h3 id="sqm-title" class="font-extrabold text-white text-sm truncate pr-3">Оценки сезонов</h3>
         <button type="button" onclick="closeSeasonQuickModal()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center">✕</button>
       </div>
       <div class="p-3.5 space-y-2 max-h-[68vh] overflow-y-auto">
         <div id="sqm-seasons-container" class="space-y-2"></div>
-        <button type="button" onclick="sqmAddSeason()" class="w-full py-2 rounded-xl border border-dashed border-[#3c404d] hover:border-zinc-400 text-zinc-300 text-xs font-bold transition">
+        <button type="button" onclick="sqmAddSeason()" class="w-full py-2 rounded-xl border border-dashed border-[#3a3e4b] hover:border-zinc-400 text-zinc-300 text-xs font-bold transition">
           + Добавить ещё сезон
         </button>
       </div>
-      <div class="px-4 py-3 bg-[#18191d] border-t border-[#2e313a] flex justify-end gap-2">
-        <button type="button" onclick="closeSeasonQuickModal()" class="px-3 py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] text-zinc-300 text-xs font-semibold">Закрыть</button>
+      <div class="px-4 py-3 bg-[#16171a] border-t border-[#2a2d35] flex justify-end gap-2">
+        <button type="button" onclick="closeSeasonQuickModal()" class="px-3 py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] text-zinc-300 text-xs font-semibold">Закрыть</button>
         <button type="button" onclick="saveSeasonQuickModal()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-extrabold">Готово</button>
       </div>
     </div>
@@ -427,8 +428,8 @@
 
   <!-- SEND TO WAITING MODAL -->
   <div id="send-waiting-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm">
-    <div class="bg-[#22242a] border border-[#2e313a] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
-      <div class="px-4 py-3 border-b border-[#2e313a] flex items-center justify-between bg-[#18191d]">
+    <div class="bg-[#1f2126] border border-[#2a2d35] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+      <div class="px-4 py-3 border-b border-[#2a2d35] flex items-center justify-between bg-[#16171a]">
         <div class="flex items-center gap-2 min-w-0">
           <span class="text-base">⏳</span>
           <h3 id="swm-title" class="font-extrabold text-white text-sm truncate">В ожидание продолжения</h3>
@@ -442,7 +443,7 @@
 
         <div>
           <label class="block text-xs font-semibold text-zinc-300 mb-1">Какой сезон ждём?</label>
-          <div class="flex items-center bg-[#18191d] border border-[#2e313a] rounded-xl overflow-hidden">
+          <div class="flex items-center bg-[#16171a] border border-[#2a2d35] rounded-xl overflow-hidden">
             <button type="button" onclick="stepSwmSeason(-1)" class="px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">−</button>
             <input id="swm-season-input" type="number" min="1" value="2" class="w-full text-center bg-transparent text-white font-extrabold text-sm focus:outline-none" />
             <button type="button" onclick="stepSwmSeason(1)" class="px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 font-bold">+</button>
@@ -451,17 +452,17 @@
 
         <div>
           <label class="block text-xs font-semibold text-zinc-300 mb-1">Когда выходит</label>
-          <input id="swm-date-input" type="text" placeholder="Зима 2027, Осень 2026, Жду анонс..." class="w-full px-3 py-2 rounded-xl bg-[#18191d] border border-[#2e313a] focus:border-rose-400 focus:outline-none text-xs text-white placeholder-zinc-600" />
+          <input id="swm-date-input" type="text" placeholder="Зима 2027, Осень 2026, Жду анонс..." class="w-full px-3 py-2 rounded-xl bg-[#16171a] border border-[#2a2d35] focus:border-rose-400 focus:outline-none text-xs text-white placeholder-zinc-600" />
           <div class="flex flex-wrap gap-1 mt-2">
-            <button type="button" onclick="document.getElementById('swm-date-input').value='Зима 2027'" class="px-2 py-1 rounded-lg bg-[#18191d] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Зима 2027</button>
-            <button type="button" onclick="document.getElementById('swm-date-input').value='Весна 2027'" class="px-2 py-1 rounded-lg bg-[#18191d] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Весна 2027</button>
-            <button type="button" onclick="document.getElementById('swm-date-input').value='Осень 2027'" class="px-2 py-1 rounded-lg bg-[#18191d] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Осень 2027</button>
-            <button type="button" onclick="document.getElementById('swm-date-input').value='Жду анонс'" class="px-2 py-1 rounded-lg bg-[#18191d] hover:bg-[#2b2e36] text-[10px] text-zinc-300">Жду анонс</button>
+            <button type="button" onclick="document.getElementById('swm-date-input').value='Зима 2027'" class="px-2 py-1 rounded-lg bg-[#16171a] hover:bg-[#272a31] text-[10px] text-zinc-300">Зима 2027</button>
+            <button type="button" onclick="document.getElementById('swm-date-input').value='Весна 2027'" class="px-2 py-1 rounded-lg bg-[#16171a] hover:bg-[#272a31] text-[10px] text-zinc-300">Весна 2027</button>
+            <button type="button" onclick="document.getElementById('swm-date-input').value='Осень 2027'" class="px-2 py-1 rounded-lg bg-[#16171a] hover:bg-[#272a31] text-[10px] text-zinc-300">Осень 2027</button>
+            <button type="button" onclick="document.getElementById('swm-date-input').value='Жду анонс'" class="px-2 py-1 rounded-lg bg-[#16171a] hover:bg-[#272a31] text-[10px] text-zinc-300">Жду анонс</button>
           </div>
         </div>
       </div>
-      <div class="px-4 py-3 bg-[#18191d] border-t border-[#2e313a] flex justify-end gap-2">
-        <button type="button" onclick="closeSendWaitingModal()" class="px-3 py-2 rounded-xl bg-[#2b2e36] hover:bg-[#353944] text-zinc-300 text-xs font-semibold">Отмена</button>
+      <div class="px-4 py-3 bg-[#16171a] border-t border-[#2a2d35] flex justify-end gap-2">
+        <button type="button" onclick="closeSendWaitingModal()" class="px-3 py-2 rounded-xl bg-[#272a31] hover:bg-[#323640] text-zinc-300 text-xs font-semibold">Отмена</button>
         <button type="button" onclick="confirmSendToWaiting()" class="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-xs font-extrabold">
           ⏳ В ожидание
         </button>
@@ -486,8 +487,8 @@
       try {
         tg.ready();
         tg.expand();
-        if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#18191d');
-        if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#18191d');
+        if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#16171a');
+        if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#16171a');
         if (tg.BackButton) {
           tg.BackButton.onClick(() => {
             if (!document.getElementById('item-modal').classList.contains('hidden')) closeModal();
@@ -497,7 +498,7 @@
           });
         }
       } catch (e) {
-        console.warn('TG SDK note:', e);
+        console.warn('TG SDK init:', e);
       }
       updateSyncBadge();
     }
@@ -535,12 +536,12 @@
         badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30';
       } else {
         badge.textContent = '💾 Local';
-        badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#22242a] text-zinc-400 border border-[#2e313a]';
+        badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#1f2126] text-zinc-400 border border-[#2a2d35]';
       }
     }
 
     // ==========================================
-    // 2. STATE & 4 DEFAULT DEMO CARDS
+    // 2. STATE & DEFAULT DEMO CARDS
     // ==========================================
     const STORAGE_KEY = 'kinobro_v3_gray_demo';
     const CLOUD_META_KEY = 'kinobro_v3_gray_demo_meta';
@@ -614,7 +615,7 @@
     function getSvgFallbackDataUri(type = 'movie') {
       const emojiMap = { movie: '🎬', series: '📺', anime: '⛩️', waiting: '⏳' };
       const emoji = emojiMap[type] || '🎬';
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a2d36"/><stop offset="100%" stop-color="#18191d"/></linearGradient></defs><rect width="300" height="450" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="64">${emoji}</text></svg>`;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a2d36"/><stop offset="100%" stop-color="#16171a"/></linearGradient></defs><rect width="300" height="450" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="64">${emoji}</text></svg>`;
       return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
     }
 
@@ -757,7 +758,7 @@
         return;
       }
       try {
-        tg.CloudStorage.getItems([STORAGE_KEY, CLOUD_META_KEY, 'kb_meta'], (err, vals) => {
+        tg.CloudStorage.getItems([STORAGE_KEY, CLOUD_META_KEY], (err, vals) => {
           if (err || !vals) {
             callback(null);
             return;
@@ -895,9 +896,9 @@
       if (!container) return;
       const el = document.createElement('div');
       const colors = {
-        success: 'bg-[#22242a] border-emerald-500/40 text-emerald-300',
-        info: 'bg-[#22242a] border-blue-500/40 text-blue-300',
-        error: 'bg-[#22242a] border-rose-500/40 text-rose-300'
+        success: 'bg-[#1f2126] border-emerald-500/40 text-emerald-300',
+        info: 'bg-[#1f2126] border-blue-500/40 text-blue-300',
+        error: 'bg-[#1f2126] border-rose-500/40 text-rose-300'
       };
       el.className = `px-3.5 py-2 rounded-2xl border shadow-xl text-xs font-bold backdrop-blur-md animate-fade-in ${colors[type] || colors.success}`;
       el.textContent = message;
@@ -936,7 +937,7 @@
         if (t === tab) {
           el.className = `tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border ${CATEGORY_META[t].tabActive}`;
         } else {
-          el.className = 'tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border bg-[#22242a] border-[#2e313a] text-zinc-400 hover:text-zinc-200';
+          el.className = 'tab-btn flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl font-bold text-xs transition-all border bg-[#1f2126] border-[#2a2d35] text-zinc-400 hover:text-zinc-200';
         }
       });
 
@@ -981,7 +982,7 @@
         if (st === currentStatusFilter) {
           btn.className = 'status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border bg-zinc-200 text-zinc-950 border-white';
         } else {
-          btn.className = 'status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#22242a] border-[#2e313a] text-zinc-400 hover:text-white';
+          btn.className = 'status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#1f2126] border-[#2a2d35] text-zinc-400 hover:text-white';
         }
       });
 
@@ -990,7 +991,7 @@
         if (wt === currentWaitingTypeFilter) {
           btn.className = 'wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border bg-rose-500/20 text-rose-300 border-rose-500/50';
         } else {
-          btn.className = 'wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#22242a] border-[#2e313a] text-zinc-400 hover:text-white';
+          btn.className = 'wtype-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#1f2126] border-[#2a2d35] text-zinc-400 hover:text-white';
         }
       });
     }
@@ -1107,29 +1108,34 @@
         const isMovieWait = item.waitingSubtype === 'movie';
 
         const seasonPills = !isMovieWait && Array.isArray(item.seasons) && item.seasons.length > 0
-          ? item.seasons.slice(-3).map(s => `<span class="px-1.5 py-0.5 rounded bg-[#18191d] text-[9px] font-bold text-zinc-300 border border-[#2e313a]">С${s.season}:${s.rating || '—'}</span>`).join('')
+          ? item.seasons.slice(-3).map(s => `<span class="px-1.5 py-0.5 rounded bg-[#16171a] text-[9px] font-bold text-zinc-300 border border-[#2a2d35]">С${s.season}:${s.rating || '—'}</span>`).join('')
           : '';
 
         return `
-          <div class="bg-[#22242a] border border-[#2e313a] hover:border-rose-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
+          <div class="bg-[#1f2126] border border-[#2a2d35] hover:border-rose-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
             <div>
-              <div class="relative aspect-[2/3] w-full bg-[#18191d] overflow-hidden">
+              <div class="relative aspect-[2/3] w-full bg-[#16171a] overflow-hidden">
                 <img src="${escapeHtml(posterSrc)}" referrerpolicy="no-referrer" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.onerror=null;this.src='${svgFallback}'" />
-                <div class="absolute inset-0 bg-gradient-to-t from-[#22242a] via-transparent to-black/45"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#1f2126] via-transparent to-black/45"></div>
                 <div class="absolute top-2 left-2 right-2 flex items-center justify-between gap-1">
                   <span class="px-1.5 py-0.5 rounded-lg bg-black/80 backdrop-blur-md border border-white/15 text-zinc-200 font-bold text-[10px]">${sub}</span>
                   ${ratingBadge}
                 </div>
-                <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="absolute bottom-2 right-2 w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
-                  ✎
-                </button>
+                <div class="absolute bottom-2 right-2 flex items-center gap-1">
+                  <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
+                    ✎
+                  </button>
+                  <button type="button" onclick="deleteItemQuick('${item.id}')" title="Удалить" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-rose-600 text-rose-300 hover:text-white flex items-center justify-center text-xs backdrop-blur-md border border-white/15 transition">
+                    🗑
+                  </button>
+                </div>
               </div>
 
               <div class="p-2.5 pb-1.5">
                 <h3 class="font-extrabold text-white text-xs leading-snug line-clamp-2 min-h-[2rem]" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</h3>
                 ${item.note ? `<p class="text-[10px] text-zinc-400 italic truncate mt-0.5">«${escapeHtml(item.note)}»</p>` : ''}
                 
-                <div class="mt-2 bg-[#18191d] border border-rose-500/25 rounded-xl px-2 py-1.5 flex items-center justify-between gap-1">
+                <div class="mt-2 bg-[#16171a] border border-rose-500/25 rounded-xl px-2 py-1.5 flex items-center justify-between gap-1">
                   <span class="text-[10px] font-extrabold text-rose-300">${isMovieWait ? 'Премьера' : 'Сезон ' + expSeason}</span>
                   <span class="text-[10px] font-semibold text-zinc-300 truncate">${escapeHtml(relDate)}</span>
                 </div>
@@ -1155,18 +1161,23 @@
         const toggleLabel = item.status === 'completed' ? '↩ В планы' : '✓ Глянул';
 
         return `
-          <div class="bg-[#22242a] border border-[#2e313a] hover:border-amber-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
+          <div class="bg-[#1f2126] border border-[#2a2d35] hover:border-amber-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
             <div>
-              <div class="relative aspect-[2/3] w-full bg-[#18191d] overflow-hidden">
+              <div class="relative aspect-[2/3] w-full bg-[#16171a] overflow-hidden">
                 <img src="${escapeHtml(posterSrc)}" referrerpolicy="no-referrer" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.onerror=null;this.src='${svgFallback}'" />
-                <div class="absolute inset-0 bg-gradient-to-t from-[#22242a] via-transparent to-black/45"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#1f2126] via-transparent to-black/45"></div>
                 <div class="absolute top-2 left-2 right-2 flex items-center justify-between gap-1">
                   <span class="px-1.5 py-0.5 rounded-lg border backdrop-blur-md font-bold text-[10px] ${stInfo.class}">${stInfo.label}</span>
                   ${ratingBadge}
                 </div>
-                <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="absolute bottom-2 right-2 w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
-                  ✎
-                </button>
+                <div class="absolute bottom-2 right-2 flex items-center gap-1">
+                  <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
+                    ✎
+                  </button>
+                  <button type="button" onclick="deleteItemQuick('${item.id}')" title="Удалить" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-rose-600 text-rose-300 hover:text-white flex items-center justify-center text-xs backdrop-blur-md border border-white/15 transition">
+                    🗑
+                  </button>
+                </div>
               </div>
 
               <div class="p-2.5 pb-1.5">
@@ -1176,7 +1187,7 @@
             </div>
 
             <div class="p-2.5 pt-1.5 grid grid-cols-2 gap-1.5">
-              <button type="button" onclick="quickToggleMovieStatus('${item.id}', '${nextStatus}')" class="py-1.5 px-2 rounded-xl bg-[#18191d] hover:bg-[#2b2e36] border border-[#2e313a] text-[10px] font-bold text-zinc-200 transition active:scale-95">
+              <button type="button" onclick="quickToggleMovieStatus('${item.id}', '${nextStatus}')" class="py-1.5 px-2 rounded-xl bg-[#16171a] hover:bg-[#272a31] border border-[#2a2d35] text-[10px] font-bold text-zinc-200 transition active:scale-95">
                 ${toggleLabel}
               </button>
               <button type="button" onclick="openEditModal('${item.id}')" class="py-1.5 px-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-[10px] font-extrabold text-amber-300 transition active:scale-95">
@@ -1191,22 +1202,27 @@
       const curS = item.currentSeason || 1;
       const curE = item.currentEpisode || 1;
       const seasonPills = Array.isArray(item.seasons) && item.seasons.length > 0
-        ? item.seasons.map(s => `<span class="px-1.5 py-0.5 rounded bg-[#18191d] text-[9px] font-bold text-zinc-300 border border-[#2e313a]">С${s.season}:${s.rating || '—'}</span>`).join('')
+        ? item.seasons.map(s => `<span class="px-1.5 py-0.5 rounded bg-[#16171a] text-[9px] font-bold text-zinc-300 border border-[#2a2d35]">С${s.season}:${s.rating || '—'}</span>`).join('')
         : '<span class="text-[9px] text-zinc-500">Оценок сезонов нет</span>';
 
       return `
-        <div class="bg-[#22242a] border border-[#2e313a] hover:border-blue-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
+        <div class="bg-[#1f2126] border border-[#2a2d35] hover:border-blue-500/40 rounded-2xl overflow-hidden flex flex-col justify-between transition group animate-fade-in">
           <div>
-            <div class="relative aspect-[2/3] w-full bg-[#18191d] overflow-hidden">
+            <div class="relative aspect-[2/3] w-full bg-[#16171a] overflow-hidden">
               <img src="${escapeHtml(posterSrc)}" referrerpolicy="no-referrer" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.onerror=null;this.src='${svgFallback}'" />
-              <div class="absolute inset-0 bg-gradient-to-t from-[#22242a] via-transparent to-black/45"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#1f2126] via-transparent to-black/45"></div>
               <div class="absolute top-2 left-2 right-2 flex items-center justify-between gap-1">
                 <span class="px-1.5 py-0.5 rounded-lg border backdrop-blur-md font-bold text-[10px] ${stInfo.class}">${stInfo.label}</span>
                 ${ratingBadge}
               </div>
-              <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="absolute bottom-2 right-2 w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
-                ✎
-              </button>
+              <div class="absolute bottom-2 right-2 flex items-center gap-1">
+                <button type="button" onclick="openEditModal('${item.id}')" title="Редактировать" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-black text-zinc-200 flex items-center justify-center text-xs backdrop-blur-md border border-white/15">
+                  ✎
+                </button>
+                <button type="button" onclick="deleteItemQuick('${item.id}')" title="Удалить" class="w-7 h-7 rounded-xl bg-black/75 hover:bg-rose-600 text-rose-300 hover:text-white flex items-center justify-center text-xs backdrop-blur-md border border-white/15 transition">
+                  🗑
+                </button>
+              </div>
             </div>
 
             <div class="p-2.5 pb-1.5">
@@ -1214,11 +1230,11 @@
               ${item.note ? `<p class="text-[10px] text-zinc-400 italic truncate mt-0.5">«${escapeHtml(item.note)}»</p>` : ''}
 
               <!-- Compact Progress Row: С1 • Э5 with +1 buttons -->
-              <div class="mt-2 bg-[#18191d] border border-[#2e313a] rounded-xl px-2 py-1.5 flex items-center justify-between gap-1">
+              <div class="mt-2 bg-[#16171a] border border-[#2a2d35] rounded-xl px-2 py-1.5 flex items-center justify-between gap-1">
                 <span class="text-[11px] font-extrabold text-white tracking-tight">С${curS} • Э${curE}</span>
                 <div class="flex items-center gap-1">
-                  <button type="button" onclick="incrementProgress('${item.id}', 'episode')" class="px-1.5 py-0.5 rounded-md bg-[#2b2e36] hover:bg-blue-500 hover:text-white text-[10px] font-extrabold text-zinc-200 transition active:scale-90">+1 эп</button>
-                  <button type="button" onclick="incrementProgress('${item.id}', 'season')" class="px-1.5 py-0.5 rounded-md bg-[#2b2e36] hover:bg-emerald-500 hover:text-zinc-950 text-[10px] font-extrabold text-zinc-200 transition active:scale-90">+1 сез</button>
+                  <button type="button" onclick="incrementProgress('${item.id}', 'episode')" class="px-1.5 py-0.5 rounded-md bg-[#272a31] hover:bg-blue-500 hover:text-white text-[10px] font-extrabold text-zinc-200 transition active:scale-90">+1 эп</button>
+                  <button type="button" onclick="incrementProgress('${item.id}', 'season')" class="px-1.5 py-0.5 rounded-md bg-[#272a31] hover:bg-emerald-500 hover:text-zinc-950 text-[10px] font-extrabold text-zinc-200 transition active:scale-90">+1 сез</button>
                 </div>
               </div>
 
@@ -1229,10 +1245,10 @@
           </div>
 
           <div class="p-2.5 pt-1.5 grid grid-cols-2 gap-1.5">
-            <button type="button" onclick="openSeasonQuickModal('${item.id}')" class="py-1.5 px-1.5 rounded-xl bg-[#18191d] hover:bg-[#2b2e36] border border-[#2e313a] text-[10px] font-bold text-amber-300 transition active:scale-95 truncate">
+            <button type="button" onclick="openSeasonQuickModal('${item.id}')" class="py-1.5 px-1.5 rounded-xl bg-[#16171a] hover:bg-[#272a31] border border-[#2a2d35] text-[10px] font-bold text-amber-300 transition active:scale-95 truncate">
               ⭐ Оценки
             </button>
-            <button type="button" onclick="openSendWaitingModal('${item.id}')" class="py-1.5 px-1.5 rounded-xl bg-[#18191d] hover:bg-rose-500/20 border border-[#2e313a] hover:border-rose-500/40 text-[10px] font-bold text-rose-300 transition active:scale-95 truncate">
+            <button type="button" onclick="openSendWaitingModal('${item.id}')" class="py-1.5 px-1.5 rounded-xl bg-[#16171a] hover:bg-rose-500/20 border border-[#2a2d35] hover:border-rose-500/40 text-[10px] font-bold text-rose-300 transition active:scale-95 truncate">
               ⏳ Ждать
             </button>
           </div>
@@ -1243,6 +1259,16 @@
     // ==========================================
     // 7. QUICK CARD ACTIONS
     // ==========================================
+    function deleteItemQuick(id) {
+      triggerHaptic('medium');
+      const item = mediaItems.find(i => i.id === id);
+      if (!item) return;
+      mediaItems = mediaItems.filter(i => i.id !== id);
+      saveToStorage();
+      renderItems();
+      showToast(`«${item.title}» удалён`);
+    }
+
     function incrementProgress(id, field) {
       triggerHaptic('light');
       const idx = mediaItems.findIndex(i => i.id === id);
@@ -1435,7 +1461,7 @@
         if (!btn) return;
         btn.className = t === modalMediaType
           ? `py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1 ${typeStyles[t]}`
-          : 'py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1 bg-[#22242a] border-[#2e313a] text-zinc-400 hover:text-zinc-200';
+          : 'py-2 px-2 rounded-xl text-xs font-extrabold border transition flex items-center justify-center gap-1 bg-[#1f2126] border-[#2a2d35] text-zinc-400 hover:text-zinc-200';
       });
 
       const waitBtn = document.getElementById('modal-waiting-toggle');
@@ -1444,7 +1470,7 @@
         waitBtn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-rose-500/25 border-rose-500 text-rose-300';
       } else {
         waitBtn.textContent = 'Выкл';
-        waitBtn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-[#22242a] border-[#2e313a] text-zinc-400';
+        waitBtn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition bg-[#1f2126] border-[#2a2d35] text-zinc-400';
       }
 
       const waitDetSec = document.getElementById('waiting-details-section');
@@ -1490,7 +1516,7 @@
       group.innerHTML = allowedStatuses.map(st => {
         const label = st === 'completed' ? 'Просмотрено' : STATUS_LABELS[st].label;
         const active = st === modalSelectedStatus;
-        return `<button type="button" onclick="selectModalStatus('${st}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${active ? 'bg-white text-zinc-950 border-white' : 'bg-[#22242a] text-zinc-400 border-[#2e313a] hover:text-white'}">${label}</button>`;
+        return `<button type="button" onclick="selectModalStatus('${st}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${active ? 'bg-white text-zinc-950 border-white' : 'bg-[#1f2126] text-zinc-400 border-[#2a2d35] hover:text-white'}">${label}</button>`;
       }).join('');
     }
 
@@ -1523,7 +1549,7 @@
       const scores = [1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10];
       container.innerHTML = scores.map(sc => {
         const active = Number(modalMovieRating) === sc;
-        return `<button type="button" onclick="setMovieRating(${sc})" class="py-1.5 rounded-lg text-xs font-extrabold border transition ${active ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-[#18191d] text-zinc-300 border-[#2e313a] hover:border-zinc-500'}">${sc}</button>`;
+        return `<button type="button" onclick="setMovieRating(${sc})" class="py-1.5 rounded-lg text-xs font-extrabold border transition ${active ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-[#16171a] text-zinc-300 border-[#2a2d35] hover:border-zinc-500'}">${sc}</button>`;
       }).join('');
     }
 
@@ -1536,11 +1562,11 @@
     function renderSeasonsEditor() {
       const container = document.getElementById('seasons-list-editor');
       container.innerHTML = modalSeasons.map((s, idx) => `
-        <div class="flex items-center justify-between gap-2 bg-[#22242a] border border-[#2e313a] rounded-xl px-2.5 py-1.5">
+        <div class="flex items-center justify-between gap-2 bg-[#1f2126] border border-[#2a2d35] rounded-xl px-2.5 py-1.5">
           <span class="text-xs font-extrabold text-zinc-200 whitespace-nowrap">Сезон ${s.season}</span>
           <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
             ${[6, 7, 8, 8.5, 9, 9.5, 10].map(r => `
-              <button type="button" onclick="setModalSeasonRating(${idx}, ${r})" class="px-1.5 py-1 rounded text-[10px] font-extrabold transition ${Number(s.rating) === r ? 'bg-amber-500 text-zinc-950' : 'bg-[#18191d] text-zinc-400 hover:text-white'}">${r}</button>
+              <button type="button" onclick="setModalSeasonRating(${idx}, ${r})" class="px-1.5 py-1 rounded text-[10px] font-extrabold transition ${Number(s.rating) === r ? 'bg-amber-500 text-zinc-950' : 'bg-[#16171a] text-zinc-400 hover:text-white'}">${r}</button>
             `).join('')}
             ${modalSeasons.length > 1 ? `<button type="button" onclick="removeSeasonRow(${idx})" class="ml-1 text-rose-400 hover:text-rose-300 text-xs px-1">✕</button>` : ''}
           </div>
@@ -1695,14 +1721,14 @@
     function renderSqmSeasons() {
       const container = document.getElementById('sqm-seasons-container');
       container.innerHTML = sqmTempSeasons.map((s, idx) => `
-        <div class="bg-[#18191d] border border-[#2e313a] rounded-2xl p-2.5">
+        <div class="bg-[#16171a] border border-[#2a2d35] rounded-2xl p-2.5">
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-xs font-extrabold text-white">Сезон ${s.season}</span>
             <span class="text-xs font-bold text-amber-400">${s.rating > 0 ? '★ ' + s.rating : 'Без оценки'}</span>
           </div>
           <div class="grid grid-cols-5 gap-1">
             ${[5, 6, 7, 7.5, 8, 8.5, 9, 9.5, 10].map(r => `
-              <button type="button" onclick="sqmSetRating(${idx}, ${r})" class="py-1 rounded-lg text-[11px] font-extrabold border transition ${Number(s.rating) === r ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-[#22242a] text-zinc-300 border-[#2e313a]'}">${r}</button>
+              <button type="button" onclick="sqmSetRating(${idx}, ${r})" class="py-1 rounded-lg text-[11px] font-extrabold border transition ${Number(s.rating) === r ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-[#1f2126] text-zinc-300 border-[#2a2d35]'}">${r}</button>
             `).join('')}
           </div>
         </div>
@@ -1788,12 +1814,10 @@
     }
 
     // ==========================================
-    // 10. FAST NON-BLOCKING PARALLEL SEARCH ENGINE
-    //     - Strict 2500ms AbortController timeout per request
-    //     - Progressive rendering via Promise.allSettled()
-    //     - Anime: Shikimori (primary RU/EN) + Wiki->AniList/Jikan
-    //     - Movies: RU Wiki batch langlinks -> US iTunes + Direct US/RU iTunes
-    //     - Series: RU Wiki batch langlinks -> TVMaze + Direct TVMaze
+    // 10. CORS-IMMUNE MULTI-SOURCE SEARCH ENGINE
+    //     - JSONP loader for iTunes (bypasses iOS Telegram WebView CORS)
+    //     - Dual RU Wikipedia + Wikidata Entity Search (resolves "Матрица" -> "The Matrix")
+    //     - Parallel pipelines with 3.0s AbortController & 3.5s spinner guard
     // ==========================================
     function updatePosterPreview(url) {
       const img = document.getElementById('poster-preview');
@@ -1823,7 +1847,7 @@
       }
       searchDebounceTimer = setTimeout(() => {
         fetchPosterSuggestions(val.trim());
-      }, 360);
+      }, 450);
     }
 
     function triggerPosterSearch() {
@@ -1837,22 +1861,77 @@
       fetchPosterSuggestions(val);
     }
 
-    // Strict timeout wrapper: guarantees every fetch finishes or aborts within timeoutMs (2500ms)
-    async function fetchWithTimeout(url, options = {}, timeoutMs = 2500) {
+    // Genuine <script> JSONP loader for iTunes Search API (100% immune to iOS WebView CORS blocks)
+    let jsonpCounter = 0;
+    function searchItunesJsonp(term, entity = 'movie', country = 'us') {
+      return new Promise((resolve) => {
+        if (!term || !term.trim()) {
+          resolve([]);
+          return;
+        }
+        const cbName = `__kb_itunes_cb_${Date.now()}_${++jsonpCounter}`;
+        const script = document.createElement('script');
+        let settled = false;
+
+        const cleanup = () => {
+          if (window[cbName]) {
+            try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+          }
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+        };
+
+        const timer = setTimeout(() => {
+          if (!settled) {
+            settled = true;
+            cleanup();
+            resolve([]);
+          }
+        }, 3500);
+
+        window[cbName] = (data) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          cleanup();
+          const results = Array.isArray(data?.results) ? data.results : [];
+          resolve(results);
+        };
+
+        script.onerror = () => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          cleanup();
+          resolve([]);
+        };
+
+        const mediaParam = entity === 'tvSeason' ? 'tvShow' : 'movie';
+        script.src = `https://itunes.apple.com/search?term=${encodeURIComponent(term.trim())}&media=${mediaParam}&entity=${encodeURIComponent(entity)}&country=${encodeURIComponent(country)}&limit=20&callback=${cbName}`;
+        document.head.appendChild(script);
+      });
+    }
+
+    // Fetch wrapper with strict 3.0s AbortController timeout
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 3000) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
-        const response = await fetch(url, {
-          ...options,
-          signal: controller.signal
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        return response;
+        const res = await fetch(url, { ...options, signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res;
       } finally {
         clearTimeout(timer);
       }
+    }
+
+    function normalizeMatchKey(str) {
+      return (str || '')
+        .toLowerCase()
+        .replace(/\(.*?\)/g, '')
+        .replace(/\b(the|a|an|movie|film|series|season|part)\b/gi, '')
+        .replace(/[^a-zа-яё0-9]/gi, '');
     }
 
     function normalizeDedupeKey(title, year) {
@@ -1863,119 +1942,311 @@
       return `${norm}_${year || 'ny'}`;
     }
 
-    function normalizeMatchKey(str) {
-      return (str || '')
-        .toLowerCase()
-        .replace(/\(.*?\)/g, '')
-        .replace(/\b(the|a|an|movie|film|series|season)\b/gi, '')
-        .replace(/[^a-zа-яё0-9]/gi, '');
-    }
-
-    function parseWikiCleanTitleAndYear(rawTitle, snippet = '') {
+    function cleanWikiTitleAndYear(rawTitle, description = '') {
       let year = '';
-      const parenMatch = rawTitle.match(/\((?:[^)]*?\b)?(19\d{2}|20\d{2})\b[^)]*\)/);
-      if (parenMatch) {
-        year = parenMatch[1];
-      } else if (snippet) {
-        const cleanSnip = snippet.replace(/<[^>]+>/g, '');
-        const descMatch = cleanSnip.match(/\b(19\d{2}|20\d{2})\b/);
-        if (descMatch) year = descMatch[1];
+      const parenYear = rawTitle.match(/\((?:[^)]*?\b)?(19\d{2}|20\d{2})\b[^)]*\)/);
+      if (parenYear) {
+        year = parenYear[1];
+      } else if (description) {
+        const descYear = description.match(/\b(19\d{2}|20\d{2})\b/);
+        if (descYear) year = descYear[1];
       }
       const cleanTitle = rawTitle.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
       return { cleanTitle, year };
     }
 
-    // Helper: RU Wikipedia srsearch -> single batched prop=langlinks&lllang=en request
-    async function fetchWikiRuToEnPairs(query, suffix, limit = 10) {
-      try {
-        const searchUrl = `https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query + suffix)}&srlimit=${limit}&format=json&origin=*`;
-        const searchRes = await fetchWithTimeout(searchUrl, {}, 2500);
-        const searchData = await searchRes.json();
-        const results = Array.isArray(searchData?.query?.search) ? searchData.query.search : [];
-        if (results.length === 0) return [];
+    // Russian-to-Original Title Resolver (Dual RU Wikipedia generator=search + Wikidata wbsearchentities)
+    async function resolveRuToOriginalPairs(query, mediaHint = 'movie') {
+      const hintWord = mediaHint === 'movie' ? ' фильм' : (mediaHint === 'series' ? ' телесериал' : ' аниме');
 
-        const pageIds = results.map(r => r.pageid).filter(Boolean);
-        const langUrl = `https://ru.wikipedia.org/w/api.php?action=query&pageids=${pageIds.join('|')}&prop=langlinks&lllang=en&lllimit=50&format=json&origin=*`;
-        const langRes = await fetchWithTimeout(langUrl, {}, 2500);
-        const langData = await langRes.json();
-        const pagesObj = langData?.query?.pages || {};
+      const wikiWithHintUrl = `https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query + hintWord)}&gsrlimit=8&prop=langlinks|pageprops&lllang=en&format=json&origin=*`;
+      const wikiDirectUrl = `https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=8&prop=langlinks|pageprops&lllang=en&format=json&origin=*`;
+      const wikidataSearchUrl = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(query)}&language=ru&uselang=ru&limit=8&format=json&origin=*`;
 
-        const pairs = [];
-        for (const r of results) {
-          const { cleanTitle, year } = parseWikiCleanTitleAndYear(r.title || '', r.snippet || '');
-          if (!cleanTitle) continue;
-          const pInfo = pagesObj[r.pageid];
-          const rawEn = Array.isArray(pInfo?.langlinks) && pInfo.langlinks[0] ? pInfo.langlinks[0]['*'] : '';
-          const enTitle = rawEn.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
-          pairs.push({
-            ruTitle: cleanTitle,
-            enTitle,
-            year
-          });
+      const fetchWikiPages = async (url) => {
+        try {
+          const res = await fetchWithTimeout(url, {}, 3000);
+          const data = await res.json();
+          const pages = Object.values(data?.query?.pages || {});
+          pages.sort((a, b) => (a.index || 99) - (b.index || 99));
+          const out = [];
+          for (const p of pages) {
+            const rawEn = Array.isArray(p.langlinks) && p.langlinks[0] ? p.langlinks[0]['*'] : '';
+            if (!rawEn) continue;
+            const enClean = rawEn.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+            const desc = p.pageprops?.['wikibase-shortdesc'] || '';
+            const { cleanTitle, year } = cleanWikiTitleAndYear(p.title || '', desc);
+            if (enClean && cleanTitle) {
+              out.push({ ruTitle: cleanTitle, enTitle: enClean, year });
+            }
+          }
+          return out;
+        } catch (e) {
+          return [];
         }
-        return pairs;
-      } catch (e) {
-        return [];
+      };
+
+      const fetchWikidataEntities = async () => {
+        try {
+          const res = await fetchWithTimeout(wikidataSearchUrl, {}, 3000);
+          const data = await res.json();
+          const hits = Array.isArray(data?.search) ? data.search : [];
+          // Prioritize hits whose description mentions film/movie/series/anime or keep top hits
+          const mediaKeywords = /фильм|кино|сериал|мультфильм|аниме|франшиз|трилог|film|movie|series|anime/i;
+          const sortedHits = [...hits].sort((a, b) => {
+            const aIsMedia = mediaKeywords.test(a.description || '') ? 1 : 0;
+            const bIsMedia = mediaKeywords.test(b.description || '') ? 1 : 0;
+            return bIsMedia - aIsMedia;
+          });
+          const ids = sortedHits.slice(0, 6).map(h => h.id).filter(Boolean);
+          if (ids.length === 0) return [];
+
+          const getUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${ids.join('|')}&props=labels&languages=en|ru&format=json&origin=*`;
+          const getRes = await fetchWithTimeout(getUrl, {}, 3000);
+          const getData = await getRes.json();
+          const entities = getData?.entities || {};
+
+          const out = [];
+          for (const h of sortedHits.slice(0, 6)) {
+            const ent = entities[h.id];
+            if (!ent || !ent.labels) continue;
+            const enLabel = (ent.labels.en?.value || '').trim();
+            const ruLabel = (ent.labels.ru?.value || h.label || '').trim();
+            if (!enLabel) continue;
+            const yearMatch = (h.description || '').match(/\b(19\d{2}|20\d{2})\b/);
+            out.push({
+              ruTitle: ruLabel || enLabel,
+              enTitle: enLabel,
+              year: yearMatch ? yearMatch[1] : ''
+            });
+          }
+          return out;
+        } catch (e) {
+          return [];
+        }
+      };
+
+      const [r1, r2, r3] = await Promise.allSettled([
+        fetchWikiPages(wikiWithHintUrl),
+        fetchWikiPages(wikiDirectUrl),
+        fetchWikidataEntities()
+      ]);
+
+      const combined = [
+        ...(r1.status === 'fulfilled' ? r1.value : []),
+        ...(r3.status === 'fulfilled' ? r3.value : []),
+        ...(r2.status === 'fulfilled' ? r2.value : [])
+      ];
+
+      const uniquePairs = [];
+      const seenEn = new Set();
+      for (const pair of combined) {
+        const key = normalizeMatchKey(pair.enTitle);
+        if (!key || seenEn.has(key)) continue;
+        seenEn.add(key);
+        uniquePairs.push(pair);
+        if (uniquePairs.length >= 6) break;
       }
+      return uniquePairs;
     }
 
-    // ANIME SOURCE 1: Shikimori API (Instant RU/EN search + direct posters)
-    async function fetchAnimeFromShikimori(q) {
-      try {
-        const url = `https://shikimori.one/api/animes?search=${encodeURIComponent(q)}&limit=15`;
-        const res = await fetchWithTimeout(url, {
-          headers: { 'User-Agent': 'KinoBroApp' }
-        }, 2500);
-        const list = await res.json();
-        if (!Array.isArray(list)) return [];
+    // Format iTunes raw result into unified card object
+    function mapItunesMovieResult(item, resolvedPairs = [], priority = 6) {
+      const origName = (item.trackName || '').trim();
+      if (!origName) return null;
+      const year = item.releaseDate ? String(item.releaseDate).slice(0, 4) : '';
+      const poster = item.artworkUrl100 ? item.artworkUrl100.replace('100x100bb', '600x900bb') : '';
 
-        return list.map(item => {
-          const ru = (item.russian || '').trim();
-          const orig = (item.name || '').trim();
-          const mainName = ru || orig;
-          if (!mainName) return null;
+      // Match specific Russian label from resolvedPairs without overwriting unrelated titles
+      const origKey = normalizeMatchKey(origName);
+      let matchedPair = resolvedPairs.find(p => {
+        const pk = normalizeMatchKey(p.enTitle);
+        if (!pk) return false;
+        if (pk === origKey) {
+          return !p.year || !year || p.year === year;
+        }
+        return false;
+      });
+      if (!matchedPair) {
+        matchedPair = resolvedPairs.find(p => {
+          const pk = normalizeMatchKey(p.enTitle);
+          return pk && pk === origKey;
+        });
+      }
 
-          const displayTitle = (ru && orig && ru.toLowerCase() !== orig.toLowerCase())
-            ? `${ru} (${orig})`
-            : mainName;
-          const year = item.aired_on ? String(item.aired_on).slice(0, 4) : '';
-          const imgPath = item.image?.original || item.image?.preview || '';
-          const poster = imgPath
-            ? (imgPath.startsWith('http') ? imgPath : `https://shikimori.one${imgPath}`)
-            : '';
-          const epText = item.episodes ? `${item.episodes} эп.` : (item.status === 'ongoing' ? 'Онгоинг' : 'Аниме');
+      const displayTitle = (matchedPair && matchedPair.ruTitle && matchedPair.ruTitle.toLowerCase() !== origName.toLowerCase())
+        ? `${matchedPair.ruTitle} (${origName})`
+        : origName;
 
+      return {
+        id: item.trackId ? `itunes_${item.trackId}` : '',
+        title: matchedPair ? matchedPair.ruTitle : origName,
+        originalTitle: origName,
+        displayTitle,
+        year,
+        poster,
+        source: item.primaryGenreName || 'Фильм',
+        priority
+      };
+    }
+
+    // MOVIE PIPELINE: Direct JSONP (US + RU) + Resolved RU->EN JSONP (US)
+    async function searchMoviesPipeline(rawQuery, onPartialResults) {
+      // 1. Fire direct iTunes JSONP immediately (works instantly for English or RU-localized store items)
+      const directUsPromise = searchItunesJsonp(rawQuery, 'movie', 'us').then(list => {
+        const mapped = list.map(m => mapItunesMovieResult(m, [], 7)).filter(Boolean);
+        if (mapped.length > 0) onPartialResults(mapped);
+        return mapped;
+      });
+
+      const directRuPromise = searchItunesJsonp(rawQuery, 'movie', 'ru').then(list => {
+        const mapped = list.map(m => mapItunesMovieResult(m, [], 8)).filter(Boolean);
+        if (mapped.length > 0) onPartialResults(mapped);
+        return mapped;
+      });
+
+      // 2. Resolve Russian title -> Original English titles via Wikipedia & Wikidata
+      const resolvedPromise = resolveRuToOriginalPairs(rawQuery, 'movie').then(async (pairs) => {
+        if (!pairs || pairs.length === 0) return [];
+        const topPairs = pairs.slice(0, 4);
+        const enSearches = topPairs.map(p =>
+          searchItunesJsonp(p.enTitle, 'movie', 'us').then(list =>
+            list.map(m => mapItunesMovieResult(m, pairs, 10)).filter(Boolean)
+          )
+        );
+        const settled = await Promise.allSettled(enSearches);
+        const allResolved = [];
+        for (const s of settled) {
+          if (s.status === 'fulfilled') allResolved.push(...s.value);
+        }
+        if (allResolved.length > 0) onPartialResults(allResolved);
+        return allResolved;
+      });
+
+      await Promise.allSettled([directUsPromise, directRuPromise, resolvedPromise]);
+    }
+
+    // SERIES PIPELINE: TVMaze (direct + resolved EN) + iTunes TV JSONP fallback
+    async function searchSeriesPipeline(rawQuery, onPartialResults) {
+      const fetchTvMaze = async (term, pairs = [], priority = 7) => {
+        try {
+          const res = await fetchWithTimeout(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(term)}`, {}, 3000);
+          const data = await res.json();
+          if (!Array.isArray(data)) return [];
+          return data.slice(0, 15).map(entry => {
+            const s = entry.show;
+            if (!s || !s.name) return null;
+            const origName = s.name.trim();
+            const year = s.premiered ? String(s.premiered).slice(0, 4) : '';
+            const poster = s.image?.medium || s.image?.original || '';
+            const origKey = normalizeMatchKey(origName);
+            const matchedPair = pairs.find(p => normalizeMatchKey(p.enTitle) === origKey);
+            const displayTitle = (matchedPair && matchedPair.ruTitle.toLowerCase() !== origName.toLowerCase())
+              ? `${matchedPair.ruTitle} (${origName})`
+              : origName;
+            return {
+              id: s.id ? `tvmaze_${s.id}` : '',
+              title: matchedPair ? matchedPair.ruTitle : origName,
+              originalTitle: origName,
+              displayTitle,
+              year,
+              poster,
+              source: s.status === 'Ended' ? 'Завершён' : 'Сериал',
+              priority
+            };
+          }).filter(Boolean);
+        } catch (e) {
+          return [];
+        }
+      };
+
+      const directTvPromise = fetchTvMaze(rawQuery, [], 7).then(items => {
+        if (items.length > 0) onPartialResults(items);
+        return items;
+      });
+
+      const directItunesTvPromise = searchItunesJsonp(rawQuery, 'tvSeason', 'us').then(list => {
+        const mapped = list.map(m => {
+          const name = (m.collectionName || m.artistName || '').trim();
+          if (!name) return null;
+          const year = m.releaseDate ? String(m.releaseDate).slice(0, 4) : '';
+          const poster = m.artworkUrl100 ? m.artworkUrl100.replace('100x100bb', '600x900bb') : '';
           return {
-            title: mainName,
-            originalTitle: orig || mainName,
-            displayTitle,
+            id: m.collectionId ? `itunestv_${m.collectionId}` : '',
+            title: name,
+            originalTitle: name,
+            displayTitle: name,
             year,
             poster,
-            source: `Shikimori • ${epText}`,
-            type: 'anime',
-            priority: 10
+            source: 'Сериал',
+            priority: 6
           };
         }).filter(Boolean);
-      } catch (e) {
-        return [];
-      }
+        if (mapped.length > 0) onPartialResults(mapped);
+        return mapped;
+      });
+
+      const resolvedSeriesPromise = resolveRuToOriginalPairs(rawQuery, 'series').then(async (pairs) => {
+        if (!pairs || pairs.length === 0) return [];
+        const topPairs = pairs.slice(0, 4);
+        const searches = topPairs.map(p => fetchTvMaze(p.enTitle, pairs, 10));
+        const settled = await Promise.allSettled(searches);
+        const all = [];
+        for (const s of settled) {
+          if (s.status === 'fulfilled') all.push(...s.value);
+        }
+        if (all.length > 0) onPartialResults(all);
+        return all;
+      });
+
+      await Promise.allSettled([directTvPromise, directItunesTvPromise, resolvedSeriesPromise]);
     }
 
-    // ANIME SOURCE 2: RU Wikipedia -> EN -> AniList GraphQL (with Jikan fallback)
-    async function fetchAnimeFromWikiAndAniList(q) {
-      try {
-        const pairs = await fetchWikiRuToEnPairs(q, ' аниме', 6);
-        const enCandidates = Array.from(new Set([
-          ...pairs.map(p => p.enTitle).filter(Boolean),
-          q
-        ])).slice(0, 3);
+    // ANIME PIPELINE: Shikimori + AniList GraphQL + Jikan in parallel
+    async function searchAnimePipeline(rawQuery, onPartialResults) {
+      const shikiPromise = (async () => {
+        try {
+          const res = await fetchWithTimeout(`https://shikimori.one/api/animes?search=${encodeURIComponent(rawQuery)}&limit=20`, {}, 3000);
+          const list = await res.json();
+          if (!Array.isArray(list)) return [];
+          const mapped = list.map(item => {
+            const ru = (item.russian || '').trim();
+            const orig = (item.name || '').trim();
+            const mainName = ru || orig;
+            if (!mainName) return null;
+            const displayTitle = (ru && orig && ru.toLowerCase() !== orig.toLowerCase())
+              ? `${ru} (${orig})`
+              : mainName;
+            const year = item.aired_on ? String(item.aired_on).slice(0, 4) : '';
+            const imgPath = item.image?.original || item.image?.preview || '';
+            const poster = imgPath ? (imgPath.startsWith('http') ? imgPath : `https://shikimori.one${imgPath}`) : '';
+            const epText = item.episodes ? `${item.episodes} эп.` : 'Аниме';
+            return {
+              id: item.id ? `shiki_${item.id}` : '',
+              title: mainName,
+              originalTitle: orig || mainName,
+              displayTitle,
+              year,
+              poster,
+              source: `Shikimori • ${epText}`,
+              priority: 10
+            };
+          }).filter(Boolean);
+          if (mapped.length > 0) onPartialResults(mapped);
+          return mapped;
+        } catch (e) {
+          return [];
+        }
+      })();
 
-        const anilistPromises = enCandidates.map(async (term) => {
+      const anilistPromise = (async () => {
+        try {
           const graphqlQuery = `
             query ($search: String) {
-              Page(page: 1, perPage: 10) {
+              Page(page: 1, perPage: 15) {
                 media(search: $search, type: ANIME) {
-                  title { romaji english native }
+                  id
+                  title { romaji english }
                   startDate { year }
                   episodes
                   coverImage { large medium }
@@ -1986,239 +2257,66 @@
           const res = await fetchWithTimeout('https://graphql.anilist.co', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ query: graphqlQuery, variables: { search: term } })
-          }, 2500);
+            body: JSON.stringify({ query: graphqlQuery, variables: { search: rawQuery } })
+          }, 3000);
           const json = await res.json();
           const mediaList = json?.data?.Page?.media || [];
-
-          return mediaList.map(m => {
+          const mapped = mediaList.map(m => {
             const enName = (m.title?.english || m.title?.romaji || '').trim();
             if (!enName) return null;
-            const matchedPair = pairs.find(p => {
-              const pk = normalizeMatchKey(p.enTitle);
-              const ek = normalizeMatchKey(enName);
-              const rk = normalizeMatchKey(m.title?.romaji || '');
-              return pk && (pk === ek || pk === rk);
-            });
-            const displayTitle = matchedPair && matchedPair.ruTitle.toLowerCase() !== enName.toLowerCase()
-              ? `${matchedPair.ruTitle} (${enName})`
-              : enName;
-            const year = m.startDate?.year ? String(m.startDate.year) : (matchedPair?.year || '');
+            const year = m.startDate?.year ? String(m.startDate.year) : '';
             const poster = m.coverImage?.large || m.coverImage?.medium || '';
             const epText = m.episodes ? `${m.episodes} эп.` : 'Аниме';
-
             return {
+              id: m.id ? `anilist_${m.id}` : '',
               title: enName,
               originalTitle: m.title?.romaji || enName,
-              displayTitle,
+              displayTitle: enName,
               year,
               poster,
               source: `AniList • ${epText}`,
-              type: 'anime',
+              priority: 8
+            };
+          }).filter(Boolean);
+          if (mapped.length > 0) onPartialResults(mapped);
+          return mapped;
+        } catch (e) {
+          return [];
+        }
+      })();
+
+      const jikanPromise = (async () => {
+        try {
+          const res = await fetchWithTimeout(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(rawQuery)}&limit=15`, {}, 3000);
+          const json = await res.json();
+          const list = Array.isArray(json?.data) ? json.data : [];
+          const mapped = list.map(a => {
+            const title = (a.title_english || a.title || '').trim();
+            if (!title) return null;
+            const year = a.year ? String(a.year) : '';
+            const poster = a.images?.jpg?.large_image_url || a.images?.jpg?.image_url || '';
+            return {
+              id: a.mal_id ? `mal_${a.mal_id}` : '',
+              title,
+              originalTitle: a.title || title,
+              displayTitle: title,
+              year,
+              poster,
+              source: a.episodes ? `MAL • ${a.episodes} эп.` : 'MyAnimeList',
               priority: 7
             };
           }).filter(Boolean);
-        });
-
-        const settled = await Promise.allSettled(anilistPromises);
-        const items = [];
-        for (const r of settled) {
-          if (r.status === 'fulfilled' && Array.isArray(r.value)) {
-            items.push(...r.value);
-          }
+          if (mapped.length > 0) onPartialResults(mapped);
+          return mapped;
+        } catch (e) {
+          return [];
         }
-        return items;
-      } catch (e) {
-        return [];
-      }
+      })();
+
+      await Promise.allSettled([shikiPromise, anilistPromise, jikanPromise]);
     }
 
-    // MOVIES SOURCE 1: Direct iTunes (US + RU in parallel)
-    async function fetchMoviesDirectItunes(q) {
-      const urls = [
-        `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&country=us&media=movie&entity=movie&limit=15`,
-        `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&country=ru&lang=ru_ru&media=movie&entity=movie&limit=15`
-      ];
-
-      const settled = await Promise.allSettled(urls.map(async (u) => {
-        const res = await fetchWithTimeout(u, {}, 2500);
-        const data = await res.json();
-        return (data.results || []).map(m => {
-          const name = (m.trackName || '').trim();
-          if (!name) return null;
-          const year = m.releaseDate ? String(m.releaseDate).slice(0, 4) : '';
-          const poster = m.artworkUrl100 ? m.artworkUrl100.replace('100x100bb', '600x900bb') : '';
-          return {
-            title: name,
-            originalTitle: name,
-            displayTitle: name,
-            year,
-            poster,
-            source: m.primaryGenreName || 'Фильм',
-            type: 'movie',
-            priority: 6
-          };
-        }).filter(Boolean);
-      }));
-
-      const items = [];
-      for (const r of settled) {
-        if (r.status === 'fulfilled') items.push(...r.value);
-      }
-      return items;
-    }
-
-    // MOVIES SOURCE 2: RU Wikipedia -> Batched langlinks=en -> Parallel US iTunes for top 5 EN titles
-    async function fetchMoviesViaWikiAndUsItunes(q) {
-      try {
-        const pairs = await fetchWikiRuToEnPairs(q, ' фильм', 10);
-        const pairsWithEn = pairs.filter(p => p.enTitle && p.enTitle.length >= 2);
-        const top5Pairs = pairsWithEn.slice(0, 5);
-
-        const itunesPromises = top5Pairs.map(async (pair) => {
-          const url = `https://itunes.apple.com/search?term=${encodeURIComponent(pair.enTitle)}&country=us&media=movie&entity=movie&limit=3`;
-          const res = await fetchWithTimeout(url, {}, 2500);
-          const data = await res.json();
-          const results = data.results || [];
-          if (results.length === 0) return [];
-
-          // Find best matching movie from US iTunes for this Wikipedia pair
-          let best = results[0];
-          let bestScore = -1;
-          const targetKey = normalizeMatchKey(pair.enTitle);
-
-          for (const candidate of results) {
-            const cName = (candidate.trackName || '').trim();
-            const cYear = candidate.releaseDate ? String(candidate.releaseDate).slice(0, 4) : '';
-            const cKey = normalizeMatchKey(cName);
-            let score = 0;
-            if (cKey === targetKey) score += 10;
-            else if (cKey.includes(targetKey) || targetKey.includes(cKey)) score += 5;
-            if (pair.year && cYear && pair.year === cYear) score += 8;
-            if (score > bestScore) {
-              bestScore = score;
-              best = candidate;
-            }
-          }
-
-          const bestOrig = (best.trackName || pair.enTitle).trim();
-          const bestYear = (best.releaseDate ? String(best.releaseDate).slice(0, 4) : '') || pair.year;
-          const poster = best.artworkUrl100 ? best.artworkUrl100.replace('100x100bb', '600x900bb') : '';
-          const displayTitle = pair.ruTitle.toLowerCase() !== bestOrig.toLowerCase()
-            ? `${pair.ruTitle} (${bestOrig})`
-            : pair.ruTitle;
-
-          return [{
-            title: pair.ruTitle,
-            originalTitle: bestOrig,
-            displayTitle,
-            year: bestYear,
-            poster,
-            source: best.primaryGenreName || 'Фильм',
-            type: 'movie',
-            priority: 10
-          }];
-        });
-
-        const settled = await Promise.allSettled(itunesPromises);
-        const items = [];
-        for (const r of settled) {
-          if (r.status === 'fulfilled') items.push(...r.value);
-        }
-        return items;
-      } catch (e) {
-        return [];
-      }
-    }
-
-    // SERIES SOURCE 1: Direct TVMaze
-    async function fetchSeriesDirectTvMaze(q) {
-      try {
-        const res = await fetchWithTimeout(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(q)}`, {}, 2500);
-        const data = await res.json();
-        return (data || []).slice(0, 15).map(entry => {
-          const s = entry.show;
-          if (!s || !s.name) return null;
-          const year = s.premiered ? String(s.premiered).slice(0, 4) : '';
-          const poster = s.image?.medium || s.image?.original || '';
-          return {
-            title: s.name,
-            originalTitle: s.name,
-            displayTitle: s.name,
-            year,
-            poster,
-            source: s.status === 'Ended' ? 'Завершён' : 'Сериал',
-            type: 'series',
-            priority: 6
-          };
-        }).filter(Boolean);
-      } catch (e) {
-        return [];
-      }
-    }
-
-    // SERIES SOURCE 2: RU Wikipedia -> Batched langlinks=en -> Parallel TVMaze for top 5 EN titles
-    async function fetchSeriesViaWikiAndTvMaze(q) {
-      try {
-        const pairs = await fetchWikiRuToEnPairs(q, ' телесериал', 10);
-        const top5Pairs = pairs.filter(p => p.enTitle && p.enTitle.length >= 2).slice(0, 5);
-
-        const tvPromises = top5Pairs.map(async (pair) => {
-          const res = await fetchWithTimeout(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(pair.enTitle)}`, {}, 2500);
-          const data = await res.json();
-          if (!Array.isArray(data) || data.length === 0) return [];
-
-          let bestShow = data[0].show;
-          let bestScore = -1;
-          const targetKey = normalizeMatchKey(pair.enTitle);
-
-          for (const entry of data.slice(0, 5)) {
-            const s = entry.show;
-            if (!s || !s.name) continue;
-            const sKey = normalizeMatchKey(s.name);
-            const sYear = s.premiered ? String(s.premiered).slice(0, 4) : '';
-            let score = 0;
-            if (sKey === targetKey) score += 10;
-            else if (sKey.includes(targetKey) || targetKey.includes(sKey)) score += 5;
-            if (pair.year && sYear && pair.year === sYear) score += 8;
-            if (score > bestScore) {
-              bestScore = score;
-              bestShow = s;
-            }
-          }
-
-          if (!bestShow || !bestShow.name) return [];
-          const origName = bestShow.name.trim();
-          const bestYear = (bestShow.premiered ? String(bestShow.premiered).slice(0, 4) : '') || pair.year;
-          const poster = bestShow.image?.medium || bestShow.image?.original || '';
-          const displayTitle = pair.ruTitle.toLowerCase() !== origName.toLowerCase()
-            ? `${pair.ruTitle} (${origName})`
-            : pair.ruTitle;
-
-          return [{
-            title: pair.ruTitle,
-            originalTitle: origName,
-            displayTitle,
-            year: bestYear,
-            poster,
-            source: bestShow.status === 'Ended' ? 'Завершён' : 'Сериал',
-            type: 'series',
-            priority: 10
-          }];
-        });
-
-        const settled = await Promise.allSettled(tvPromises);
-        const items = [];
-        for (const r of settled) {
-          if (r.status === 'fulfilled') items.push(...r.value);
-        }
-        return items;
-      } catch (e) {
-        return [];
-      }
-    }
-
-    // Progressive Search Orchestrator with guaranteed <= 3000ms spinner shutdown
+    // Main Search Orchestrator with 3.5s guaranteed spinner shutdown
     async function fetchPosterSuggestions(rawQuery) {
       const sessionId = ++activeSearchSessionId;
       const spinner = document.getElementById('api-spinner');
@@ -2229,33 +2327,36 @@
       dropdown.innerHTML = `<div class="p-3 text-xs text-zinc-400 text-center flex items-center justify-center gap-2"><span class="animate-pulse">🔎</span><span>Ищу «${escapeHtml(rawQuery)}»...</span></div>`;
       dropdown.classList.remove('hidden');
 
-      // Hard safety guard: never leave spinner spinning beyond 3000ms under any circumstance
-      const hardSpinnerGuard = setTimeout(() => {
+      const spinnerGuard = setTimeout(() => {
         if (sessionId === activeSearchSessionId) {
           spinner.classList.add('hidden');
         }
-      }, 3000);
+      }, 3500);
 
-      const collectedItems = [];
+      const collected = [];
 
-      const renderProgressiveDropdown = (isFinal = false) => {
+      const renderResultsList = (isFinal = false) => {
         if (sessionId !== activeSearchSessionId) return;
 
-        // Sort: higher priority & items with posters first
-        const sorted = [...collectedItems].sort((a, b) => {
-          const aScore = (a.poster ? 20 : 0) + (a.priority || 0);
-          const bScore = (b.poster ? 20 : 0) + (b.priority || 0);
+        // Sort: items with posters and localized Russian+Original titles first
+        const sorted = [...collected].sort((a, b) => {
+          const aScore = (a.poster ? 30 : 0) + (a.displayTitle.includes('(') ? 10 : 0) + (a.priority || 0);
+          const bScore = (b.poster ? 30 : 0) + (b.displayTitle.includes('(') ? 10 : 0) + (b.priority || 0);
           return bScore - aScore;
         });
 
         const uniqueList = [];
-        const seen = new Set();
+        const seenIds = new Set();
+        const seenKeys = new Set();
+
         for (const item of sorted) {
+          if (item.id && seenIds.has(item.id)) continue;
           const keyOrig = normalizeDedupeKey(item.originalTitle || item.title, item.year);
           const keyTitle = normalizeDedupeKey(item.title, item.year);
-          if (seen.has(keyOrig) || seen.has(keyTitle)) continue;
-          seen.add(keyOrig);
-          seen.add(keyTitle);
+          if (seenKeys.has(keyOrig) || seenKeys.has(keyTitle)) continue;
+          if (item.id) seenIds.add(item.id);
+          seenKeys.add(keyOrig);
+          seenKeys.add(keyTitle);
           uniqueList.push(item);
           if (uniqueList.length >= 20) break;
         }
@@ -2270,13 +2371,13 @@
 
         const svgFallback = getSvgFallbackDataUri(searchType);
         dropdown.innerHTML = uniqueList.map((r, i) => `
-          <button type="button" data-sug-idx="${i}" class="suggestion-row-btn w-full flex items-center gap-2.5 p-2 hover:bg-[#22242a] transition text-left">
-            <img src="${escapeHtml(r.poster || svgFallback)}" referrerpolicy="no-referrer" class="w-9 h-12 object-cover rounded-lg bg-[#22242a] flex-shrink-0 border border-[#2e313a]" onerror="this.onerror=null;this.src='${svgFallback}'" />
+          <button type="button" data-sug-idx="${i}" class="suggestion-row-btn w-full flex items-center gap-2.5 p-2 hover:bg-[#1f2126] transition text-left">
+            <img src="${escapeHtml(r.poster || svgFallback)}" referrerpolicy="no-referrer" class="w-9 h-12 object-cover rounded-lg bg-[#1f2126] flex-shrink-0 border border-[#2a2d35]" onerror="this.onerror=null;this.src='${svgFallback}'" />
             <div class="min-w-0 flex-1">
               <div class="text-xs font-bold text-white truncate">${escapeHtml(r.displayTitle)}</div>
               <div class="text-[10px] text-zinc-400 truncate">${[r.year, r.source].filter(Boolean).join(' • ')}</div>
             </div>
-            <span class="text-[10px] font-bold text-zinc-200 px-2 py-1 rounded-lg bg-[#2b2e36] border border-[#3c404d] flex-shrink-0">Выбрать</span>
+            <span class="text-[10px] font-bold text-zinc-200 px-2 py-1 rounded-lg bg-[#272a31] border border-[#3a3e4b] flex-shrink-0">Выбрать</span>
           </button>
         `).join('');
 
@@ -2291,44 +2392,27 @@
         dropdown.classList.remove('hidden');
       };
 
+      const pushBatch = (batch) => {
+        if (sessionId !== activeSearchSessionId || !Array.isArray(batch) || batch.length === 0) return;
+        collected.push(...batch);
+        renderResultsList(false);
+      };
+
       try {
-        let tasks = [];
         if (searchType === 'anime') {
-          tasks = [
-            fetchAnimeFromShikimori(rawQuery),
-            fetchAnimeFromWikiAndAniList(rawQuery)
-          ];
+          await searchAnimePipeline(rawQuery, pushBatch);
         } else if (searchType === 'movie') {
-          tasks = [
-            fetchMoviesViaWikiAndUsItunes(rawQuery),
-            fetchMoviesDirectItunes(rawQuery)
-          ];
+          await searchMoviesPipeline(rawQuery, pushBatch);
         } else {
-          tasks = [
-            fetchSeriesViaWikiAndTvMaze(rawQuery),
-            fetchSeriesDirectTvMaze(rawQuery)
-          ];
+          await searchSeriesPipeline(rawQuery, pushBatch);
         }
-
-        // Render progressively as soon as EACH parallel source resolves
-        const wrappedTasks = tasks.map(promise =>
-          promise.then(resItems => {
-            if (sessionId === activeSearchSessionId && Array.isArray(resItems) && resItems.length > 0) {
-              collectedItems.push(...resItems);
-              renderProgressiveDropdown(false);
-            }
-            return resItems;
-          })
-        );
-
-        await Promise.allSettled(wrappedTasks);
       } catch (e) {
-        console.warn('Search catch:', e);
+        console.warn('Search pipeline note:', e);
       } finally {
-        clearTimeout(hardSpinnerGuard);
+        clearTimeout(spinnerGuard);
         if (sessionId === activeSearchSessionId) {
           spinner.classList.add('hidden');
-          renderProgressiveDropdown(true);
+          renderResultsList(true);
         }
       }
     }
