@@ -76,12 +76,12 @@
           <div class="flex items-center gap-1.5">
             <h1 class="text-base font-extrabold tracking-tight text-white">Киноброуски</h1>
             <span id="sync-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#181b20] text-zinc-400 border border-[#252932]">
-              💾 Local
+              💾 Локально
             </span>
           </div>
         </div>
 
-        <!-- Global Actions & Backup Controls -->
+        <!-- Global Actions: Export, Import, API Settings, + Add -->
         <div class="flex items-center gap-1.5">
           <!-- JSON Export -->
           <button type="button" onclick="exportData()" title="Скачать / скопировать бэкап (JSON)" class="p-2 rounded-xl bg-[#181b20] hover:bg-[#22262e] border border-[#252932] text-zinc-300 hover:text-white transition text-xs font-medium flex items-center active:scale-95">
@@ -93,6 +93,12 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
             <input type="file" accept=".json" onchange="importData(event)" class="hidden" />
           </label>
+
+          <!-- API Settings Gear -->
+          <button type="button" id="btn-api-settings" onclick="openSettingsModal()" title="Настройки Kinopoisk API" class="relative p-2 rounded-xl bg-[#181b20] hover:bg-[#22262e] border border-[#252932] text-zinc-300 hover:text-amber-300 transition text-xs font-medium flex items-center active:scale-95">
+            <span class="text-sm leading-none">⚙️</span>
+            <span id="kp-key-dot" class="hidden absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[#0f1115]"></span>
+          </button>
 
           <!-- Main Add Button -->
           <button type="button" id="btn-add-main" onclick="openAddModal()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold text-xs shadow transition-all flex items-center gap-1 active:scale-95">
@@ -126,7 +132,7 @@
         </div>
       </div>
 
-      <!-- Filter Tabs: Все, Фильмы, Сериалы, Аниме, Ожидание -->
+      <!-- Type Filter Tabs: Все, Фильмы, Сериалы, Аниме -->
       <div class="mt-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
         <button type="button" onclick="switchTab('all')" id="tab-all" class="tab-btn flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border">
           <span>🔥</span>
@@ -148,11 +154,6 @@
           <span>Аниме</span>
           <span id="count-anime" class="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30">0</span>
         </button>
-        <button type="button" onclick="switchTab('waiting')" id="tab-waiting" class="tab-btn flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border">
-          <span>⏳</span>
-          <span>Ожидание</span>
-          <span id="count-waiting" class="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30">0</span>
-        </button>
       </div>
     </div>
   </header>
@@ -160,7 +161,7 @@
   <!-- Main Workspace -->
   <main class="flex-1 max-w-[560px] w-full mx-auto px-3 py-3">
 
-    <!-- Search Across Saved Items & Secondary Filters -->
+    <!-- Search Across Saved Items & Status/Sort Filters -->
     <div class="flex flex-col gap-2 mb-3">
       <div class="relative flex-1">
         <svg class="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -168,16 +169,18 @@
         <button type="button" id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs px-1">✕</button>
       </div>
 
-      <div class="flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar">
-        <div id="status-filters" class="flex items-center gap-1">
-          <button type="button" onclick="setStatusFilter('all')" data-status="all" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border">Все</button>
-          <button type="button" onclick="setStatusFilter('watching')" data-status="watching" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">Смотрю</button>
-          <button type="button" onclick="setStatusFilter('completed')" data-status="completed" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">Просмотрено</button>
-          <button type="button" onclick="setStatusFilter('planned')" data-status="planned" class="status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">В планах</button>
+      <div class="flex items-center justify-between gap-1.5">
+        <div id="status-filters" class="flex items-center gap-1 overflow-x-auto no-scrollbar pb-0.5">
+          <button type="button" onclick="setStatusFilter('all')" data-status="all" class="status-pill flex-shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border">Все</button>
+          <button type="button" onclick="setStatusFilter('watching')" data-status="watching" class="status-pill flex-shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">Смотрю</button>
+          <button type="button" onclick="setStatusFilter('completed')" data-status="completed" class="status-pill flex-shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">Просмотрено</button>
+          <button type="button" onclick="setStatusFilter('planned')" data-status="planned" class="status-pill flex-shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">В планах</button>
+          <button type="button" onclick="setStatusFilter('waiting')" data-status="waiting" class="status-pill flex-shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border">⏳ Ожидание</button>
         </div>
 
-        <select id="sort-select" onchange="renderItems()" class="px-2 py-1.5 rounded-xl bg-[#181b20] border border-[#252932] text-[11px] font-semibold text-zinc-300 focus:outline-none">
+        <select id="sort-select" onchange="renderItems()" class="flex-shrink-0 px-2 py-1.5 rounded-xl bg-[#181b20] border border-[#252932] text-[11px] font-semibold text-zinc-300 focus:outline-none">
           <option value="recent">Новые</option>
+          <option value="oldest">Старые</option>
           <option value="rating">По оценке</option>
           <option value="title">По названию</option>
         </select>
@@ -205,7 +208,56 @@
     </div>
   </main>
 
-  <!-- ADD / EDIT MODAL -->
+  <!-- SETTINGS MODAL (Kinopoisk Unofficial API Key) -->
+  <div id="settings-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-[#181b20] border border-[#272b34] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden my-auto animate-fade-in">
+      <div class="px-4 py-3 border-b border-[#252932] flex items-center justify-between bg-[#0f1115]">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide bg-amber-500/20 text-amber-300">API</span>
+          <h2 class="text-sm font-extrabold text-white">Настройки поиска (Кинопоиск)</h2>
+        </div>
+        <button type="button" onclick="closeSettingsModal()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center transition">✕</button>
+      </div>
+
+      <div class="p-4 space-y-3.5">
+        <div class="bg-[#0f1115] border border-[#252932] rounded-2xl p-3 space-y-1.5 text-xs text-zinc-300">
+          <div class="font-extrabold text-amber-300 text-[11px] uppercase tracking-wider">Как подключить базу Кинопоиска (бесплатно):</div>
+          <ol class="list-decimal list-inside space-y-1 text-[11px] text-zinc-400 leading-relaxed">
+            <li>Зайди на сайт <span class="text-white font-semibold">kinopoiskapiunofficial.tech</span> и зарегистрируйся за 30 секунд.</li>
+            <li>В личном кабинете скопируй бесплатный ключ <span class="text-amber-300 font-mono">X-API-KEY</span> (500 запросов в сутки).</li>
+            <li>Вставь его ниже — ключ сохранится в <span class="text-blue-300 font-semibold">TG Cloud</span> и локально.</li>
+          </ol>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            КЛЮЧ KINOPOISK UNOFFICIAL API (X-API-KEY)
+          </label>
+          <input id="input-kp-api-key" type="text" autocomplete="off" placeholder="Например: 8c8e1a50-6322-4135-8875-5d40a5420d86" class="w-full px-3 py-2.5 rounded-xl bg-[#0f1115] border border-[#252932] focus:border-amber-500/70 focus:outline-none text-white text-xs font-mono" />
+        </div>
+
+        <p class="text-[11px] text-zinc-500 leading-snug">
+          Без ключа поиск тоже работает автоматически через <span class="text-zinc-300">YummyAnime, AniLibria, Shikimori, Википедию и IMDb</span>. Ключ делает выдачу фильмов и сериалов 100% точной.
+        </p>
+      </div>
+
+      <div class="px-4 py-3 bg-[#0f1115] border-t border-[#252932] flex items-center justify-between gap-2">
+        <button type="button" onclick="clearKpApiKey()" class="px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 text-xs font-bold transition">
+          Очистить
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeSettingsModal()" class="px-3.5 py-2 rounded-xl bg-[#22262e] hover:bg-[#2c313b] text-zinc-300 text-xs font-semibold transition">
+            Закрыть
+          </button>
+          <button type="button" onclick="saveKpApiKey()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-extrabold shadow transition active:scale-95">
+            Сохранить ключ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT TITLE MODAL -->
   <div id="item-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 bg-black/80 backdrop-blur-sm overflow-y-auto">
     <div class="bg-[#181b20] border border-[#272b34] rounded-3xl w-full max-w-md shadow-2xl overflow-hidden my-auto animate-fade-in">
       <!-- Modal Header -->
@@ -252,11 +304,11 @@
         <!-- Title Input + Live Auto Search -->
         <div class="relative">
           <label class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-            НАЗВАНИЕ ПО-РУССКИ ИЛИ НА АНГЛИЙСКОМ
+            НАЗВАНИЕ (ПО-РУССКИ ИЛИ НА АНГЛИЙСКОМ)
           </label>
           <div class="flex gap-1.5">
             <div class="relative flex-1">
-              <input id="input-title" type="text" autocomplete="off" oninput="handleTitleInput(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();triggerPosterSearch();}" placeholder="Матрица, Мстители, Брат, Код гиас..." class="w-full px-3 py-2.5 pr-8 rounded-xl bg-[#0f1115] border border-[#252932] focus:border-amber-500/70 focus:outline-none text-white text-xs font-medium" />
+              <input id="input-title" type="text" autocomplete="off" oninput="handleTitleInput(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();triggerPosterSearch();}" placeholder="Матрица, Песнь чёрных сов, Код гиас..." class="w-full px-3 py-2.5 pr-8 rounded-xl bg-[#0f1115] border border-[#252932] focus:border-amber-500/70 focus:outline-none text-white text-xs font-medium" />
               <div id="api-spinner" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
                 <svg class="animate-spin h-4 w-4 text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -397,7 +449,13 @@
         if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#0f1115');
         if (tg.BackButton) {
           tg.BackButton.onClick(() => {
-            if (!document.getElementById('item-modal').classList.contains('hidden')) closeModal();
+            if (!document.getElementById('settings-modal').classList.contains('hidden')) {
+              closeSettingsModal();
+              return;
+            }
+            if (!document.getElementById('item-modal').classList.contains('hidden')) {
+              closeModal();
+            }
           });
         }
       } catch (e) {
@@ -408,9 +466,11 @@
 
     function updateTgBackButton() {
       if (!tg || !tg.BackButton) return;
-      const modalOpen = !document.getElementById('item-modal').classList.contains('hidden');
+      const anyModalOpen =
+        !document.getElementById('item-modal').classList.contains('hidden') ||
+        !document.getElementById('settings-modal').classList.contains('hidden');
       try {
-        if (modalOpen) tg.BackButton.show();
+        if (anyModalOpen) tg.BackButton.show();
         else tg.BackButton.hide();
       } catch (e) {}
     }
@@ -434,20 +494,22 @@
         badge.textContent = '☁️ TG Cloud';
         badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30';
       } else {
-        badge.textContent = '💾 Local';
+        badge.textContent = '💾 Локально';
         badge.className = 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#181b20] text-zinc-400 border border-[#252932]';
       }
     }
 
     // ==========================================
-    // 2. STATE & STORAGE (kinobro_items_v1)
+    // 2. STATE, STORAGE & KINOPOISK KEY
     // ==========================================
     const STORAGE_KEY = 'kinobro_items_v1';
+    const KP_API_STORAGE_KEY = 'kinobro_kp_api_key_v1';
     const CLOUD_META_KEY = 'kinobro_items_v1_meta';
     const CLOUD_CHUNK_PREFIX = 'kinobro_items_v1_c_';
     const CLOUD_CHUNK_SIZE = 3800;
 
     let mediaItems = [];
+    let kpApiKey = '';
     let currentTab = 'all';
     let currentStatusFilter = 'all';
 
@@ -531,7 +593,7 @@
           poster: 'https://m.media-amazon.com/images/M/MV5BN2NmN2VhMTQtMDNiOS00NDlhLTliMjgtODE2ZTY0ODQyNDRhXkEyXkFqcGc@._V1_UX400_.jpg',
           status: 'completed',
           rating: 10,
-          note: 'Культовая классика братьев/сестёр Вачовски',
+          note: 'Культовая классика Вачовски',
           updatedAt: now - 1000
         },
         {
@@ -563,6 +625,80 @@
       ];
     }
 
+    function updateKpKeyIndicator() {
+      const dot = document.getElementById('kp-key-dot');
+      if (!dot) return;
+      if (kpApiKey && kpApiKey.trim().length > 5) {
+        dot.classList.remove('hidden');
+      } else {
+        dot.classList.add('hidden');
+      }
+    }
+
+    function saveKpApiKeyToStorage(keyVal) {
+      kpApiKey = (keyVal || '').trim();
+      updateKpKeyIndicator();
+      try {
+        localStorage.setItem(KP_API_STORAGE_KEY, kpApiKey);
+      } catch (e) {}
+      if (hasTgCloudStorage) {
+        try {
+          tg.CloudStorage.setItem(KP_API_STORAGE_KEY, kpApiKey, () => {});
+        } catch (e) {}
+      }
+    }
+
+    function loadKpApiKeyFromStorage() {
+      try {
+        kpApiKey = (localStorage.getItem(KP_API_STORAGE_KEY) || '').trim();
+      } catch (e) {
+        kpApiKey = '';
+      }
+      updateKpKeyIndicator();
+      if (hasTgCloudStorage) {
+        try {
+          tg.CloudStorage.getItem(KP_API_STORAGE_KEY, (err, val) => {
+            if (!err && typeof val === 'string' && val.trim()) {
+              kpApiKey = val.trim();
+              try { localStorage.setItem(KP_API_STORAGE_KEY, kpApiKey); } catch (e) {}
+              updateKpKeyIndicator();
+            }
+          });
+        } catch (e) {}
+      }
+    }
+
+    function openSettingsModal() {
+      triggerHaptic('light');
+      document.getElementById('input-kp-api-key').value = kpApiKey || '';
+      const modal = document.getElementById('settings-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      updateTgBackButton();
+    }
+
+    function closeSettingsModal() {
+      const modal = document.getElementById('settings-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      updateTgBackButton();
+    }
+
+    function saveKpApiKey() {
+      triggerHaptic('medium');
+      const val = document.getElementById('input-kp-api-key').value.trim();
+      saveKpApiKeyToStorage(val);
+      closeSettingsModal();
+      showToast(val ? 'Ключ Кинопоиска сохранён!' : 'Ключ очищен');
+    }
+
+    function clearKpApiKey() {
+      triggerHaptic('light');
+      document.getElementById('input-kp-api-key').value = '';
+      saveKpApiKeyToStorage('');
+      showToast('Ключ Кинопоиска удалён', 'info');
+    }
+
     function saveToLocal(items) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
@@ -590,7 +726,7 @@
           updateSyncBadge('☁️ Синхр...');
           tg.CloudStorage.setItem(STORAGE_KEY, jsonStr, (err) => {
             if (err) {
-              updateSyncBadge('💾 Local');
+              updateSyncBadge('💾 Локально');
               return;
             }
             tg.CloudStorage.setItem(CLOUD_META_KEY, '0', () => {
@@ -605,7 +741,7 @@
           updateSyncBadge('☁️ Синхр...');
           tg.CloudStorage.setItem(CLOUD_META_KEY, String(chunks.length), (err) => {
             if (err) {
-              updateSyncBadge('💾 Local');
+              updateSyncBadge('💾 Локально');
               return;
             }
             let done = 0;
@@ -620,7 +756,7 @@
           });
         }
       } catch (e) {
-        updateSyncBadge('💾 Local');
+        updateSyncBadge('💾 Локально');
       }
     }
 
@@ -675,6 +811,7 @@
     }
 
     function loadItemsAsync() {
+      loadKpApiKeyFromStorage();
       const localItems = loadFromLocal();
       if (localItems !== null) {
         mediaItems = localItems;
@@ -746,7 +883,7 @@
         addBtn.className = `px-3.5 py-2 rounded-xl ${meta.accentBtn} font-extrabold text-xs shadow transition-all flex items-center gap-1 active:scale-95`;
       }
 
-      ['all', 'movie', 'series', 'anime', 'waiting'].forEach(t => {
+      ['all', 'movie', 'series', 'anime'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         if (!el) return;
         if (t === tab) {
@@ -755,11 +892,6 @@
           el.className = 'tab-btn flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border bg-[#181b20] border-[#252932] text-zinc-400 hover:text-zinc-200';
         }
       });
-
-      const statusFilters = document.getElementById('status-filters');
-      if (statusFilters) {
-        statusFilters.style.display = tab === 'waiting' ? 'none' : 'flex';
-      }
 
       updateFilterPillsUI();
       renderItems();
@@ -776,9 +908,13 @@
       document.querySelectorAll('.status-pill').forEach(btn => {
         const st = btn.getAttribute('data-status');
         if (st === currentStatusFilter) {
-          btn.className = 'status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border bg-zinc-200 text-zinc-950 border-white';
+          if (st === 'waiting') {
+            btn.className = 'status-pill flex-shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border bg-rose-500/20 text-rose-300 border-rose-500/50';
+          } else {
+            btn.className = 'status-pill flex-shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border bg-zinc-200 text-zinc-950 border-white';
+          }
         } else {
-          btn.className = 'status-pill px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#181b20] border-[#252932] text-zinc-400 hover:text-white';
+          btn.className = 'status-pill flex-shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition border bg-[#181b20] border-[#252932] text-zinc-400 hover:text-white';
         }
       });
     }
@@ -811,19 +947,26 @@
 
       // Tab badges
       document.getElementById('count-all').textContent = mediaItems.length;
-      ['movie', 'series', 'anime', 'waiting'].forEach(t => {
+      ['movie', 'series', 'anime'].forEach(t => {
         const cEl = document.getElementById(`count-${t}`);
-        if (cEl) cEl.textContent = mediaItems.filter(i => i.type === t).length;
+        if (cEl) {
+          cEl.textContent = mediaItems.filter(i => i.type === t || (i.type === 'waiting' && i.waitingSubtype === t)).length;
+        }
       });
 
       let filtered = mediaItems.filter(item => {
-        if (currentTab !== 'all' && item.type !== currentTab) return false;
+        const effectiveType = item.type === 'waiting' ? (item.waitingSubtype || 'series') : item.type;
+        if (currentTab !== 'all' && effectiveType !== currentTab) return false;
         if (query && !item.title.toLowerCase().includes(query) && !(item.note || '').toLowerCase().includes(query)) {
           return false;
         }
-        if (currentTab !== 'waiting' && currentStatusFilter !== 'all') {
-          if (item.type === 'waiting') return false;
-          if (item.status !== currentStatusFilter) return false;
+        if (currentStatusFilter !== 'all') {
+          if (currentStatusFilter === 'waiting') {
+            if (item.type !== 'waiting') return false;
+          } else {
+            if (item.type === 'waiting') return false;
+            if (item.status !== currentStatusFilter) return false;
+          }
         }
         return true;
       });
@@ -831,6 +974,7 @@
       filtered.sort((a, b) => {
         if (sortVal === 'rating') return (Number(b.rating) || 0) - (Number(a.rating) || 0);
         if (sortVal === 'title') return a.title.localeCompare(b.title, 'ru');
+        if (sortVal === 'oldest') return (a.updatedAt || 0) - (b.updatedAt || 0);
         return (b.updatedAt || 0) - (a.updatedAt || 0);
       });
 
@@ -1105,8 +1249,8 @@
       modalTotalEpisodes = null;
       updatePosterPreview('');
 
-      if (currentTab === 'waiting') {
-        modalMediaType = 'series';
+      if (currentStatusFilter === 'waiting') {
+        modalMediaType = currentTab === 'all' ? 'series' : currentTab;
         modalIsWaiting = true;
       } else if (currentTab === 'all') {
         modalMediaType = 'movie';
@@ -1382,7 +1526,7 @@
         }
 
         mediaItems.unshift(newItem);
-        if (currentTab !== 'all' && currentTab !== targetType) {
+        if (targetType !== 'waiting' && currentTab !== 'all' && currentTab !== targetType) {
           switchTab(targetType);
         }
         showToast(`«${title}» добавлен!`);
@@ -1404,11 +1548,10 @@
     }
 
     // ==========================================
-    // 7. ZERO-CORS RUSSIAN SEARCH ARCHITECTURE
-    //    - RU Wikipedia + Wikidata -> English langlinks
-    //    - IMDb CloudFront Suggestion CDN (v3.sg.media-imdb.com)
-    //    - TVMaze backup for Series
-    //    - Shikimori + AniList GraphQL for Anime
+    // 7. MULTI-SOURCE ZERO-CORS SEARCH ENGINE
+    //    - Kinopoisk Unofficial API (when key provided)
+    //    - Anime / Donghua: YummyAnime + AniLibria + Shikimori + RU Wiki
+    //    - Films / Series: RU Wiki + EN Wiki Poster Lookup + IMDb + TVMaze
     // ==========================================
     function updatePosterPreview(url) {
       const img = document.getElementById('poster-preview');
@@ -1452,7 +1595,7 @@
       fetchPosterSuggestions(val);
     }
 
-    async function fetchWithTimeout(url, options = {}, timeoutMs = 4000) {
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 4200) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
@@ -1464,18 +1607,20 @@
       }
     }
 
+    function stripParentheses(str) {
+      return (str || '').replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
     function normalizeMatchKey(str) {
-      return (str || '')
+      return stripParentheses(str)
         .toLowerCase()
-        .replace(/\(.*?\)/g, '')
         .replace(/\b(the|a|an|movie|film|series|season|part)\b/gi, '')
         .replace(/[^a-zа-яё0-9]/gi, '');
     }
 
     function normalizeDedupeKey(title, year) {
-      const norm = (title || '')
+      const norm = stripParentheses(title)
         .toLowerCase()
-        .replace(/\(.*?\)/g, '')
         .replace(/[^a-zа-яё0-9]/gi, '');
       return `${norm}_${year || 'ny'}`;
     }
@@ -1493,21 +1638,89 @@
         const descYear = description.match(/\b(19\d{2}|20\d{2})\b/);
         if (descYear) year = descYear[1];
       }
-      const cleanTitle = rawTitle.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+      const cleanTitle = stripParentheses(rawTitle);
       return { cleanTitle, year };
     }
 
-    // Step B helper: Query IMDb open CloudFront suggestion CDN
+    // 7A. KINOPOISK UNOFFICIAL API (Optional User Token)
+    async function searchKinopoiskApi(rawQuery, mediaType) {
+      if (!kpApiKey || kpApiKey.trim().length < 6) return [];
+      try {
+        const url = `https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword=${encodeURIComponent(rawQuery)}&page=1`;
+        const res = await fetchWithTimeout(url, {
+          headers: {
+            'X-API-KEY': kpApiKey.trim(),
+            'Content-Type': 'application/json'
+          }
+        }, 4200);
+        const data = await res.json();
+        const films = Array.isArray(data?.films) ? data.films : [];
+
+        return films
+          .filter(f => {
+            if (!f) return false;
+            const t = (f.type || '').toUpperCase();
+            if (mediaType === 'movie') return t === 'FILM' || !t;
+            if (mediaType === 'series') return t === 'TV_SERIES' || t === 'MINI_SERIES' || t === 'TV_SHOW';
+            return true;
+          })
+          .slice(0, 10)
+          .map(f => {
+            const ru = (f.nameRu || '').trim();
+            const en = (f.nameEn || '').trim();
+            const mainName = ru || en;
+            if (!mainName) return null;
+            const displayTitle = (ru && en && ru.toLowerCase() !== en.toLowerCase())
+              ? `${ru} (${en})`
+              : mainName;
+            const year = f.year && f.year !== 'null' ? String(f.year) : '';
+            const poster = f.posterUrlPreview || f.posterUrl || '';
+            const ratingStr = f.rating && f.rating !== 'null' ? ` • ★ ${f.rating}` : '';
+            return {
+              id: f.filmId ? `kp_${f.filmId}` : '',
+              title: mainName,
+              originalTitle: en || mainName,
+              displayTitle,
+              year,
+              poster,
+              source: `Кинопоиск${ratingStr}`,
+              priority: 25
+            };
+          })
+          .filter(Boolean);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // 7B. ENGLISH WIKIPEDIA POSTER LOOKUP (Fixes missing sequel posters like The Matrix Revolutions)
+    async function fetchEnWikiPoster(enRawTitle) {
+      if (!enRawTitle) return '';
+      try {
+        const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(enRawTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=500&redirects=1&format=json&origin=*`;
+        const res = await fetchWithTimeout(url, {}, 3800);
+        const data = await res.json();
+        const pages = Object.values(data?.query?.pages || {});
+        for (const p of pages) {
+          if (p && p.thumbnail && p.thumbnail.source) {
+            return p.thumbnail.source;
+          }
+        }
+      } catch (e) {}
+      return '';
+    }
+
+    // 7C. IMDb CLOUDFRONT SUGGESTION CDN (Sanitized without parentheses)
     async function searchImdbSuggestions(enQuery, mediaType = 'movie', ruTitleHint = '', yearHint = '') {
-      const sanitized = (enQuery || '')
+      const cleaned = stripParentheses(enQuery)
         .toLowerCase()
         .replace(/[^a-z0-9\s]/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
-      if (!sanitized) return [];
+      if (!cleaned) return [];
 
       try {
-        const url = `https://v3.sg.media-imdb.com/suggestion/x/${encodeURIComponent(sanitized)}.json`;
+        const url = `https://v3.sg.media-imdb.com/suggestion/x/${encodeURIComponent(cleaned)}.json`;
         const res = await fetchWithTimeout(url, {}, 4000);
         const data = await res.json();
         const list = Array.isArray(data?.d) ? data.d : [];
@@ -1530,8 +1743,7 @@
               poster = poster.replace(/\._V1_.*\.jpg$/i, '._V1_UX400_.jpg');
             }
 
-            // Pair Russian title with matching IMDb hit
-            const useRuHint = ruTitleHint && (idx === 0 || (yearHint && year === yearHint) || normalizeMatchKey(origName) === normalizeMatchKey(enQuery));
+            const useRuHint = ruTitleHint && (idx === 0 || (yearHint && year === yearHint) || normalizeMatchKey(origName) === normalizeMatchKey(cleaned));
             const displayTitle = (useRuHint && ruTitleHint.toLowerCase() !== origName.toLowerCase())
               ? `${ruTitleHint} (${origName})`
               : origName;
@@ -1544,7 +1756,7 @@
               year,
               poster,
               source: item.q || 'IMDb',
-              priority: useRuHint ? 12 : 8
+              priority: useRuHint ? 14 : 9
             };
           });
       } catch (e) {
@@ -1552,11 +1764,12 @@
       }
     }
 
-    // Step C helper: Query TVMaze for Series
+    // 7D. TVMaze for Series
     async function searchTvMazeShows(enQuery, ruTitleHint = '') {
-      if (!enQuery || !enQuery.trim()) return [];
+      const cleaned = stripParentheses(enQuery);
+      if (!cleaned) return [];
       try {
-        const res = await fetchWithTimeout(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(enQuery.trim())}`, {}, 4000);
+        const res = await fetchWithTimeout(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(cleaned)}`, {}, 4000);
         const data = await res.json();
         if (!Array.isArray(data)) return [];
         return data.slice(0, 8).map((entry, idx) => {
@@ -1565,7 +1778,7 @@
           const origName = s.name.trim();
           const year = s.premiered ? String(s.premiered).slice(0, 4) : '';
           const poster = s.image?.medium || s.image?.original || '';
-          const useRuHint = ruTitleHint && (idx === 0 || normalizeMatchKey(origName) === normalizeMatchKey(enQuery));
+          const useRuHint = ruTitleHint && (idx === 0 || normalizeMatchKey(origName) === normalizeMatchKey(cleaned));
           const displayTitle = (useRuHint && ruTitleHint.toLowerCase() !== origName.toLowerCase())
             ? `${ruTitleHint} (${origName})`
             : origName;
@@ -1577,7 +1790,7 @@
             year,
             poster,
             source: 'TVMaze',
-            priority: useRuHint ? 11 : 7
+            priority: useRuHint ? 12 : 8
           };
         }).filter(Boolean);
       } catch (e) {
@@ -1585,75 +1798,72 @@
       }
     }
 
-    // Step A + B + C Pipeline for FILMS and SERIES
-    async function searchFilmsAndSeriesPipeline(rawQuery, mediaType, onBatch) {
-      const hintSuffix = mediaType === 'series' ? ' телесериал' : ' фильм';
-      const wikiHintUrl = `https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(rawQuery + hintSuffix)}&gsrlimit=6&prop=langlinks|pageimages|extracts&lllang=en&piprop=thumbnail&pithumbsize=400&exintro=1&explaintext=1&exsentences=1&format=json&origin=*`;
-      const wikiDirectUrl = `https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(rawQuery)}&gsrlimit=6&prop=langlinks|pageimages|extracts&lllang=en&piprop=thumbnail&pithumbsize=400&exintro=1&explaintext=1&exsentences=1&format=json&origin=*`;
-      const wikidataUrl = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(rawQuery)}&language=ru&uselang=ru&limit=5&format=json&origin=*`;
+    // 7E. RUSSIAN WIKIPEDIA + EN WIKIPEDIA POSTERS + IMDb + TVMaze PIPELINE
+    async function searchWikipediaPipeline(rawQuery, mediaType, onBatch, withHint = true) {
+      const hintSuffix = withHint ? (mediaType === 'series' ? ' телесериал' : (mediaType === 'anime' ? ' аниме' : ' фильм')) : '';
+      const wikiUrl = `https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(rawQuery + hintSuffix)}&gsrlimit=8&prop=pageimages|pageterms|langlinks&piprop=thumbnail&pithumbsize=500&lllang=en&format=json&origin=*`;
 
-      // If query already contains Latin letters, immediately fire IMDb (+ TVMaze for series)
-      const directLatinPromises = [];
-      if (isLikelyLatin(rawQuery)) {
-        directLatinPromises.push(
-          searchImdbSuggestions(rawQuery, mediaType).then(items => {
-            if (items.length > 0) onBatch(items);
-          })
-        );
-        if (mediaType === 'series') {
-          directLatinPromises.push(
-            searchTvMazeShows(rawQuery).then(items => {
-              if (items.length > 0) onBatch(items);
-            })
-          );
-        }
-      }
+      try {
+        const res = await fetchWithTimeout(wikiUrl, {}, 4200);
+        const data = await res.json();
+        const pages = Object.values(data?.query?.pages || {});
+        pages.sort((a, b) => (a.index || 99) - (b.index || 99));
 
-      const fetchWikiBatch = async (url, basePriority) => {
-        try {
-          const res = await fetchWithTimeout(url, {}, 4000);
-          const data = await res.json();
-          const pages = Object.values(data?.query?.pages || {});
-          pages.sort((a, b) => (a.index || 99) - (b.index || 99));
+        const enrichTasks = [];
 
-          const wikiResults = [];
-          const posterEnrichmentTasks = [];
+        for (const p of pages) {
+          const rawTitle = p.title || '';
+          if (!rawTitle || rawTitle.includes('(значения)')) continue;
 
-          for (const p of pages) {
-            const rawTitle = p.title || '';
-            if (!rawTitle || rawTitle.includes('(значения)')) continue;
+          const desc = Array.isArray(p.terms?.description) ? p.terms.description.join(' ') : '';
+          const { cleanTitle, year } = cleanWikiTitleAndYear(rawTitle, desc);
+          const rawEn = Array.isArray(p.langlinks) && p.langlinks[0] ? p.langlinks[0]['*'] : '';
+          const enClean = stripParentheses(rawEn);
+          const ruThumb = p.thumbnail?.source || '';
 
-            const extract = p.extract || '';
-            const { cleanTitle, year } = cleanWikiTitleAndYear(rawTitle, extract);
-            const rawEn = Array.isArray(p.langlinks) && p.langlinks[0] ? p.langlinks[0]['*'] : '';
-            const enClean = rawEn ? rawEn.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim() : '';
-            const wikiThumb = p.thumbnail?.source || '';
+          const displayTitle = (enClean && enClean.toLowerCase() !== cleanTitle.toLowerCase())
+            ? `${cleanTitle} (${enClean})`
+            : cleanTitle;
 
-            const displayTitle = (enClean && enClean.toLowerCase() !== cleanTitle.toLowerCase())
-              ? `${cleanTitle} (${enClean})`
-              : cleanTitle;
+          const baseItem = {
+            id: `wiki_${p.pageid}`,
+            title: cleanTitle,
+            originalTitle: enClean || cleanTitle,
+            displayTitle,
+            year,
+            poster: ruThumb,
+            source: 'Википедия',
+            priority: withHint ? 10 : 8
+          };
 
-            // Always push Wikipedia result immediately so list is NEVER empty
-            wikiResults.push({
-              id: `wiki_${p.pageid}`,
-              title: cleanTitle,
-              originalTitle: enClean || cleanTitle,
-              displayTitle,
-              year,
-              poster: wikiThumb,
-              source: 'Википедия',
-              priority: basePriority
-            });
+          // Emit immediately so user sees results fast
+          onBatch([baseItem]);
 
-            // Step B & C: Enrich with high-res IMDb / TVMaze posters via English langlink
+          // If RU Wikipedia lacks poster OR has English langlink, pull poster from EN Wikipedia & IMDb
+          if (rawEn) {
+            if (!ruThumb) {
+              enrichTasks.push(
+                fetchEnWikiPoster(rawEn).then(enThumb => {
+                  if (enThumb) {
+                    onBatch([{
+                      ...baseItem,
+                      id: `wiki_en_${p.pageid}`,
+                      poster: enThumb,
+                      priority: baseItem.priority + 3
+                    }]);
+                  }
+                })
+              );
+            }
+
             if (enClean) {
-              posterEnrichmentTasks.push(
-                searchImdbSuggestions(enClean, mediaType, cleanTitle, year).then(imdbItems => {
+              enrichTasks.push(
+                searchImdbSuggestions(enClean, mediaType === 'anime' ? 'series' : mediaType, cleanTitle, year).then(imdbItems => {
                   if (imdbItems.length > 0) onBatch(imdbItems);
                 })
               );
               if (mediaType === 'series') {
-                posterEnrichmentTasks.push(
+                enrichTasks.push(
                   searchTvMazeShows(enClean, cleanTitle).then(tvItems => {
                     if (tvItems.length > 0) onBatch(tvItems);
                   })
@@ -1661,62 +1871,135 @@
               }
             }
           }
+        }
 
-          if (wikiResults.length > 0) onBatch(wikiResults);
-          if (posterEnrichmentTasks.length > 0) {
-            await Promise.allSettled(posterEnrichmentTasks);
-          }
-        } catch (e) {}
-      };
-
-      const fetchWikidataBatch = async () => {
-        try {
-          const res = await fetchWithTimeout(wikidataUrl, {}, 4000);
-          const data = await res.json();
-          const hits = Array.isArray(data?.search) ? data.search : [];
-          const ids = hits.slice(0, 5).map(h => h.id).filter(Boolean);
-          if (ids.length === 0) return;
-
-          const getUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${ids.join('|')}&props=labels&languages=en|ru&format=json&origin=*`;
-          const getRes = await fetchWithTimeout(getUrl, {}, 4000);
-          const getData = await getRes.json();
-          const entities = getData?.entities || {};
-
-          const wdEnrichTasks = [];
-          for (const h of hits.slice(0, 5)) {
-            const ent = entities[h.id];
-            if (!ent || !ent.labels) continue;
-            const enLabel = (ent.labels.en?.value || '').trim();
-            const ruLabel = (ent.labels.ru?.value || h.label || '').trim();
-            if (!enLabel) continue;
-            const yearMatch = (h.description || '').match(/\b(19\d{2}|20\d{2})\b/);
-            const yr = yearMatch ? yearMatch[1] : '';
-
-            wdEnrichTasks.push(
-              searchImdbSuggestions(enLabel, mediaType, ruLabel, yr).then(items => {
-                if (items.length > 0) onBatch(items);
-              })
-            );
-          }
-          if (wdEnrichTasks.length > 0) {
-            await Promise.allSettled(wdEnrichTasks);
-          }
-        } catch (e) {}
-      };
-
-      await Promise.allSettled([
-        ...directLatinPromises,
-        fetchWikiBatch(wikiHintUrl, 6),
-        fetchWikiBatch(wikiDirectUrl, 5),
-        fetchWikidataBatch()
-      ]);
+        if (enrichTasks.length > 0) {
+          await Promise.allSettled(enrichTasks);
+        }
+      } catch (e) {}
     }
 
-    // ANIME PIPELINE: Shikimori + AniList GraphQL in parallel
+    // 7F. FILMS & SERIES ORCHESTRATOR
+    async function searchFilmsAndSeriesPipeline(rawQuery, mediaType, onBatch) {
+      const tasks = [];
+
+      // 1. Kinopoisk Unofficial API (if user added key)
+      if (kpApiKey && kpApiKey.trim().length >= 6) {
+        tasks.push(
+          searchKinopoiskApi(rawQuery, mediaType).then(kpItems => {
+            if (kpItems.length > 0) onBatch(kpItems);
+          })
+        );
+      }
+
+      // 2. Direct Latin IMDb + TVMaze if Latin chars exist
+      if (isLikelyLatin(rawQuery)) {
+        tasks.push(
+          searchImdbSuggestions(rawQuery, mediaType).then(items => {
+            if (items.length > 0) onBatch(items);
+          })
+        );
+        if (mediaType === 'series') {
+          tasks.push(
+            searchTvMazeShows(rawQuery).then(items => {
+              if (items.length > 0) onBatch(items);
+            })
+          );
+        }
+      }
+
+      // 3. Russian Wikipedia + EN Wikipedia Posters + IMDb enrichment
+      tasks.push(searchWikipediaPipeline(rawQuery, mediaType, onBatch, true));
+      tasks.push(searchWikipediaPipeline(rawQuery, mediaType, onBatch, false));
+
+      await Promise.allSettled(tasks);
+    }
+
+    // 7G. ANIME & CHINESE 3D DONGHUA ORCHESTRATOR
+    //     YummyAnime + AniLibria + Shikimori + Kinopoisk (if key) + RU Wikipedia fallback
     async function searchAnimePipeline(rawQuery, onBatch) {
-      const shikiPromise = (async () => {
+      // 1. YummyAnime API (best for Russian anime & Chinese 3D donghua like "Песнь чёрных сов")
+      const yummyTask = (async () => {
         try {
-          const res = await fetchWithTimeout(`https://shikimori.one/api/animes?search=${encodeURIComponent(rawQuery)}&limit=8`, {}, 4000);
+          const url = `https://api.yani.tv/anime/search?q=${encodeURIComponent(rawQuery)}&limit=10`;
+          const res = await fetchWithTimeout(url, {
+            headers: {
+              'X-Application': 'yani-web',
+              'Accept': 'application/json'
+            }
+          }, 4200);
+          const json = await res.json();
+          const list = Array.isArray(json?.response) ? json.response : (Array.isArray(json) ? json : []);
+          const mapped = list.map(item => {
+            const ru = (item.title || '').trim();
+            const orig = (item.original || '').trim();
+            const mainName = ru || orig;
+            if (!mainName) return null;
+            const displayTitle = (ru && orig && ru.toLowerCase() !== orig.toLowerCase())
+              ? `${ru} (${orig})`
+              : mainName;
+            const year = item.year ? String(item.year) : '';
+            let poster = item.poster?.huge || item.poster?.big || item.poster?.medium || item.poster?.small || '';
+            if (poster && poster.startsWith('//')) poster = 'https:' + poster;
+            else if (poster && poster.startsWith('/')) poster = 'https://api.yani.tv' + poster;
+            const typeName = item.type?.name || 'YummyAnime';
+            return {
+              id: item.anime_id ? `yummy_${item.anime_id}` : '',
+              title: mainName,
+              originalTitle: orig || mainName,
+              displayTitle,
+              year,
+              poster,
+              source: `YummyAnime • ${typeName}`,
+              priority: 18
+            };
+          }).filter(Boolean);
+          if (mapped.length > 0) onBatch(mapped);
+        } catch (e) {}
+      })();
+
+      // 2. AniLibria API v3 (great for Russian dubbed anime & donghua)
+      const anilibriaTask = (async () => {
+        try {
+          const url = `https://api.anilibria.tv/v3/title/search?search=${encodeURIComponent(rawQuery)}&limit=8`;
+          const res = await fetchWithTimeout(url, {}, 4200);
+          const json = await res.json();
+          const list = Array.isArray(json?.list) ? json.list : [];
+          const mapped = list.map(item => {
+            const ru = (item.names?.ru || '').trim();
+            const en = (item.names?.en || '').trim();
+            const mainName = ru || en;
+            if (!mainName) return null;
+            const displayTitle = (ru && en && ru.toLowerCase() !== en.toLowerCase())
+              ? `${ru} (${en})`
+              : mainName;
+            const year = item.season?.year ? String(item.season.year) : '';
+            const rawPoster = item.posters?.medium?.url || item.posters?.original?.url || item.posters?.small?.url || '';
+            const poster = rawPoster
+              ? (rawPoster.startsWith('http') ? rawPoster : `https://anilibria.tv${rawPoster}`)
+              : '';
+            const epCount = item.type?.episodes || null;
+            const epText = epCount ? `${epCount} эп.` : 'AniLibria';
+            return {
+              id: item.id ? `anilibria_${item.id}` : '',
+              title: mainName,
+              originalTitle: en || mainName,
+              displayTitle,
+              year,
+              poster,
+              totalEpisodes: epCount,
+              source: `AniLibria • ${epText}`,
+              priority: 16
+            };
+          }).filter(Boolean);
+          if (mapped.length > 0) onBatch(mapped);
+        } catch (e) {}
+      })();
+
+      // 3. Shikimori API
+      const shikiTask = (async () => {
+        try {
+          const res = await fetchWithTimeout(`https://shikimori.one/api/animes?search=${encodeURIComponent(rawQuery)}&limit=8`, {}, 4200);
           const list = await res.json();
           if (!Array.isArray(list)) return;
           const mapped = list.map(item => {
@@ -1740,59 +2023,22 @@
               poster,
               totalEpisodes: item.episodes || null,
               source: `Shikimori • ${epText}`,
-              priority: 12
+              priority: 15
             };
           }).filter(Boolean);
           if (mapped.length > 0) onBatch(mapped);
         } catch (e) {}
       })();
 
-      const anilistPromise = (async () => {
-        try {
-          const graphqlQuery = `
-            query ($q: String) {
-              Page(page: 1, perPage: 8) {
-                media(search: $q, type: ANIME) {
-                  id
-                  title { romaji english }
-                  startDate { year }
-                  episodes
-                  coverImage { large medium }
-                }
-              }
-            }
-          `;
-          const res = await fetchWithTimeout('https://graphql.anilist.co', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ query: graphqlQuery, variables: { q: rawQuery } })
-          }, 4000);
-          const json = await res.json();
-          const mediaList = json?.data?.Page?.media || [];
-          const mapped = mediaList.map(m => {
-            const romaji = (m.title?.romaji || '').trim();
-            const enName = (m.title?.english || romaji || '').trim();
-            if (!enName) return null;
-            const year = m.startDate?.year ? String(m.startDate.year) : '';
-            const poster = m.coverImage?.large || m.coverImage?.medium || '';
-            const epText = m.episodes ? `${m.episodes} эп.` : 'Аниме';
-            return {
-              id: m.id ? `anilist_${m.id}` : '',
-              title: romaji || enName,
-              originalTitle: romaji || enName,
-              displayTitle: enName,
-              year,
-              poster,
-              totalEpisodes: m.episodes || null,
-              source: `AniList • ${epText}`,
-              priority: 9
-            };
-          }).filter(Boolean);
-          if (mapped.length > 0) onBatch(mapped);
-        } catch (e) {}
-      })();
+      // 4. Optional Kinopoisk Unofficial API (also indexes donghua & anime)
+      const kpTask = (kpApiKey && kpApiKey.trim().length >= 6)
+        ? searchKinopoiskApi(rawQuery, 'anime').then(items => { if (items.length > 0) onBatch(items); })
+        : Promise.resolve();
 
-      await Promise.allSettled([shikiPromise, anilistPromise]);
+      // 5. Fallback to Russian Wikipedia for rare donghua / titles
+      const wikiFallbackTask = searchWikipediaPipeline(rawQuery, 'anime', onBatch, false);
+
+      await Promise.allSettled([yummyTask, anilibriaTask, shikiTask, kpTask, wikiFallbackTask]);
     }
 
     // Master Search Orchestrator
@@ -1803,14 +2049,14 @@
       const searchType = modalMediaType;
 
       spinner.classList.remove('hidden');
-      dropdown.innerHTML = `<div class="p-3 text-xs text-zinc-400 text-center flex items-center justify-center gap-2"><span class="animate-pulse">🔎</span><span>Ищу «${escapeHtml(rawQuery)}»...</span></div>`;
+      dropdown.innerHTML = `<div class="p-3 text-xs text-zinc-400 text-center flex items-center justify-center gap-2"><span class="animate-pulse">🔎</span><span>Ищу «${escapeHtml(rawQuery)}» по базам...</span></div>`;
       dropdown.classList.remove('hidden');
 
       const spinnerGuard = setTimeout(() => {
         if (sessionId === activeSearchSessionId) {
           spinner.classList.add('hidden');
         }
-      }, 4200);
+      }, 4500);
 
       const collected = [];
 
@@ -1819,8 +2065,8 @@
 
         // Prioritize results with posters & Russian+Original pairing
         const sorted = [...collected].sort((a, b) => {
-          const aScore = (a.poster ? 40 : 0) + (a.displayTitle.includes('(') ? 15 : 0) + (a.priority || 0);
-          const bScore = (b.poster ? 40 : 0) + (b.displayTitle.includes('(') ? 15 : 0) + (b.priority || 0);
+          const aScore = (a.poster ? 45 : 0) + (a.displayTitle.includes('(') ? 12 : 0) + (a.priority || 0);
+          const bScore = (b.poster ? 45 : 0) + (b.displayTitle.includes('(') ? 12 : 0) + (b.priority || 0);
           return bScore - aScore;
         });
 
@@ -1842,7 +2088,7 @@
 
         if (uniqueList.length === 0) {
           if (isFinal) {
-            dropdown.innerHTML = `<div class="p-3 text-xs text-zinc-400 text-center">Ничего не нашлось — проверь написание или вставь ссылку на обложку вручную</div>`;
+            dropdown.innerHTML = `<div class="p-3 text-xs text-zinc-400 text-center">Ничего не нашлось — проверь написание, переключи тип сверху или вставь ссылку на обложку вручную</div>`;
             dropdown.classList.remove('hidden');
           }
           return;
