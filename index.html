@@ -7,14 +7,16 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #11090c;
-      --card: #1b0f14;
-      --card-2: #26161c;
-      --border: #3a202a;
-      --text: #f7f1f3;
-      --muted: #a68c95;
+      --bg: #0c0c0f;
+      --card: #16161c;
+      --card-2: #22222b;
+      --border: #2e2e3a;
+      --text: #f4f4f6;
+      --muted: #8e8ea0;
       --accent: #f43f5e;
-      --accent-dim: rgba(244, 63, 94, 0.16);
+      --accent-dim: rgba(244, 63, 94, 0.14);
+      --gold: #fbbf24;
+      --gold-dim: rgba(251, 191, 36, 0.14);
       --green: #22c55e;
       --blue: #38bdf8;
       --purple: #c084fc;
@@ -70,7 +72,7 @@
     .add-btn:active { transform: scale(0.96); }
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(20, 10, 14, 0.94);
+      background: rgba(18, 18, 23, 0.94);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border-top: 1px solid var(--border);
@@ -170,7 +172,7 @@
     }
     .poster-box {
       position: relative; aspect-ratio: 2 / 3;
-      background: linear-gradient(145deg, #24141a, #140b0e);
+      background: linear-gradient(145deg, #1d1d26, #14141b);
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
     }
@@ -195,7 +197,7 @@
     }
     .st-watched { background: rgba(34, 197, 94, 0.92); color: #052e16; }
     .st-watching { background: rgba(59, 130, 246, 0.92); color: #fff; }
-    .st-planned { background: rgba(27, 15, 20, 0.88); color: #f7f1f3; border: 1px solid rgba(255,255,255,0.14); }
+    .st-planned { background: rgba(22, 22, 28, 0.88); color: #e4e4ec; border: 1px solid rgba(255,255,255,0.14); }
     .badge-sequel {
       position: absolute; top: 30px; left: 7px;
       background: rgba(245, 180, 0, 0.94); color: #111;
@@ -204,14 +206,14 @@
     }
     .badge-rate {
       position: absolute; top: 7px; right: 7px;
-      background: rgba(17, 9, 12, 0.92); color: #fda4af;
-      border: 1px solid rgba(244, 63, 94, 0.5);
+      background: rgba(12, 12, 15, 0.92); color: var(--gold);
+      border: 1px solid rgba(251, 191, 36, 0.45);
       padding: 2px 6px; border-radius: 999px;
       font-size: 10.5px; font-weight: 800;
     }
     .badge-type {
       position: absolute; bottom: 7px; left: 7px;
-      background: rgba(17, 9, 12, 0.88); color: var(--text);
+      background: rgba(12, 12, 15, 0.88); color: var(--text);
       padding: 2px 6px; border-radius: 7px; font-size: 10px; font-weight: 600;
     }
     .card-tools {
@@ -220,7 +222,7 @@
     }
     .mini-ic {
       width: 24px; height: 24px; border-radius: 7px;
-      background: rgba(17, 9, 12, 0.88); border: 1px solid rgba(244, 63, 94, 0.22);
+      background: rgba(12, 12, 15, 0.88); border: 1px solid rgba(255, 255, 255, 0.14);
       color: var(--text); font-size: 11px;
       display: inline-flex; align-items: center; justify-content: center;
       cursor: pointer; padding: 0;
@@ -241,9 +243,9 @@
     }
     .s-chip-mini {
       font-size: 9.5px; font-weight: 700;
-      background: rgba(244, 63, 94, 0.14);
-      border: 1px solid rgba(244, 63, 94, 0.32);
-      color: #fda4af;
+      background: var(--gold-dim);
+      border: 1px solid rgba(251, 191, 36, 0.32);
+      color: var(--gold);
       padding: 1px 5px; border-radius: 5px;
     }
     .genre-tags-mini {
@@ -287,8 +289,8 @@
       cursor: pointer; padding: 0 4px;
     }
     .act-btn.gold {
-      background: var(--accent-dim); border-color: rgba(244, 63, 94, 0.4);
-      color: #fda4af;
+      background: var(--gold-dim); border-color: rgba(251, 191, 36, 0.38);
+      color: var(--gold);
     }
     .empty {
       grid-column: 1 / -1; text-align: center;
@@ -350,11 +352,11 @@
     }
     .g-bar-track {
       width: 100%; height: 7px; border-radius: 999px;
-      background: #12090c; overflow: hidden;
+      background: #0e0e13; overflow: hidden;
     }
     .g-bar-fill {
       height: 100%; border-radius: 999px;
-      background: linear-gradient(90deg, #e11d48, #fb7185);
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
     }
     .g-bar-fill.blue {
       background: linear-gradient(90deg, #e11d48, #f43f5e);
@@ -375,9 +377,9 @@
       font-size: 11px; color: var(--muted); margin-top: 2px;
     }
     .rated-item-score {
-      background: rgba(244, 63, 94, 0.16);
-      border: 1px solid rgba(244, 63, 94, 0.42);
-      color: #fda4af;
+      background: var(--gold-dim);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      color: var(--gold);
       font-size: 12.5px; font-weight: 800;
       padding: 4px 8px; border-radius: 9px;
       flex-shrink: 0;
@@ -392,7 +394,7 @@
     .rec-card:last-child { margin-bottom: 0; }
     .rec-poster {
       width: 40px; height: 56px; border-radius: 8px;
-      background: #140b0e; object-fit: cover; flex-shrink: 0;
+      background: #121217; object-fit: cover; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       font-size: 18px; border: 1px solid var(--border);
     }
@@ -408,11 +410,11 @@
       display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px;
     }
     .rec-gtag {
-      font-size: 9.5px; font-weight: 700;
-      padding: 1px 6px; border-radius: 5px;
-      background: rgba(244, 63, 94, 0.14);
-      color: #fda4af;
-      border: 1px solid rgba(244, 63, 94, 0.3);
+      font-size: 9.5px; font-weight: 600;
+      padding: 2px 6px; border-radius: 5px;
+      background: #2b2b36;
+      color: #d4d4e0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .rec-add-btn {
       height: 32px; padding: 0 10px; border-radius: 9px;
@@ -432,6 +434,35 @@
       cursor: pointer;
     }
 
+    .random-trigger-btn {
+      padding: 5px 10px; border-radius: 999px;
+      background: var(--gold-dim); border: 1px solid rgba(251, 191, 36, 0.42);
+      color: var(--gold); font-size: 11.5px; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .random-trigger-btn:active { transform: scale(0.96); }
+    .rnd-card-box {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 12px; margin-top: 10px;
+    }
+    .rnd-poster {
+      width: 78px; height: 114px; border-radius: 10px;
+      background: var(--card-2); object-fit: cover; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; border: 1px solid var(--border);
+    }
+    .rnd-info { flex: 1; min-width: 0; }
+    .rnd-title { font-size: 16px; font-weight: 800; line-height: 1.25; color: var(--text); }
+    .rnd-sub { font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 4px; }
+    .rnd-desc {
+      font-size: 12.5px; color: #c4c4d4; line-height: 1.45;
+      margin-top: 10px; background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 12px; max-height: 160px; overflow-y: auto;
+    }
+    .rec-card { cursor: pointer; transition: border-color 0.15s; }
+    .rec-card:hover { border-color: rgba(255, 255, 255, 0.22); }
+
     /* Modals */
     .modal-bg {
       position: fixed; inset: 0; background: rgba(0,0,0,0.78);
@@ -442,7 +473,7 @@
     @media (min-width: 560px) { .modal-bg { align-items: center; padding: 16px; } }
     .modal {
       width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto;
-      background: #180d11; border: 1px solid var(--border);
+      background: #16161d; border: 1px solid var(--border);
       border-radius: 22px 22px 0 0; padding: 16px;
     }
     @media (min-width: 560px) { .modal { border-radius: 22px; } }
@@ -668,7 +699,7 @@
     }
     .toast {
       position: fixed; bottom: 68px; left: 50%; transform: translateX(-50%);
-      background: #2a161e; color: #fff; border: 1px solid var(--border);
+      background: #22222b; color: #fff; border: 1px solid var(--border);
       padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 600;
       z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s;
       white-space: nowrap;
@@ -692,11 +723,14 @@
 
       <div class="filters">
         <div class="pills" id="statusPills"></div>
-        <select class="sort-sel" id="sortSel">
-          <option value="newest">Сначала новые</option>
-          <option value="rating">По оценке</option>
-          <option value="alpha">По алфавиту</option>
-        </select>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <button type="button" class="random-trigger-btn" onclick="openRandomizerModal()">🎲 Что посмотреть?</button>
+          <select class="sort-sel" id="sortSel">
+            <option value="newest">Сначала новые</option>
+            <option value="rating">По оценке</option>
+            <option value="alpha">По алфавиту</option>
+          </select>
+        </div>
       </div>
 
       <div class="grid" id="cardsGrid"></div>
@@ -871,6 +905,42 @@
     </div>
   </div>
 
+    <!-- Randomizer ("Что посмотреть?") Modal -->
+  <div class="modal-bg" id="randomModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">🎲 Что посмотреть сегодня?</div>
+        <button class="close-x" id="closeRandomModal">✕</button>
+      </div>
+
+      <div class="type-switch" id="rndTypeSwitch" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 8px;">
+        <div class="t-opt active" data-rtype="all" onclick="setRndType('all')">🔥 Всё</div>
+        <div class="t-opt" data-rtype="movie" onclick="setRndType('movie')">🎬 Фильм</div>
+        <div class="t-opt" data-rtype="series" onclick="setRndType('series')">📺 Сериал</div>
+        <div class="t-opt" data-rtype="anime" onclick="setRndType('anime')">⛩️ Аниме</div>
+      </div>
+
+      <div id="rndBody"></div>
+
+      <div class="modal-foot" id="rndFoot">
+        <button type="button" class="btn-sec" id="rndShuffleBtn" onclick="pickRandomPlanned()">🔄 Ещё вариант</button>
+        <button type="button" class="btn-pri" id="rndStartBtn">▶ Начать смотреть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recommendation / Title Description Sheet -->
+  <div class="modal-bg" id="recDetailModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title" id="recDetailHeading">О тайтле</div>
+        <button class="close-x" id="closeRecDetailModal">✕</button>
+      </div>
+      <div id="recDetailBody"></div>
+      <div class="modal-foot" id="recDetailFoot"></div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
@@ -917,8 +987,8 @@ if (tg) {
   try {
     tg.ready();
     tg.expand();
-    if (tg.setHeaderColor) tg.setHeaderColor('#11090c');
-    if (tg.setBackgroundColor) tg.setBackgroundColor('#11090c');
+    if (tg.setHeaderColor) tg.setHeaderColor('#0c0c0f');
+    if (tg.setBackgroundColor) tg.setBackgroundColor('#0c0c0f');
   } catch (e) {}
 }
 
@@ -1788,7 +1858,7 @@ function renderStatsView() {
       `<div class="kpi-box">` +
         `<div class="kpi-lbl">Оценено / Всего</div>` +
         `<div class="kpi-val">${ratedItems.length} <span style="font-size:13px;color:var(--muted)">из ${scoped.length}</span></div>` +
-        `<div class="kpi-sub">Средний балл: ★ ${avgScore || '—'}</div>` +
+        `<div class="kpi-sub" style="color:var(--gold)">Средний балл: ★ ${avgScore || '—'}</div>` +
       `</div>` +
       `<div class="kpi-box">` +
         `<div class="kpi-lbl">Любимый жанр</div>` +
@@ -1798,7 +1868,7 @@ function renderStatsView() {
       `<div class="kpi-box">` +
         `<div class="kpi-lbl">Высший рейтинг жанра</div>` +
         `<div class="kpi-val" style="font-size:15px">${topScoreReal ? escapeHtml(topScoreReal.name) : '—'}</div>` +
-        `<div class="kpi-sub">${topScoreReal ? `Средняя: ★ ${topScoreReal.avgRating} (${topScoreReal.ratedCount})` : 'Нет оценок'}</div>` +
+        `<div class="kpi-sub" style="color:var(--gold)">${topScoreReal ? `Средняя: ★ ${topScoreReal.avgRating} (${topScoreReal.ratedCount})` : 'Нет оценок'}</div>` +
       `</div>` +
       `<div class="kpi-box">` +
         `<div class="kpi-lbl">Просмотрено / Смотрю</div>` +
@@ -1819,7 +1889,7 @@ function renderStatsView() {
         return `<div class="g-bar-row ${isSel ? 'selected' : ''}" onclick="toggleStatsGenre('${escapeHtml(g.name)}')">` +
           `<div class="g-bar-top">` +
             `<span>${escapeHtml(g.name)}</span>` +
-            `<span class="g-bar-meta">${g.consumedCount} просм. • Всего ${g.totalCount} ${g.avgRating ? `• <b style="color:var(--accent)">★ ${g.avgRating}</b>` : ''}</span>` +
+            `<span class="g-bar-meta">${g.consumedCount} просм. • Всего ${g.totalCount} ${g.avgRating ? `• <b style="color:var(--gold)">★ ${g.avgRating}</b>` : ''}</span>` +
           `</div>` +
           `<div class="g-bar-track"><div class="g-bar-fill blue" style="width:${pct}%"></div></div>` +
         `</div>`;
@@ -1837,21 +1907,23 @@ function renderStatsView() {
           title: rec.title,
           year: rec.year || '',
           genres: rec.genres || [],
-          poster: rec.poster || ''
+          poster: rec.poster || '',
+          score: rec.score || '',
+          desc: rec.desc || ''
         }));
         const thumbHtml = rec.poster
           ? `<img class="rec-poster" src="${escapeHtml(rec.poster)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="rec-poster" style="display:none">${typeIconOnly[rec.type] || '🎬'}</div>`
           : `<div class="rec-poster">${typeIconOnly[rec.type] || '🎬'}</div>`;
-        const metaParts = [typeBadge[rec.type] || '', rec.year, rec.score ? `★ ${rec.score}` : ''].filter(Boolean).join(' • ');
+        const metaParts = [typeBadge[rec.type] || '', rec.year, rec.score ? `<span style="color:var(--gold);font-weight:700">★ ${rec.score}</span>` : ''].filter(Boolean).join(' • ');
         const gChips = (rec.genres || []).slice(0, 3).map(g => `<span class="rec-gtag">${escapeHtml(g)}</span>`).join('');
-        return `<div class="rec-card">` +
+        return `<div class="rec-card" onclick="openRecDetailSheet('${payload}')">` +
           thumbHtml +
           `<div class="rec-info">` +
-            `<div class="rec-title">${escapeHtml(rec.title)}</div>` +
-            `<div class="rec-sub">${escapeHtml(metaParts)}</div>` +
+            `<div class="rec-title">${escapeHtml(rec.title)} <span style="font-size:11px;color:var(--muted);font-weight:500">ℹ️</span></div>` +
+            `<div class="rec-sub">${metaParts}</div>` +
             (gChips ? `<div class="rec-genres">${gChips}</div>` : '') +
           `</div>` +
-          `<button type="button" class="rec-add-btn" onclick="addRecToPlanned('${payload}')">+ В планы</button>` +
+          `<button type="button" class="rec-add-btn" onclick="event.stopPropagation();addRecToPlanned('${payload}')">+ В планы</button>` +
         `</div>`;
       }).join('') : `<div style="font-size:12px;color:var(--muted)">Все рекомендации по этим жанрам уже в твоём списке! Нажми на любой жанр выше, чтобы глянуть другие.</div>`) +
     `</div>` +
@@ -2874,6 +2946,252 @@ document.getElementById('importFile').onchange = function(e) {
   };
   reader.readAsText(file);
 };
+
+
+/* ================= DESCRIPTION FETCHER & DETAIL SHEET ================= */
+const descCache = new Map();
+
+function cleanHtmlTags(str) {
+  return String(str || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+async function fetchTitleDescription(title, type) {
+  const key = (type || 'all') + '::' + String(title || '').toLowerCase().trim();
+  if (descCache.has(key)) return descCache.get(key);
+
+  const cleanQ = String(title || '').replace(/\([^)]*\)/g, '').trim();
+  let result = { desc: '', poster: '', year: '', score: '' };
+
+  // 1. Try YummyAnime for anime
+  if (type === 'anime') {
+    try {
+      const yaList = await searchYummyAnime(cleanQ);
+      if (yaList.length && yaList[0].yummyId) {
+        const r = await fetch('https://api.yani.tv/anime/' + yaList[0].yummyId, {
+          headers: { 'Accept': 'application/json', 'Lang': 'ru' }
+        });
+        if (r.ok) {
+          const data = await r.json();
+          const resp = data.response || data;
+          const d = cleanHtmlTags(resp.description || '');
+          if (d) {
+            result.desc = d;
+            result.poster = yaList[0].poster || '';
+            if (resp.year) result.year = String(resp.year);
+            if (resp.rating && resp.rating.average) result.score = String(Math.round(resp.rating.average * 10) / 10);
+            descCache.set(key, result);
+            return result;
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 2. Try Kinopoisk API if key is available
+  if (kpApiKey) {
+    try {
+      const res = await fetch('https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword=' + encodeURIComponent(cleanQ) + '&page=1', {
+        headers: { 'X-API-KEY': kpApiKey, 'Content-Type': 'application/json' }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const films = data.films || [];
+        if (films.length > 0) {
+          const f = films[0];
+          result.poster = f.posterUrlPreview || f.posterUrl || '';
+          if (f.year) result.year = String(f.year);
+          if (f.rating) result.score = String(f.rating);
+          if (f.description && f.description.trim()) {
+            result.desc = f.description.trim();
+            descCache.set(key, result);
+            return result;
+          }
+          if (f.filmId) {
+            const detRes = await fetch('https://kinopoiskapiunofficial.tech/api/v2.2/films/' + f.filmId, {
+              headers: { 'X-API-KEY': kpApiKey, 'Content-Type': 'application/json' }
+            });
+            if (detRes.ok) {
+              const det = await detRes.json();
+              const d = (det.description || det.shortDescription || '').trim();
+              if (d) {
+                result.desc = d;
+                if (det.ratingKinopoisk) result.score = String(det.ratingKinopoisk);
+                descCache.set(key, result);
+                return result;
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 3. Fallback: Russian Wikipedia summary
+  try {
+    const suffix = type === 'anime' ? 'аниме' : (type === 'series' ? 'телесериал' : 'фильм');
+    const url = 'https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' +
+      encodeURIComponent(cleanQ + ' ' + suffix) +
+      '&gsrlimit=2&prop=pageimages|extracts&exintro=1&explaintext=1&exsentences=4&piprop=thumbnail&pithumbsize=400&format=json&origin=*';
+    const r = await fetch(url);
+    if (r.ok) {
+      const data = await r.json();
+      const pages = (data.query && data.query.pages) ? Object.values(data.query.pages) : [];
+      if (pages.length && pages[0].extract) {
+        result.desc = pages[0].extract.trim();
+        if (!result.poster && pages[0].thumbnail) result.poster = pages[0].thumbnail.source;
+      }
+    }
+  } catch (e) {}
+
+  descCache.set(key, result);
+  return result;
+}
+
+window.openRecDetailSheet = async function(encodedPayload) {
+  try {
+    const rec = JSON.parse(decodeURIComponent(encodedPayload));
+    if (!rec || !rec.title) return;
+
+    const typeNames = { movie: '🎬 Фильм', series: '📺 Сериал', anime: '⛩️ Аниме' };
+    const typeIcons = { movie: '🎬', series: '📺', anime: '⛩️' };
+    document.getElementById('recDetailHeading').textContent = rec.title;
+
+    const alreadyAdded = items.some(x => String(x.title || '').toLowerCase().trim() === rec.title.toLowerCase().trim());
+    const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(rec.title + ' трейлер на русском');
+
+    function renderSheetContent(descText, posterUrl, yearStr, scoreStr) {
+      const thumb = posterUrl
+        ? `<img class="rnd-poster" src="${escapeHtml(posterUrl)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="rnd-poster" style="display:none">${typeIcons[rec.type] || '🎬'}</div>`
+        : `<div class="rnd-poster">${typeIcons[rec.type] || '🎬'}</div>`;
+      const metaLine = [typeNames[rec.type] || '', yearStr, scoreStr ? ('★ ' + scoreStr) : ''].filter(Boolean).join(' • ');
+      const gChips = (rec.genres || []).map(g => `<span class="rec-gtag">${escapeHtml(g)}</span>`).join('');
+
+      document.getElementById('recDetailBody').innerHTML =
+        `<div class="rnd-card-box" style="margin-top:0">` +
+          thumb +
+          `<div class="rnd-info">` +
+            `<div class="rnd-title">${escapeHtml(rec.title)}</div>` +
+            `<div class="rnd-sub">${escapeHtml(metaLine)}</div>` +
+            (gChips ? `<div class="rec-genres" style="margin-top:6px">${gChips}</div>` : '') +
+          `</div>` +
+        `</div>` +
+        `<div class="rnd-desc">${descText ? escapeHtml(descText) : '<span style="color:var(--muted)">Загружаю описание сюжета...</span>'}</div>`;
+
+      const updatedPayload = encodeURIComponent(JSON.stringify({
+        type: rec.type,
+        title: rec.title,
+        year: yearStr || '',
+        genres: rec.genres || [],
+        poster: posterUrl || ''
+      }));
+
+      document.getElementById('recDetailFoot').innerHTML =
+        `<a href="${ytUrl}" target="_blank" rel="noopener" class="btn-sec" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none">▶ Трейлер</a>` +
+        (alreadyAdded
+          ? `<button type="button" class="btn-pri" style="background:rgba(34,197,94,0.2);color:var(--green);border:1px solid rgba(34,197,94,0.4)" disabled>✓ Уже в списке</button>`
+          : `<button type="button" class="btn-pri" onclick="addRecToPlanned('${updatedPayload}');document.getElementById('recDetailModal').classList.remove('open')">+ В планы</button>`);
+    }
+
+    renderSheetContent(rec.desc || '', rec.poster || '', rec.year || '', rec.score || '');
+    document.getElementById('recDetailModal').classList.add('open');
+
+    const fetched = await fetchTitleDescription(rec.title, rec.type);
+    const finalDesc = fetched.desc || rec.desc || 'Описание не найдено. Можешь глянуть трейлер по кнопке ниже!';
+    const finalPoster = rec.poster || fetched.poster || '';
+    const finalYear = rec.year || fetched.year || '';
+    const finalScore = rec.score || fetched.score || '';
+    renderSheetContent(finalDesc, finalPoster, finalYear, finalScore);
+  } catch (e) {}
+};
+
+document.getElementById('closeRecDetailModal').onclick = () => document.getElementById('recDetailModal').classList.remove('open');
+
+/* ================= RANDOMIZER ("🎲 ЧТО ПОСМОТРЕТЬ?") ================= */
+let rndFilterType = 'all';
+let rndCurrentItem = null;
+let rndLastId = null;
+
+window.openRandomizerModal = function() {
+  rndFilterType = (filterType !== 'all' && filterType !== 'stats') ? filterType : 'all';
+  document.getElementById('randomModal').classList.add('open');
+  pickRandomPlanned();
+};
+
+window.setRndType = function(t) {
+  rndFilterType = t;
+  pickRandomPlanned();
+};
+
+window.pickRandomPlanned = async function() {
+  document.querySelectorAll('#rndTypeSwitch .t-opt').forEach(el => {
+    el.classList.toggle('active', el.dataset.rtype === rndFilterType);
+  });
+
+  const pool = items.filter(x => x.status === 'planned' && (rndFilterType === 'all' || x.type === rndFilterType));
+  const bodyEl = document.getElementById('rndBody');
+  const startBtn = document.getElementById('rndStartBtn');
+  const shuffleBtn = document.getElementById('rndShuffleBtn');
+
+  if (!pool.length) {
+    rndCurrentItem = null;
+    bodyEl.innerHTML = `<div class="sr-msg" style="margin-top:10px">В разделе «В планах» пока пусто для этой категории.<br>Загляни в <b>📊 Статистику → Подборка</b> и накидай новых тайтлов!</div>`;
+    startBtn.disabled = true;
+    startBtn.style.opacity = '0.5';
+    shuffleBtn.disabled = true;
+    return;
+  }
+
+  startBtn.disabled = false;
+  startBtn.style.opacity = '1';
+  shuffleBtn.disabled = pool.length <= 1;
+
+  let candidates = pool.length > 1 ? pool.filter(x => x.id !== rndLastId) : pool;
+  const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+  rndCurrentItem = chosen;
+  rndLastId = chosen.id;
+
+  const typeNames = { movie: '🎬 Фильм', series: '📺 Сериал', anime: '⛩️ Аниме' };
+  const typeIcons = { movie: '🎬', series: '📺', anime: '⛩️' };
+
+  function drawRndCard(descStr, posterUrl) {
+    const thumb = posterUrl
+      ? `<img class="rnd-poster" src="${escapeHtml(posterUrl)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="rnd-poster" style="display:none">${typeIcons[chosen.type] || '🎬'}</div>`
+      : `<div class="rnd-poster">${typeIcons[chosen.type] || '🎬'}</div>`;
+    const gChips = (chosen.genres || []).map(g => `<span class="rec-gtag">${escapeHtml(g)}</span>`).join('');
+    bodyEl.innerHTML =
+      `<div class="rnd-card-box">` +
+        thumb +
+        `<div class="rnd-info">` +
+          `<div class="rnd-title">${escapeHtml(chosen.title)}</div>` +
+          `<div class="rnd-sub">${typeNames[chosen.type] || ''} • В планах (${pool.length} шт.)</div>` +
+          (gChips ? `<div class="rec-genres" style="margin-top:6px">${gChips}</div>` : '') +
+        `</div>` +
+      `</div>` +
+      `<div class="rnd-desc">${descStr ? escapeHtml(descStr) : '<span style="color:var(--muted)">Подтягиваю описание...</span>'}</div>`;
+  }
+
+  drawRndCard('', chosen.poster || '');
+
+  startBtn.onclick = function() {
+    if (!rndCurrentItem) return;
+    rndCurrentItem.status = 'watching';
+    saveItems();
+    document.getElementById('randomModal').classList.remove('open');
+    render();
+    showToast('🍿 Перенесено в «Смотрю»: ' + rndCurrentItem.title);
+  };
+
+  const fetched = await fetchTitleDescription(chosen.title, chosen.type);
+  if (rndCurrentItem && rndCurrentItem.id === chosen.id) {
+    if (!chosen.poster && fetched.poster) {
+      chosen.poster = fetched.poster;
+      saveItems();
+    }
+    drawRndCard(fetched.desc || chosen.note || 'Описание пока не подгрузилось — самое время включить и заценить!', chosen.poster || '');
+  }
+};
+
+document.getElementById('closeRandomModal').onclick = () => document.getElementById('randomModal').classList.remove('open');
 
 bootInstant();
   </script>
