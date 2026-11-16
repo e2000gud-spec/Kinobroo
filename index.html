@@ -7,17 +7,17 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #0e0e12;
-      --card: #18181f;
-      --card-2: #22222c;
-      --border: #2c2c38;
-      --text: #f3f3f7;
-      --muted: #8e8ea0;
-      --accent: #f5b400;
-      --accent-dim: rgba(245, 180, 0, 0.14);
+      --bg: #11090c;
+      --card: #1b0f14;
+      --card-2: #26161c;
+      --border: #3a202a;
+      --text: #f7f1f3;
+      --muted: #a68c95;
+      --accent: #f43f5e;
+      --accent-dim: rgba(244, 63, 94, 0.16);
       --green: #22c55e;
-      --blue: #3b82f6;
-      --purple: #a855f7;
+      --blue: #38bdf8;
+      --purple: #c084fc;
       --red: #ef4444;
       --radius: 16px;
     }
@@ -34,41 +34,65 @@
       padding: 12px 12px 96px;
     }
     .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 8px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 7px;
+      margin-bottom: 10px;
     }
-    .brand {
-      display: flex; align-items: center; gap: 6px;
-      font-weight: 800; font-size: 17px; letter-spacing: -0.3px;
-      min-width: 0;
+    .topbar .search-wrap {
+      position: relative; flex: 1; min-width: 0;
     }
-    .brand-txt { white-space: nowrap; }
-    .cloud-pill {
-      font-size: 10px; font-weight: 700;
-      padding: 2px 6px; border-radius: 999px;
-      background: rgba(59, 130, 246, 0.16); color: #60a5fa;
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      flex-shrink: 0;
-    }
-    .top-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-    .icon-btn {
-      width: 34px; height: 34px; border-radius: 10px;
+    .topbar .search-input {
+      width: 100%; height: 38px; border-radius: 11px;
       background: var(--card); border: 1px solid var(--border);
-      color: var(--text); font-size: 15px;
+      color: var(--text); padding: 0 32px 0 12px; font-size: 13.5px;
+      outline: none;
+    }
+    .topbar .search-input:focus { border-color: var(--accent); }
+    .icon-btn {
+      width: 38px; height: 38px; border-radius: 11px;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--text); font-size: 16px;
       display: inline-flex; align-items: center; justify-content: center;
-      cursor: pointer; position: relative; padding: 0;
+      cursor: pointer; position: relative; padding: 0; flex-shrink: 0;
     }
     .icon-btn .dot {
-      position: absolute; top: 4px; right: 4px;
+      position: absolute; top: 5px; right: 5px;
       width: 6px; height: 6px; border-radius: 50%;
       background: var(--green);
     }
     .add-btn {
-      height: 34px; padding: 0 12px; border-radius: 10px;
-      background: var(--accent); color: #111; border: none;
-      font-weight: 800; font-size: 13px;
-      display: inline-flex; align-items: center; gap: 4px;
-      cursor: pointer; white-space: nowrap;
+      width: 44px; height: 38px; padding: 0; border-radius: 11px;
+      background: linear-gradient(135deg, #e11d48, #be123c); color: #fff; border: 1px solid rgba(255, 255, 255, 0.14);
+      font-weight: 900; font-size: 22px; line-height: 1;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+      box-shadow: 0 2px 12px rgba(225, 29, 72, 0.36);
+    }
+    .add-btn:active { transform: scale(0.96); }
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(20, 10, 14, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: center;
+      padding: 6px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+      z-index: 90;
+    }
+    .bottom-nav-inner {
+      width: 100%; max-width: 720px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .bnav-btn {
+      height: 42px; border-radius: 12px;
+      background: transparent; border: 1px solid transparent;
+      color: var(--muted); font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .bnav-btn.active {
+      background: var(--accent-dim);
+      border-color: rgba(244, 63, 94, 0.42);
+      color: var(--accent);
     }
     .stats {
       display: grid; grid-template-columns: repeat(5, 1fr);
@@ -102,7 +126,7 @@
       background: var(--card-2); color: var(--muted);
       padding: 1px 6px; border-radius: 999px; font-size: 10.5px;
     }
-    .tab.active .cnt { background: var(--accent); color: #111; }
+    .tab.active .cnt { background: var(--accent); color: #fff; }
     .search-row { margin-bottom: 10px; position: relative; }
     .search-input {
       width: 100%; height: 40px; border-radius: 12px;
@@ -146,7 +170,7 @@
     }
     .poster-box {
       position: relative; aspect-ratio: 2 / 3;
-      background: linear-gradient(145deg, #1d1d26, #14141b);
+      background: linear-gradient(145deg, #24141a, #140b0e);
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
     }
@@ -171,7 +195,7 @@
     }
     .st-watched { background: rgba(34, 197, 94, 0.92); color: #052e16; }
     .st-watching { background: rgba(59, 130, 246, 0.92); color: #fff; }
-    .st-planned { background: rgba(24, 24, 31, 0.88); color: #e4e4ec; border: 1px solid rgba(255,255,255,0.14); }
+    .st-planned { background: rgba(27, 15, 20, 0.88); color: #f7f1f3; border: 1px solid rgba(255,255,255,0.14); }
     .badge-sequel {
       position: absolute; top: 30px; left: 7px;
       background: rgba(245, 180, 0, 0.94); color: #111;
@@ -180,14 +204,14 @@
     }
     .badge-rate {
       position: absolute; top: 7px; right: 7px;
-      background: rgba(14, 14, 18, 0.9); color: var(--accent);
-      border: 1px solid rgba(245, 180, 0, 0.45);
+      background: rgba(17, 9, 12, 0.92); color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.5);
       padding: 2px 6px; border-radius: 999px;
       font-size: 10.5px; font-weight: 800;
     }
     .badge-type {
       position: absolute; bottom: 7px; left: 7px;
-      background: rgba(14, 14, 18, 0.86); color: var(--text);
+      background: rgba(17, 9, 12, 0.88); color: var(--text);
       padding: 2px 6px; border-radius: 7px; font-size: 10px; font-weight: 600;
     }
     .card-tools {
@@ -196,7 +220,7 @@
     }
     .mini-ic {
       width: 24px; height: 24px; border-radius: 7px;
-      background: rgba(14, 14, 18, 0.88); border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(17, 9, 12, 0.88); border: 1px solid rgba(244, 63, 94, 0.22);
       color: var(--text); font-size: 11px;
       display: inline-flex; align-items: center; justify-content: center;
       cursor: pointer; padding: 0;
@@ -217,9 +241,9 @@
     }
     .s-chip-mini {
       font-size: 9.5px; font-weight: 700;
-      background: rgba(245, 180, 0, 0.12);
-      border: 1px solid rgba(245, 180, 0, 0.28);
-      color: var(--accent);
+      background: rgba(244, 63, 94, 0.14);
+      border: 1px solid rgba(244, 63, 94, 0.32);
+      color: #fda4af;
       padding: 1px 5px; border-radius: 5px;
     }
     .genre-tags-mini {
@@ -263,8 +287,8 @@
       cursor: pointer; padding: 0 4px;
     }
     .act-btn.gold {
-      background: var(--accent-dim); border-color: rgba(245, 180, 0, 0.35);
-      color: var(--accent);
+      background: var(--accent-dim); border-color: rgba(244, 63, 94, 0.4);
+      color: #fda4af;
     }
     .empty {
       grid-column: 1 / -1; text-align: center;
@@ -286,7 +310,7 @@
       color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer;
     }
     .st-subtab.active {
-      background: var(--accent); color: #111; border-color: var(--accent);
+      background: var(--accent); color: #fff; border-color: var(--accent);
     }
     .kpi-grid {
       display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
@@ -326,14 +350,14 @@
     }
     .g-bar-track {
       width: 100%; height: 7px; border-radius: 999px;
-      background: #121218; overflow: hidden;
+      background: #12090c; overflow: hidden;
     }
     .g-bar-fill {
       height: 100%; border-radius: 999px;
-      background: linear-gradient(90deg, var(--accent), #fbbf24);
+      background: linear-gradient(90deg, #e11d48, #fb7185);
     }
     .g-bar-fill.blue {
-      background: linear-gradient(90deg, #3b82f6, #60a5fa);
+      background: linear-gradient(90deg, #e11d48, #f43f5e);
     }
     .rated-item-row {
       display: flex; align-items: center; justify-content: space-between;
@@ -351,12 +375,61 @@
       font-size: 11px; color: var(--muted); margin-top: 2px;
     }
     .rated-item-score {
-      background: rgba(245, 180, 0, 0.14);
-      border: 1px solid rgba(245, 180, 0, 0.4);
-      color: var(--accent);
+      background: rgba(244, 63, 94, 0.16);
+      border: 1px solid rgba(244, 63, 94, 0.42);
+      color: #fda4af;
       font-size: 12.5px; font-weight: 800;
       padding: 4px 8px; border-radius: 9px;
       flex-shrink: 0;
+    }
+
+    .rec-card {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 9px 10px; border-radius: 12px;
+      background: var(--card-2); border: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .rec-card:last-child { margin-bottom: 0; }
+    .rec-poster {
+      width: 40px; height: 56px; border-radius: 8px;
+      background: #140b0e; object-fit: cover; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; border: 1px solid var(--border);
+    }
+    .rec-info { min-width: 0; flex: 1; }
+    .rec-title {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      line-height: 1.25;
+    }
+    .rec-sub {
+      font-size: 11px; color: var(--muted); margin-top: 2px;
+    }
+    .rec-genres {
+      display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px;
+    }
+    .rec-gtag {
+      font-size: 9.5px; font-weight: 700;
+      padding: 1px 6px; border-radius: 5px;
+      background: rgba(244, 63, 94, 0.14);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+    .rec-add-btn {
+      height: 32px; padding: 0 10px; border-radius: 9px;
+      background: var(--accent); color: #fff; border: none;
+      font-size: 11.5px; font-weight: 800; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .rec-add-btn.added {
+      background: rgba(34, 197, 94, 0.18);
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+    .rec-shuffle-btn {
+      padding: 4px 9px; border-radius: 8px;
+      background: var(--card-2); border: 1px solid var(--border);
+      color: var(--text); font-size: 11px; font-weight: 700;
+      cursor: pointer;
     }
 
     /* Modals */
@@ -369,7 +442,7 @@
     @media (min-width: 560px) { .modal-bg { align-items: center; padding: 16px; } }
     .modal {
       width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto;
-      background: #16161d; border: 1px solid var(--border);
+      background: #180d11; border: 1px solid var(--border);
       border-radius: 22px 22px 0 0; padding: 16px;
     }
     @media (min-width: 560px) { .modal { border-radius: 22px; } }
@@ -532,7 +605,7 @@
       background: var(--card); border: 1px solid var(--border);
       color: var(--text); font-size: 12.5px; font-weight: 700; cursor: pointer;
     }
-    .r-opt.active { background: var(--accent); color: #111; border-color: var(--accent); }
+    .r-opt.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     .modal-foot {
       display: flex; gap: 8px; margin-top: 16px;
     }
@@ -544,7 +617,7 @@
     .btn-pri {
       flex: 1.4; height: 42px; border-radius: 12px;
       background: var(--accent); border: none;
-      color: #111; font-weight: 800; font-size: 14px; cursor: pointer;
+      color: #fff; font-weight: 800; font-size: 14px; cursor: pointer;
     }
     .settings-card {
       background: var(--card); border: 1px solid var(--border);
@@ -594,8 +667,8 @@
       font-size: 13px; cursor: pointer; padding: 2px 4px;
     }
     .toast {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: #22222c; color: #fff; border: 1px solid var(--border);
+      position: fixed; bottom: 68px; left: 50%; transform: translateX(-50%);
+      background: #2a161e; color: #fff; border: 1px solid var(--border);
       padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 600;
       z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s;
       white-space: nowrap;
@@ -605,25 +678,17 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <span class="brand-txt">🎬 Киноброуски</span>
-        <span class="cloud-pill">TG Cloud</span>
-      </div>
-      <div class="top-actions">
-        <button class="icon-btn" id="btnSettings" title="Настройки">⚙️<span class="dot" id="kpDot" style="display:none"></span></button>
-        <button class="add-btn" id="btnOpenAdd">+ Добавить</button>
-      </div>
-    </div>
-
-    <div class="stats" id="statsBar"></div>
-    <div class="tabs" id="typeTabs"></div>
-
-    <div id="catalogControls">
-      <div class="search-row">
-        <input type="text" class="search-input" id="localSearch" placeholder="Поиск по сохранённым тайтлам..." />
+    <div class="topbar" id="mainTopbar">
+      <div class="search-wrap" id="topSearchWrap">
+        <input type="text" class="search-input" id="localSearch" placeholder="Поиск по тайтлам..." />
         <button class="clear-search" id="clearLocalSearch">✕</button>
       </div>
+      <button class="icon-btn" id="btnSettings" title="Настройки">⚙️<span class="dot" id="kpDot" style="display:none"></span></button>
+      <button class="add-btn" id="btnOpenAdd" title="Добавить тайтл">+</button>
+    </div>
+
+    <div id="catalogControls">
+      <div class="tabs" id="typeTabs"></div>
 
       <div class="filters">
         <div class="pills" id="statusPills"></div>
@@ -638,6 +703,13 @@
     </div>
 
     <div id="statsContainer" style="display:none"></div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button type="button" class="bnav-btn active" id="navCatalogBtn" onclick="switchBottomTab('catalog')">🎬 Каталог</button>
+      <button type="button" class="bnav-btn" id="navStatsBtn" onclick="switchBottomTab('stats')">📊 Статистика</button>
+    </div>
   </div>
 
   <!-- Add / Edit Modal -->
@@ -845,8 +917,8 @@ if (tg) {
   try {
     tg.ready();
     tg.expand();
-    if (tg.setHeaderColor) tg.setHeaderColor('#0e0e12');
-    if (tg.setBackgroundColor) tg.setBackgroundColor('#0e0e12');
+    if (tg.setHeaderColor) tg.setHeaderColor('#11090c');
+    if (tg.setBackgroundColor) tg.setBackgroundColor('#11090c');
   } catch (e) {}
 }
 
@@ -1175,33 +1247,36 @@ function isItemWaitingSequel(x) {
   return false;
 }
 
+function switchBottomTab(tab) {
+  if (tab === 'stats') {
+    filterType = 'stats';
+  } else {
+    if (filterType === 'stats') filterType = 'all';
+  }
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function jumpFromStatsToStatus(st) {
+  filterType = 'all';
+  filterStatus = st;
+  visibleLimit = 40;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function render() {
   const total = items.length;
-  const cWatching = items.filter(x => x.status === 'watching').length;
-  const cWatched = items.filter(x => x.status === 'watched').length;
-  const cPlanned = items.filter(x => x.status === 'planned').length;
-  const cSequel = items.filter(x => isItemWaitingSequel(x)).length;
-
-  document.getElementById('statsBar').innerHTML =
-    `<div class="stat ${filterType!=='stats'&&filterStatus==='all'?'active':''}" onclick="setStatusFilter('all')"><span class="lbl">Всего</span><span class="val">${total}</span></div>` +
-    `<div class="stat ${filterType!=='stats'&&filterStatus==='watched'?'active':''}" onclick="setStatusFilter('watched')"><span class="lbl">Просмот.</span><span class="val" style="color:var(--green)">${cWatched}</span></div>` +
-    `<div class="stat ${filterType!=='stats'&&filterStatus==='watching'?'active':''}" onclick="setStatusFilter('watching')"><span class="lbl">Смотрю</span><span class="val" style="color:var(--blue)">${cWatching}</span></div>` +
-    `<div class="stat ${filterType!=='stats'&&filterStatus==='planned'?'active':''}" onclick="setStatusFilter('planned')"><span class="lbl">В планах</span><span class="val">${cPlanned}</span></div>` +
-    `<div class="stat ${filterType!=='stats'&&filterStatus==='sequel'?'active':''}" onclick="setStatusFilter('sequel')"><span class="lbl">Жду прод.</span><span class="val" style="color:var(--accent)">${cSequel}</span></div>`;
-
   const cMovies = items.filter(x => x.type === 'movie').length;
   const cSeries = items.filter(x => x.type === 'series').length;
   const cAnime = items.filter(x => x.type === 'anime').length;
-  const cRated = items.filter(x => typeof x.rating === 'number' && x.rating > 0).length;
 
-  document.getElementById('typeTabs').innerHTML =
-    `<div class="tab ${filterType==='all'?'active':''}" onclick="setTypeFilter('all')">🔥 Все <span class="cnt">${total}</span></div>` +
-    `<div class="tab ${filterType==='movie'?'active':''}" onclick="setTypeFilter('movie')">🎬 Фильмы <span class="cnt">${cMovies}</span></div>` +
-    `<div class="tab ${filterType==='series'?'active':''}" onclick="setTypeFilter('series')">📺 Сериалы <span class="cnt">${cSeries}</span></div>` +
-    `<div class="tab ${filterType==='anime'?'active':''}" onclick="setTypeFilter('anime')">⛩️ Аниме <span class="cnt">${cAnime}</span></div>` +
-    `<div class="tab ${filterType==='stats'?'active':''}" onclick="setTypeFilter('stats')">📊 Статистика <span class="cnt">${cRated}</span></div>`;
+  const isStats = (filterType === 'stats');
+  document.getElementById('navCatalogBtn').classList.toggle('active', !isStats);
+  document.getElementById('navStatsBtn').classList.toggle('active', isStats);
+  document.getElementById('topSearchWrap').style.visibility = isStats ? 'hidden' : 'visible';
 
-  if (filterType === 'stats') {
+  if (isStats) {
     document.getElementById('catalogControls').style.display = 'none';
     document.getElementById('statsContainer').style.display = 'block';
     renderStatsView();
@@ -1210,6 +1285,12 @@ function render() {
 
   document.getElementById('catalogControls').style.display = 'block';
   document.getElementById('statsContainer').style.display = 'none';
+
+  document.getElementById('typeTabs').innerHTML =
+    `<div class="tab ${filterType==='all'?'active':''}" onclick="setTypeFilter('all')">🔥 Все <span class="cnt">${total}</span></div>` +
+    `<div class="tab ${filterType==='movie'?'active':''}" onclick="setTypeFilter('movie')">🎬 Фильмы <span class="cnt">${cMovies}</span></div>` +
+    `<div class="tab ${filterType==='series'?'active':''}" onclick="setTypeFilter('series')">📺 Сериалы <span class="cnt">${cSeries}</span></div>` +
+    `<div class="tab ${filterType==='anime'?'active':''}" onclick="setTypeFilter('anime')">⛩️ Аниме <span class="cnt">${cAnime}</span></div>`;
 
   const pillsData = [
     ['all', 'Все'],
@@ -1350,6 +1431,226 @@ function render() {
   grid.innerHTML = html;
 }
 
+
+const CURATED_RECS = [
+  // Movies
+  { type: 'movie', title: 'Начало', year: '2010', genres: ['Фантастика', 'Боевик', 'Триллер'], score: '8.7' },
+  { type: 'movie', title: 'Бегущий по лезвию 2049', year: '2017', genres: ['Фантастика', 'Киберпанк', 'Драма'], score: '7.8' },
+  { type: 'movie', title: 'Дюна', year: '2021', genres: ['Фантастика', 'Приключения', 'Драма'], score: '7.7' },
+  { type: 'movie', title: 'Дюна: Часть вторая', year: '2024', genres: ['Фантастика', 'Боевик', 'Приключения'], score: '8.2' },
+  { type: 'movie', title: 'Престиж', year: '2006', genres: ['Триллер', 'Фантастика', 'Детектив'], score: '8.5' },
+  { type: 'movie', title: 'Отступники', year: '2006', genres: ['Криминал', 'Триллер', 'Драма'], score: '8.5' },
+  { type: 'movie', title: 'Славные парни', year: '1990', genres: ['Криминал', 'Биография', 'Драма'], score: '8.1' },
+  { type: 'movie', title: 'Бешеные псы', year: '1992', genres: ['Криминал', 'Триллер', 'Драма'], score: '8.1' },
+  { type: 'movie', title: 'Олдбой', year: '2003', genres: ['Триллер', 'Детектив', 'Драма'], score: '8.1' },
+  { type: 'movie', title: 'Паразиты', year: '2019', genres: ['Триллер', 'Драма', 'Комедия'], score: '8.0' },
+  { type: 'movie', title: 'Семь', year: '1995', genres: ['Триллер', 'Детектив', 'Криминал'], score: '8.3' },
+  { type: 'movie', title: 'Зодиак', year: '2007', genres: ['Детектив', 'Триллер', 'Криминал'], score: '7.3' },
+  { type: 'movie', title: 'Убийца', year: '2015', genres: ['Боевик', 'Триллер', 'Криминал'], score: '7.3' },
+  { type: 'movie', title: 'Ветреная река', year: '2017', genres: ['Детектив', 'Триллер', 'Криминал'], score: '7.5' },
+  { type: 'movie', title: 'Любой ценой', year: '2016', genres: ['Криминал', 'Драма', 'Триллер'], score: '7.2' },
+  { type: 'movie', title: 'Драйв', year: '2011', genres: ['Криминал', 'Драма', 'Триллер'], score: '7.3' },
+  { type: 'movie', title: 'Апгрейд', year: '2018', genres: ['Фантастика', 'Киберпанк', 'Боевик'], score: '7.6' },
+  { type: 'movie', title: 'Из машины', year: '2014', genres: ['Фантастика', 'Триллер', 'Драма'], score: '7.1' },
+  { type: 'movie', title: 'Район №9', year: '2009', genres: ['Фантастика', 'Боевик', 'Триллер'], score: '7.8' },
+  { type: 'movie', title: 'Прибытие', year: '2016', genres: ['Фантастика', 'Драма', 'Детектив'], score: '7.6' },
+  { type: 'movie', title: 'Обливион', year: '2013', genres: ['Фантастика', 'Боевик', 'Приключения'], score: '7.2' },
+  { type: 'movie', title: 'Безумный Макс: Дорога ярости', year: '2015', genres: ['Боевик', 'Фантастика', 'Приключения'], score: '7.8' },
+  { type: 'movie', title: 'Рейд', year: '2011', genres: ['Боевик', 'Триллер', 'Криминал'], score: '7.4' },
+  { type: 'movie', title: 'Тайлер Рейк: Операция по спасению', year: '2020', genres: ['Боевик', 'Триллер'], score: '6.9' },
+  { type: 'movie', title: 'Одержимость', year: '2014', genres: ['Драма', 'Музыка'], score: '8.3' },
+  { type: 'movie', title: 'Крик', year: '1996', genres: ['Ужасы', 'Детектив', 'Триллер'], score: '7.3' },
+  { type: 'movie', title: 'Тихое место', year: '2018', genres: ['Ужасы', 'Фантастика', 'Триллер'], score: '6.8' },
+  { type: 'movie', title: 'Прочь', year: '2017', genres: ['Ужасы', 'Триллер', 'Детектив'], score: '7.1' },
+  { type: 'movie', title: 'Реинкарнация', year: '2018', genres: ['Ужасы', 'Триллер', 'Драма'], score: '6.6' },
+  { type: 'movie', title: 'SuperПерцы', year: '2007', genres: ['Комедия'], score: '7.0' },
+  { type: 'movie', title: 'Мальчишник в Вегасе', year: '2009', genres: ['Комедия'], score: '7.9' },
+  { type: 'movie', title: 'Славные парни (2016)', year: '2016', genres: ['Комедия', 'Криминал', 'Детектив'], score: '7.2' },
+
+  // Series
+  { type: 'series', title: 'Настоящий детектив', year: '2014', genres: ['Детектив', 'Криминал', 'Триллер'], score: '8.7' },
+  { type: 'series', title: 'Фарго', year: '2014', genres: ['Криминал', 'Триллер', 'Драма'], score: '8.4' },
+  { type: 'series', title: 'Лучше звоните Солу', year: '2015', genres: ['Криминал', 'Драма'], score: '8.4' },
+  { type: 'series', title: 'Клан Сопрано', year: '1999', genres: ['Криминал', 'Драма'], score: '8.8' },
+  { type: 'series', title: 'Прослушка', year: '2002', genres: ['Криминал', 'Драма', 'Триллер'], score: '8.5' },
+  { type: 'series', title: 'Мистер Робот', year: '2015', genres: ['Триллер', 'Драма', 'Криминал'], score: '7.9' },
+  { type: 'series', title: 'Тьма', year: '2017', genres: ['Фантастика', 'Триллер', 'Детектив'], score: '8.1' },
+  { type: 'series', title: 'Видоизменённый углерод', year: '2018', genres: ['Фантастика', 'Киберпанк', 'Боевик'], score: '7.6' },
+  { type: 'series', title: 'Мир Дикого Запада', year: '2016', genres: ['Фантастика', 'Триллер', 'Драма'], score: '7.9' },
+  { type: 'series', title: 'Экспансия', year: '2015', genres: ['Фантастика', 'Детектив', 'Триллер'], score: '7.9' },
+  { type: 'series', title: 'Банши', year: '2013', genres: ['Боевик', 'Криминал', 'Триллер'], score: '7.9' },
+  { type: 'series', title: 'Каратель', year: '2017', genres: ['Боевик', 'Криминал', 'Триллер'], score: '7.9' },
+  { type: 'series', title: 'Джек Ричер', year: '2022', genres: ['Боевик', 'Криминал', 'Детектив'], score: '7.6' },
+  { type: 'series', title: 'Медведь', year: '2022', genres: ['Драма', 'Комедия'], score: '8.1' },
+  { type: 'series', title: 'Наследники', year: '2018', genres: ['Драма', 'Комедия'], score: '8.2' },
+  { type: 'series', title: 'Сёгун', year: '2024', genres: ['Драма', 'Приключения', 'Боевик'], score: '8.2' },
+  { type: 'series', title: 'Ведьмак', year: '2019', genres: ['Фэнтези', 'Приключения', 'Боевик'], score: '7.2' },
+  { type: 'series', title: 'Призраки дома на холме', year: '2018', genres: ['Ужасы', 'Драма', 'Детектив'], score: '7.9' },
+  { type: 'series', title: 'Любовь. Смерть. Роботы', year: '2019', genres: ['Фантастика', 'Ужасы', 'Комедия'], score: '8.3' },
+  { type: 'series', title: 'Силиконовая долина', year: '2014', genres: ['Комедия'], score: '8.4' },
+
+  // Anime
+  { type: 'anime', title: 'Монстр', year: '2004', genres: ['Психология', 'Триллер', 'Детектив'], score: '8.8' },
+  { type: 'anime', title: 'Код Гиасс: Отступник Акито', year: '2012', genres: ['Фантастика', 'Боевик'], score: '7.4' },
+  { type: 'anime', title: 'Призрак в доспехах: Синдром одиночки', year: '2002', genres: ['Киберпанк', 'Фантастика', 'Детектив'], score: '8.4' },
+  { type: 'anime', title: 'Эрго Прокси', year: '2006', genres: ['Киберпанк', 'Психология', 'Фантастика'], score: '7.9' },
+  { type: 'anime', title: 'Технолайз', year: '2003', genres: ['Киберпанк', 'Психология', 'Фантастика'], score: '7.7' },
+  { type: 'anime', title: 'Моб Психо 100', year: '2016', genres: ['Боевик', 'Комедия', 'Фэнтези'], score: '8.5' },
+  { type: 'anime', title: 'Обещанный Неверленд', year: '2019', genres: ['Триллер', 'Психология', 'Фэнтези'], score: '8.5' },
+  { type: 'anime', title: 'Созданный в Бездне', year: '2017', genres: ['Приключения', 'Фэнтези', 'Драма'], score: '8.6' },
+  { type: 'anime', title: 'Семья шпиона', year: '2022', genres: ['Комедия', 'Боевик'], score: '8.5' },
+  { type: 'anime', title: 'Фрирен, провожающая в последний путь', year: '2023', genres: ['Фэнтези', 'Приключения', 'Драма'], score: '9.3' },
+  { type: 'anime', title: 'Кайдзю №8', year: '2024', genres: ['Боевик', 'Фантастика'], score: '8.3' },
+  { type: 'anime', title: 'Дандадан', year: '2024', genres: ['Боевик', 'Комедия', 'Фэнтези'], score: '8.6' },
+  { type: 'anime', title: 'Ветролом', year: '2024', genres: ['Боевик', 'Драма'], score: '7.8' },
+  { type: 'anime', title: 'Токийские мстители', year: '2021', genres: ['Боевик', 'Драма', 'Фантастика'], score: '7.9' },
+  { type: 'anime', title: 'Волейбол!!', year: '2014', genres: ['Спорт', 'Комедия', 'Драма'], score: '8.5' },
+  { type: 'anime', title: 'Первый шаг', year: '2000', genres: ['Спорт', 'Драма', 'Комедия'], score: '8.7' },
+  { type: 'anime', title: 'Ао Аси', year: '2022', genres: ['Спорт', 'Драма'], score: '8.2' },
+  { type: 'anime', title: 'Парад смерти', year: '2015', genres: ['Психология', 'Триллер', 'Драма'], score: '8.1' },
+  { type: 'anime', title: 'Иная', year: '2012', genres: ['Ужасы', 'Детектив', 'Триллер'], score: '7.5' },
+  { type: 'anime', title: 'Хеллсинг Ultimate', year: '2006', genres: ['Ужасы', 'Боевик', 'Фэнтези'], score: '8.3' },
+  { type: 'anime', title: 'Самурай Чамплу', year: '2004', genres: ['Приключения', 'Боевик', 'Комедия'], score: '8.5' },
+  { type: 'anime', title: 'Гуррен-Лаганн', year: '2007', genres: ['Фантастика', 'Боевик', 'Приключения'], score: '8.6' },
+  { type: 'anime', title: 'Госпожа Кагуя: В любви как на войне', year: '2019', genres: ['Романтика', 'Комедия', 'Психология'], score: '8.4' },
+  { type: 'anime', title: 'Хоримия', year: '2021', genres: ['Романтика', 'Комедия', 'Повседневность'], score: '8.2' }
+];
+
+let liveApiRecsCache = { all: [], movie: [], series: [], anime: [] };
+let liveApiRecsLoaded = { all: false, movie: false, series: false, anime: false };
+let recShuffleOffset = 0;
+
+async function loadLiveRecommendationsForTab(tabType) {
+  if (liveApiRecsLoaded[tabType]) return;
+  liveApiRecsLoaded[tabType] = true;
+
+  const existingTitles = new Set(items.map(x => String(x.title || '').toLowerCase().trim()));
+  const fetched = [];
+
+  // 1. Fetch popular anime from YummyAnime API if tab is 'anime' or 'all'
+  if (tabType === 'anime' || tabType === 'all') {
+    try {
+      const r = await fetch('https://api.yani.tv/anime?sort=top&limit=30', {
+        headers: { 'Accept': 'application/json', 'Lang': 'ru' }
+      });
+      if (r.ok) {
+        const json = await r.json();
+        const arr = Array.isArray(json.response) ? json.response : (Array.isArray(json) ? json : []);
+        arr.forEach(a => {
+          const t = (a.title || '').trim();
+          if (!t || existingTitles.has(t.toLowerCase())) return;
+          let poster = '';
+          if (a.poster) {
+            poster = a.poster.medium || a.poster.big || a.poster.huge || '';
+            if (poster.startsWith('//')) poster = 'https:' + poster;
+            else if (poster.startsWith('/')) poster = 'https://yummyani.me' + poster;
+          }
+          const genres = Array.isArray(a.genres) ? a.genres.map(g => capitalizeGenre(g.title || g.name || g)).filter(Boolean) : [];
+          const score = (a.rating && a.rating.average) ? String(Math.round(a.rating.average * 10) / 10) : '';
+          fetched.push({
+            type: 'anime',
+            title: t,
+            year: a.year ? String(a.year) : '',
+            genres: genres,
+            poster: poster,
+            score: score
+          });
+        });
+      }
+    } catch (e) {}
+  }
+
+  // 2. Fetch popular movies/series from Kinopoisk API if key is set and tab is 'movie', 'series', or 'all'
+  if (kpApiKey && (tabType === 'movie' || tabType === 'series' || tabType === 'all')) {
+    const colTypes = [];
+    if (tabType === 'movie' || tabType === 'all') colTypes.push({ col: 'TOP_POPULAR_MOVIES', mType: 'movie' });
+    if (tabType === 'series' || tabType === 'all') colTypes.push({ col: 'TOP_250_TV_SHOWS', mType: 'series' });
+
+    for (const cfg of colTypes) {
+      try {
+        const res = await fetch('https://kinopoiskapiunofficial.tech/api/v2.2/films/collections?type=' + cfg.col + '&page=1', {
+          headers: { 'X-API-KEY': kpApiKey, 'Content-Type': 'application/json' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          (data.items || []).forEach(f => {
+            const t = (f.nameRu || f.nameEn || '').trim();
+            if (!t || existingTitles.has(t.toLowerCase())) return;
+            const genres = Array.isArray(f.genres) ? f.genres.map(x => capitalizeGenre(x.genre)).filter(Boolean) : [];
+            fetched.push({
+              type: cfg.mType,
+              title: t,
+              year: f.year ? String(f.year) : '',
+              genres: genres,
+              poster: f.posterUrlPreview || f.posterUrl || '',
+              score: f.ratingKinopoisk ? String(f.ratingKinopoisk) : ''
+            });
+          });
+        }
+      } catch (e) {}
+    }
+  }
+
+  if (fetched.length) {
+    liveApiRecsCache[tabType] = fetched;
+    if (filterType === 'stats' && statsTypeFilter === tabType) {
+      renderStatsView();
+    }
+  }
+}
+
+window.shuffleRecommendations = function() {
+  recShuffleOffset += 5;
+  renderStatsView();
+};
+
+window.addRecToPlanned = async function(encodedPayload) {
+  try {
+    const rec = JSON.parse(decodeURIComponent(encodedPayload));
+    if (!rec || !rec.title) return;
+    const norm = rec.title.toLowerCase().trim();
+    if (items.some(x => String(x.title || '').toLowerCase().trim() === norm)) {
+      showToast('Уже есть в твоём списке!');
+      renderStatsView();
+      return;
+    }
+    const newItem = {
+      id: 'item_' + Date.now(),
+      type: rec.type || 'movie',
+      title: rec.title,
+      poster: rec.poster || '',
+      status: 'planned',
+      rating: null,
+      seasonRatings: {},
+      season: 1,
+      episode: 1,
+      note: rec.year ? (rec.year + ' г.') : '',
+      waiting: false,
+      waitNote: '',
+      watchOrder: [],
+      genres: Array.isArray(rec.genres) ? rec.genres : [],
+      createdAt: Date.now()
+    };
+    items.unshift(newItem);
+    saveItems();
+    renderStatsView();
+    showToast('✅ Добавлено в «В планах»!');
+
+    // Auto-fetch poster in background if missing
+    if (!newItem.poster) {
+      const meta = await fetchBestMeta(newItem.title, newItem.type);
+      if (meta && meta.poster && meta.poster !== 'RATE_LIMIT') {
+        newItem.poster = meta.poster;
+        if ((!newItem.genres || !newItem.genres.length) && meta.genres && meta.genres.length) {
+          newItem.genres = meta.genres;
+        }
+        saveItems();
+        if (filterType === 'stats') renderStatsView();
+      }
+    }
+  } catch (e) {}
+};
+
 /* ================= STATISTICS & GENRE ANALYTICS ================= */
 function renderStatsView() {
   const container = document.getElementById('statsContainer');
@@ -1360,16 +1661,18 @@ function renderStatsView() {
     ['movie', '🎬 Фильмы']
   ];
 
+  // Trigger background live API fetch for current tab once
+  loadLiveRecommendationsForTab(statsTypeFilter);
+
   const scoped = items.filter(x => statsTypeFilter === 'all' || x.type === statsTypeFilter);
   const watchedOrWatching = scoped.filter(x => x.status === 'watched' || x.status === 'watching');
   const ratedItems = scoped.filter(x => typeof x.rating === 'number' && x.rating > 0);
 
-  // Average score across rated items
   const avgScore = ratedItems.length
     ? (Math.round((ratedItems.reduce((acc, x) => acc + x.rating, 0) / ratedItems.length) * 100) / 100)
     : 0;
 
-  // Aggregate genres: frequency (watched/watching + all) and average rating (rated)
+  // Aggregate genres by consumption & user ratings to weight user taste
   const genreMap = new Map();
   scoped.forEach(item => {
     const gs = (item.genres && item.genres.length) ? item.genres : ['Без жанра'];
@@ -1395,11 +1698,9 @@ function renderStatsView() {
     avgRating: g.ratedCount ? Math.round((g.ratingSum / g.ratedCount) * 10) / 10 : 0
   }));
 
-  // Most watched genres (excluding "Без жанра" from top callout if real genres exist)
   const byFreq = genreStats.slice().sort((a, b) => (b.consumedCount - a.consumedCount) || (b.totalCount - a.totalCount));
   const topFreqReal = byFreq.find(g => g.name !== 'Без жанра') || byFreq[0];
 
-  // Highest rated genres (at least 1 rated item)
   const byScore = genreStats
     .filter(g => g.ratedCount > 0)
     .sort((a, b) => (b.avgRating - a.avgRating) || (b.ratedCount - a.ratedCount));
@@ -1411,7 +1712,45 @@ function renderStatsView() {
     statsSelectedGenre = null;
   }
 
-  // Filter rated items by selected genre
+  // Build personalized recommendations based on top favorite genres (or selected genre)
+  const existingTitles = new Set(items.map(x => String(x.title || '').toLowerCase().trim()));
+  const favGenres = statsSelectedGenre && statsSelectedGenre !== 'Без жанра'
+    ? [statsSelectedGenre]
+    : byFreq.filter(g => g.name !== 'Без жанра').slice(0, 3).map(g => g.name);
+
+  const favSet = new Set(favGenres.map(g => g.toLowerCase()));
+  const combinedPool = [];
+  const seenPoolTitles = new Set();
+
+  // Merge live API results + curated fallback pool
+  const rawPool = [...(liveApiRecsCache[statsTypeFilter] || []), ...CURATED_RECS];
+  rawPool.forEach(rec => {
+    if (statsTypeFilter !== 'all' && rec.type !== statsTypeFilter) return;
+    const norm = String(rec.title || '').toLowerCase().trim();
+    if (!norm || existingTitles.has(norm) || seenPoolTitles.has(norm)) return;
+    seenPoolTitles.add(norm);
+
+    const matched = (rec.genres || []).filter(g => favSet.has(g.toLowerCase()));
+    if (favGenres.length > 0 && matched.length === 0) return;
+
+    combinedPool.push({
+      ...rec,
+      matchedGenres: matched.length ? matched : (rec.genres || []).slice(0, 2),
+      matchScore: matched.length * 10 + (parseFloat(rec.score) || 0)
+    });
+  });
+
+  combinedPool.sort((a, b) => b.matchScore - a.matchScore);
+  const totalMatches = combinedPool.length;
+  const pageSize = 6;
+  let recsToShow = [];
+  if (totalMatches > 0) {
+    const startOff = recShuffleOffset % totalMatches;
+    for (let i = 0; i < Math.min(pageSize, totalMatches); i++) {
+      recsToShow.push(combinedPool[(startOff + i) % totalMatches]);
+    }
+  }
+
   const filteredRated = ratedItems
     .filter(item => {
       if (!statsSelectedGenre) return true;
@@ -1421,8 +1760,26 @@ function renderStatsView() {
     .sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
   const typeBadge = { movie: '🎬 Фильм', series: '📺 Сериал', anime: '⛩️ Аниме' };
+  const typeIconOnly = { movie: '🎬', series: '📺', anime: '⛩️' };
+
+  const allTotal = items.length;
+  const allWatched = items.filter(x => x.status === 'watched').length;
+  const allWatching = items.filter(x => x.status === 'watching').length;
+  const allPlanned = items.filter(x => x.status === 'planned').length;
+  const allSequel = items.filter(x => isItemWaitingSequel(x)).length;
+
+  const summaryBarHtml = `<div class="stats" style="margin-bottom:2px">` +
+    `<div class="stat" onclick="jumpFromStatsToStatus('all')"><span class="lbl">Всего</span><span class="val">${allTotal}</span></div>` +
+    `<div class="stat" onclick="jumpFromStatsToStatus('watched')"><span class="lbl">Просмот.</span><span class="val" style="color:var(--green)">${allWatched}</span></div>` +
+    `<div class="stat" onclick="jumpFromStatsToStatus('watching')"><span class="lbl">Смотрю</span><span class="val" style="color:var(--blue)">${allWatching}</span></div>` +
+    `<div class="stat" onclick="jumpFromStatsToStatus('planned')"><span class="lbl">В планах</span><span class="val">${allPlanned}</span></div>` +
+    `<div class="stat" onclick="jumpFromStatsToStatus('sequel')"><span class="lbl">Жду прод.</span><span class="val" style="color:var(--accent)">${allSequel}</span></div>` +
+  `</div>`;
+
+  const favLabel = favGenres.length ? favGenres.slice(0, 2).join(', ') : 'твой вкус';
 
   container.innerHTML = `<div class="stats-view">` +
+    summaryBarHtml +
     `<div class="st-subtabs">` +
       subTabs.map(p => `<div class="st-subtab ${statsTypeFilter===p[0]?'active':''}" onclick="setStatsType('${p[0]}')">${p[1]}</div>`).join('') +
     `</div>` +
@@ -1471,19 +1828,32 @@ function renderStatsView() {
 
     `<div class="panel">` +
       `<div class="panel-title">` +
-        `<span>🏆 Рейтинг жанров по твоим оценкам</span>` +
+        `<span>🎯 Подборка для тебя (${escapeHtml(favLabel)})</span>` +
+        (totalMatches > pageSize ? `<button type="button" class="rec-shuffle-btn" onclick="shuffleRecommendations()">🔄 Ещё</button>` : '') +
       `</div>` +
-      (byScore.length ? byScore.map(g => {
-        const pct = Math.min(100, Math.round((g.avgRating / 10) * 100));
-        const isSel = statsSelectedGenre === g.name;
-        return `<div class="g-bar-row ${isSel ? 'selected' : ''}" onclick="toggleStatsGenre('${escapeHtml(g.name)}')">` +
-          `<div class="g-bar-top">` +
-            `<span>${escapeHtml(g.name)}</span>` +
-            `<span class="g-bar-meta">Оценено: ${g.ratedCount} • <b style="color:var(--accent)">★ ${g.avgRating} / 10</b></span>` +
+      (recsToShow.length ? recsToShow.map(rec => {
+        const payload = encodeURIComponent(JSON.stringify({
+          type: rec.type,
+          title: rec.title,
+          year: rec.year || '',
+          genres: rec.genres || [],
+          poster: rec.poster || ''
+        }));
+        const thumbHtml = rec.poster
+          ? `<img class="rec-poster" src="${escapeHtml(rec.poster)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="rec-poster" style="display:none">${typeIconOnly[rec.type] || '🎬'}</div>`
+          : `<div class="rec-poster">${typeIconOnly[rec.type] || '🎬'}</div>`;
+        const metaParts = [typeBadge[rec.type] || '', rec.year, rec.score ? `★ ${rec.score}` : ''].filter(Boolean).join(' • ');
+        const gChips = (rec.genres || []).slice(0, 3).map(g => `<span class="rec-gtag">${escapeHtml(g)}</span>`).join('');
+        return `<div class="rec-card">` +
+          thumbHtml +
+          `<div class="rec-info">` +
+            `<div class="rec-title">${escapeHtml(rec.title)}</div>` +
+            `<div class="rec-sub">${escapeHtml(metaParts)}</div>` +
+            (gChips ? `<div class="rec-genres">${gChips}</div>` : '') +
           `</div>` +
-          `<div class="g-bar-track"><div class="g-bar-fill" style="width:${pct}%"></div></div>` +
+          `<button type="button" class="rec-add-btn" onclick="addRecToPlanned('${payload}')">+ В планы</button>` +
         `</div>`;
-      }).join('') : `<div style="font-size:12px;color:var(--muted)">Оцени хотя бы один тайтл, чтобы увидеть аналитику</div>`) +
+      }).join('') : `<div style="font-size:12px;color:var(--muted)">Все рекомендации по этим жанрам уже в твоём списке! Нажми на любой жанр выше, чтобы глянуть другие.</div>`) +
     `</div>` +
 
     `<div class="panel">` +
