@@ -916,10 +916,8 @@
           <button type="button" class="btn-sec" id="btnPasteSyncCode" style="flex:1;height:36px;font-size:12.5px">📥 Вставить код</button>
         </div>
         <div id="pasteSyncBox" style="display:none;margin-top:6px">
-          <div class="input-row">
-            <input type="text" class="inp" id="syncCodeInput" placeholder="Вставь код KB_SYNC:..." style="height:36px;font-size:12px" />
-            <button type="button" class="find-btn" id="applySyncCodeBtn" style="height:36px;background:var(--accent);color:#fff;border:none">ОК</button>
-          </div>
+          <textarea class="inp" id="syncCodeInput" placeholder="Вставь код KB_SYNC:..." style="height:80px;font-size:11px;padding:8px;resize:none;width:100%;margin-bottom:6px" onclick="this.select()"></textarea>
+          <button type="button" class="btn-pri" id="applySyncCodeBtn" style="width:100%;height:38px;font-size:13px">Применить код</button>
         </div>
       </div>
 
@@ -1254,8 +1252,8 @@ function cloudSetRaw(key, val) {
 }
 
 // Secondary HTTPS Cloud Relay via public Bin (works over standard HTTPS even if Telegram CloudStorage RPC times out!)
-const JSONBIN_MASTER = '$2a$10$wO3a1dEezrOQv5Vq0aB/2.kE/LhB2P3tLd6U556N63f3wJ3wHwDHO'; // Read/Write key
-const JSONBIN_COLLECTION = '6543b5e412a5d3765993e3d9';
+// --- CLOUD SYNC ENGINE ---
+const JSONBIN_KEY = 'A3b9xK2mP7qR4tW8vN1z'; // KVDB.io Bucket
 
 function getUserSyncChannel() {
   try {
@@ -1264,57 +1262,32 @@ function getUserSyncChannel() {
       : '';
     if (!uid) return '';
     let h = 2166136261;
-    const seed = 'kinobrouski_sync_v9_' + uid;
+    const seed = 'kinobrouski_sync_v10_' + uid;
     for (let i = 0; i < seed.length; i++) {
       h ^= seed.charCodeAt(i);
       h = Math.imul(h, 16777619);
     }
-    return 'kb9_' + uid + '_' + (h >>> 0).toString(16);
+    return 'kb10_' + uid + '_' + (h >>> 0).toString(16);
   } catch (e) {
     return '';
-  }
-}
-
-async function getBinIdForUser(channel) {
-  let binId = localStorage.getItem('kb_bin_id_' + channel);
-  if (binId) return binId;
-  if (tg && tg.CloudStorage) {
-    binId = await cloudGetRaw('kb_bin_id');
-    if (binId) {
-      localStorage.setItem('kb_bin_id_' + channel, binId);
-      return binId;
-    }
-  }
-  return '';
-}
-
-async function saveBinIdForUser(channel, binId) {
-  localStorage.setItem('kb_bin_id_' + channel, binId);
-  if (tg && tg.CloudStorage) {
-    await cloudSetRaw('kb_bin_id', binId);
   }
 }
 
 async function httpRelayPull() {
   const ch = getUserSyncChannel();
   if (!ch) return null;
-  const binId = await getBinIdForUser(ch);
-  if (!binId) return null;
-
   try {
     const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), 7000);
-    const res = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+    const tid = setTimeout(() => ctrl.abort(), 12000);
+    const res = await fetch('https://kvdb.io/' + JSONBIN_KEY + '/' + encodeURIComponent(ch), {
       method: 'GET',
-      headers: {
-        'X-Master-Key': JSONBIN_MASTER
-      },
       signal: ctrl.signal
     });
     clearTimeout(tid);
     if (!res.ok) return null;
-    const data = await res.json();
-    return data.record;
+    const text = await res.text();
+    if (!text) return null;
+    return JSON.parse(text);
   } catch (e) {
     return null;
   }
@@ -1323,61 +1296,87 @@ async function httpRelayPull() {
 async function httpRelayPush(payloadObj) {
   const ch = getUserSyncChannel();
   if (!ch) return false;
-  let binId = await getBinIdForUser(ch);
-
   try {
     const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), 8000);
-    if (binId) {
-      const res = await fetch('https://api.jsonbin.io/v3/b/' + binId, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': JSONBIN_MASTER
-        },
-        body: JSON.stringify(payloadObj),
-        signal: ctrl.signal
-      });
-      clearTimeout(tid);
-      return res.ok;
-    } else {
-      const res = await fetch('https://api.jsonbin.io/v3/b', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': JSONBIN_MASTER,
-          'X-Collection-Id': JSONBIN_COLLECTION,
-          'X-Bin-Name': ch
-        },
-        body: JSON.stringify(payloadObj),
-        signal: ctrl.signal
-      });
-      clearTimeout(tid);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.metadata && data.metadata.id) {
-          await saveBinIdForUser(ch, data.metadata.id);
-          return true;
-        }
-      }
-      return false;
-    }
+    const tid = setTimeout(() => ctrl.abort(), 15000);
+    const res = await fetch('https://kvdb.io/' + JSONBIN_KEY + '/' + encodeURIComponent(ch), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payloadObj),
+      signal: ctrl.signal
+    });
+    clearTimeout(tid);
+    return res.ok;
   } catch (e) {
     return false;
   }
 }
 
-function sleepMs(ms) {
-  return new Promise(r => setTimeout(r, ms));
+function cloudGetRawFast(key) {
+  return new Promise((resolve) => {
+    if (tg && tg.CloudStorage) {
+      let settled = false;
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve(''); } }, 3000);
+      try {
+        tg.CloudStorage.getItem(key, (err, val) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          resolve((!err && val) ? val : '');
+        });
+      } catch (e) {
+        if (!settled) { settled = true; clearTimeout(timer); resolve(''); }
+      }
+    } else {
+      resolve('');
+    }
+  });
 }
 
-function utf8ByteLen(str) {
-  try {
-    return new TextEncoder().encode(str).length;
-  } catch (e) {
-    return str.length * 2;
-  }
+function cloudSetRawFast(key, val) {
+  return new Promise((resolve) => {
+    if (tg && tg.CloudStorage) {
+      let settled = false;
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve(false); } }, 4000);
+      try {
+        tg.CloudStorage.setItem(key, String(val), (err, ok) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          resolve(!err);
+        });
+      } catch (e) {
+        if (!settled) { settled = true; clearTimeout(timer); resolve(false); }
+      }
+    } else {
+      resolve(false);
+    }
+  });
 }
+
+function cloudGetKeysFast() {
+  return new Promise((resolve) => {
+    if (tg && tg.CloudStorage && typeof tg.CloudStorage.getKeys === 'function') {
+      let settled = false;
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve([]); } }, 3500);
+      try {
+        tg.CloudStorage.getKeys((err, keys) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          resolve((!err && Array.isArray(keys)) ? keys : []);
+        });
+      } catch (e) {
+        if (!settled) { settled = true; clearTimeout(timer); resolve([]); }
+      }
+    } else {
+      resolve([]);
+    }
+  });
+}
+
+function sleepMs(ms) { return new Promise(r => setTimeout(r, ms)); }
+function utf8ByteLen(str) { try { return new TextEncoder().encode(str).length; } catch (e) { return str.length * 2; } }
 
 function splitByUtf8Bytes(str, maxBytes) {
   const chunks = [];
@@ -1404,203 +1403,62 @@ function splitByUtf8Bytes(str, maxBytes) {
   return chunks;
 }
 
-async function readCloudDelta() {
-  const allKeys = await cloudGetKeys();
-  const deltaKeys = allKeys
-    .filter(k => k.startsWith(CLOUD_DELTA_KEY + '_') && /^kb_delta_v9_\d+$/.test(k))
-    .sort((a, b) => parseInt(a.split('_').pop(), 10) - parseInt(b.split('_').pop(), 10));
-
-  const cntStr = await cloudGetRaw(CLOUD_DELTA_KEY + '_n');
-  const cnt = parseInt(cntStr, 10);
-
-  const targetCount = (cnt > 0 && cnt < 100) ? cnt : deltaKeys.length;
-  if (targetCount > 0) {
-    const parts = new Array(targetCount).fill('');
-    for (let i = 0; i < targetCount; i += 4) {
-      const batch = [];
-      for (let j = i; j < Math.min(i + 4, targetCount); j++) {
-        batch.push(cloudGetRaw(CLOUD_DELTA_KEY + '_' + j).then(v => { parts[j] = v || ''; }));
-      }
-      await Promise.all(batch);
+async function tgWriteDeltaFast(deltaPacked, safeDelStr) {
+  if (!tg || !tg.CloudStorage) return false;
+  try {
+    if (utf8ByteLen(safeDelStr) <= 3800) {
+      await cloudSetRawFast(DELETED_KEY_WRITE, safeDelStr);
     }
-    if (!parts.some(p => !p)) {
-      return parts.join('');
+    const chunks = splitByUtf8Bytes(deltaPacked, 3600);
+    if (chunks.length === 0) chunks.push('[]');
+
+    // Parallel upload of max 4 chunks to avoid 15s watchdog kill!
+    const batch = [];
+    for (let j = 0; j < Math.min(4, chunks.length); j++) {
+      batch.push(cloudSetRawFast(CLOUD_DELTA_KEY + '_' + j, chunks[j]));
     }
+    const results = await Promise.all(batch);
+    if (results.some(r => !r)) return false;
+    
+    return await cloudSetRawFast(CLOUD_DELTA_KEY + '_n', String(Math.min(4, chunks.length)));
+  } catch (e) {
+    return false;
   }
-  return await cloudGetRaw(CLOUD_DELTA_KEY);
 }
 
-async function writeCloudDelta(deltaItems, delStr) {
-  // Always push to HTTPS relay in parallel with Telegram CloudStorage so at least one channel succeeds!
-  let deltaPacked = packItems(deltaItems, false);
-  if (utf8ByteLen(deltaPacked) > 28000) {
-    deltaPacked = packItems(deltaItems, true);
+async function tgReadDeltaFast() {
+  const cntStr = await cloudGetRawFast(CLOUD_DELTA_KEY + '_n');
+  const cnt = parseInt(cntStr, 10);
+  if (cnt > 0 && cnt < 10) {
+    const parts = await Promise.all(Array.from({length: cnt}, (_, i) => cloudGetRawFast(CLOUD_DELTA_KEY + '_' + i)));
+    if (!parts.some(p => !p)) return parts.join('');
   }
-  const delEntries = Object.entries(deletedMap).sort((a, b) => b[1] - a[1]).slice(0, 60);
-  const trimmedDel = Object.fromEntries(delEntries);
-  const safeDelStr = JSON.stringify(trimmedDel);
-
-  const httpPromise = httpRelayPush({
-    d: deltaPacked,
-    del: trimmedDel,
-    kp: kpApiKey || '',
-    ts: Date.now()
-  });
-
-  let tgOk = false;
-  let tgErr = 'no_tg';
-
-  if (tg && tg.CloudStorage) {
-    try {
-      if (utf8ByteLen(safeDelStr) <= 3800) {
-        await cloudSetRaw(DELETED_KEY_WRITE, safeDelStr);
-      }
-      let tgDeltaPacked = deltaPacked;
-      if (utf8ByteLen(tgDeltaPacked) > 16000) {
-        tgDeltaPacked = packItems(deltaItems, true);
-      }
-      const chunks = splitByUtf8Bytes(tgDeltaPacked, 3600);
-      if (chunks.length === 0) chunks.push('[]');
-
-      let allChunksOk = true;
-      for (let i = 0; i < chunks.length; i += 4) {
-        const batch = [];
-        for (let j = i; j < Math.min(i + 4, chunks.length); j++) {
-          batch.push(cloudSetRaw(CLOUD_DELTA_KEY + '_' + j, chunks[j]));
-        }
-        const results = await Promise.all(batch);
-        if (results.some(r => !r.ok)) {
-          allChunksOk = false;
-          tgErr = (results.find(r => !r.ok) || {}).err || 'chunk_err';
-          break;
-        }
-      }
-      if (allChunksOk) {
-        const cntRes = await cloudSetRaw(CLOUD_DELTA_KEY + '_n', String(chunks.length));
-        tgOk = cntRes.ok;
-        tgErr = cntRes.err;
-      }
-    } catch (e) {
-      tgErr = String(e);
-    }
-  }
-
-  const httpOk = await httpPromise;
-  if (tgOk || httpOk) {
-    return { ok: true, err: '', via: tgOk ? 'TG' : 'HTTPS' };
-  }
-  return { ok: false, err: tgErr };
+  return await cloudGetRawFast(CLOUD_DELTA_KEY);
 }
 
 let cloudSaveTimer = null;
 function saveItems(immediateCloud = false) {
   const fullPacked = packItems(items, false);
-  const delStr = JSON.stringify(deletedMap);
+  const delEntries = Object.entries(deletedMap).sort((a, b) => b[1] - a[1]).slice(0, 50);
+  const delStr = JSON.stringify(Object.fromEntries(delEntries));
+  
   try {
     localStorage.setItem(STORAGE_KEY_WRITE, fullPacked);
     localStorage.setItem(DELETED_KEY_WRITE, delStr);
   } catch (e) {}
 
   const deltaItems = items.filter(isItemModifiedFromSeed);
+  const deltaPacked = packItems(deltaItems, utf8ByteLen(packItems(deltaItems, false)) > 14000);
+
+  const pushTask = () => {
+    // Fire and forget both channels
+    httpRelayPush({ d: deltaPacked, del: Object.fromEntries(delEntries), kp: kpApiKey || '', ts: Date.now() });
+    tgWriteDeltaFast(deltaPacked, delStr);
+  };
+
   clearTimeout(cloudSaveTimer);
-  if (immediateCloud) {
-    return writeCloudDelta(deltaItems, delStr);
-  }
-  cloudSaveTimer = setTimeout(() => {
-    writeCloudDelta(deltaItems, delStr);
-  }, 500);
-  return Promise.resolve({ ok: true, err: '' });
-}
-
-function mergeSeed(existing) {
-  const seedMap = new Map();
-  for (const s of INITIAL_SEED) {
-    seedMap.set((s.type || 'movie') + '::' + s.title.toLowerCase().trim(), s);
-  }
-
-  const seen = new Set();
-  const merged = [];
-  for (const it of existing) {
-    if (!it || !it.title) continue;
-    const norm = String(it.title).toLowerCase().trim();
-    const typeKey = (it.type || 'movie') + '::' + norm;
-    if (deletedMap[typeKey] || deletedMap[it.id]) continue;
-    const seedMatch = seedMap.get(typeKey);
-    if (seedMatch) {
-      if (!it.watchOrder || !it.watchOrder.length) {
-        it.watchOrder = JSON.parse(JSON.stringify(seedMatch.watchOrder || []));
-      }
-      if (seedMatch.waiting && !it.waiting) {
-        it.waiting = true;
-        if (!it.waitNote) it.waitNote = seedMatch.waitNote || '';
-      }
-    }
-    seen.add(norm);
-    seen.add(typeKey);
-    merged.push(migrateItemFields(it));
-  }
-  for (const s of INITIAL_SEED) {
-    const norm = String(s.title).toLowerCase().trim();
-    const typeKey = (s.type || 'movie') + '::' + norm;
-    if (deletedMap[typeKey] || deletedMap[s.id]) continue;
-    if (!seen.has(norm) && !seen.has(typeKey)) {
-      seen.add(typeKey);
-      merged.push(migrateItemFields(JSON.parse(JSON.stringify(s))));
-    }
-  }
-  return merged;
-}
-
-function bootInstant() {
-  try { kpApiKey = localStorage.getItem(KP_KEY_STORAGE) || ''; } catch (e) {}
-  try {
-    const rawDel = localStorage.getItem(DELETED_KEY_WRITE);
-    if (rawDel) deletedMap = JSON.parse(rawDel) || {};
-  } catch (e) {}
-  updateKpIndicator();
-
-  let localFound = [];
-  for (const k of STORAGE_KEYS_READ) {
-    try {
-      const raw = localStorage.getItem(k);
-      if (raw) {
-        const parsed = unpackItems(raw);
-        if (parsed.length > 0) {
-          localFound = parsed;
-          break;
-        }
-      }
-    } catch (e) {}
-  }
-
-  let seeded = false;
-  try { seeded = localStorage.getItem(SEED_FLAG_KEY) === '1'; } catch (e) {}
-
-  if (!seeded || localFound.length === 0) {
-    items = mergeSeed(localFound);
-    try { localStorage.setItem(SEED_FLAG_KEY, '1'); } catch (e) {}
-    saveItems(false);
-  } else {
-    items = localFound.map(migrateItemFields);
-  }
-  render();
-  syncCloudFull(false);
-}
-
-async function autoFillMissingPostersBackground(newTitlesList) {
-  for (const it of newTitlesList) {
-    if (!it.poster) {
-      const meta = await fetchBestMeta(it.title, it.type);
-      if (meta && meta.poster && meta.poster !== 'RATE_LIMIT') {
-        it.poster = meta.poster;
-        if ((!it.genres || !it.genres.length) && meta.genres && meta.genres.length) {
-          it.genres = meta.genres;
-        }
-        try { localStorage.setItem(STORAGE_KEY_WRITE, packItems(items, false)); } catch (e) {}
-        render();
-      }
-    }
-  }
+  if (immediateCloud) { pushTask(); return; }
+  cloudSaveTimer = setTimeout(pushTask, 800);
 }
 
 async function syncCloudFull(manual = false) {
@@ -1612,24 +1470,23 @@ async function syncCloudFull(manual = false) {
   const watchdog = setTimeout(() => {
     isCloudSyncing = false;
     if (syncBtn) syncBtn.classList.remove('syncing');
-  }, 18000);
+    if (manual) showToast('⚠️ Превышено время ожидания сети');
+  }, 16000);
 
   try {
-    // Pull from BOTH Telegram CloudStorage AND HTTPS Relay in parallel
-    const [cloudKey, cloudDelRaw, rawDelta, httpObj] = await Promise.all([
-      cloudGetRaw(KP_KEY_STORAGE),
-      cloudGetRaw(DELETED_KEY_WRITE),
-      readCloudDelta(),
-      httpRelayPull()
+    // Parallel fetch from TG and HTTP
+    const [tgDeltaRaw, httpObj, cloudDelRaw] = await Promise.all([
+      tgReadDeltaFast(),
+      httpRelayPull(),
+      cloudGetRawFast(DELETED_KEY_WRITE)
     ]);
 
-    const effectiveKey = cloudKey || (httpObj && httpObj.kp) || '';
-    if (effectiveKey && effectiveKey !== kpApiKey) {
-      kpApiKey = effectiveKey;
-      try { localStorage.setItem(KP_KEY_STORAGE, kpApiKey); } catch (e) {}
-      updateKpIndicator();
-    } else if (kpApiKey && !cloudKey) {
-      cloudSetRaw(KP_KEY_STORAGE, kpApiKey);
+    let cloudItems = [];
+    if (tgDeltaRaw) {
+      try { cloudItems = cloudItems.concat(unpackItems(tgDeltaRaw)); } catch (e) {}
+    }
+    if (httpObj && httpObj.d) {
+      try { cloudItems = cloudItems.concat(unpackItems(httpObj.d)); } catch (e) {}
     }
 
     if (cloudDelRaw) {
@@ -1640,32 +1497,27 @@ async function syncCloudFull(manual = false) {
         }
       } catch (e) {}
     }
-    if (httpObj && httpObj.del && typeof httpObj.del === 'object') {
+    if (httpObj && httpObj.del) {
       for (const [dk, ts] of Object.entries(httpObj.del)) {
         if (!deletedMap[dk] || ts > deletedMap[dk]) deletedMap[dk] = ts;
       }
     }
-
-    let cloudItems = [];
-    if (rawDelta) {
-      try { cloudItems = cloudItems.concat(unpackItems(rawDelta)); } catch (e) {}
-    }
-    if (httpObj && httpObj.d) {
-      try { cloudItems = cloudItems.concat(unpackItems(httpObj.d)); } catch (e) {}
+    if (httpObj && httpObj.kp && !kpApiKey) {
+      kpApiKey = httpObj.kp;
+      localStorage.setItem(KP_KEY_STORAGE, kpApiKey);
+      updateKpIndicator();
     }
 
     const mergedMap = new Map();
     let localChanged = false;
-    let cloudNeedsPush = false;
-    let addedFromCloudCount = 0;
-    const newlyPulledWithoutPoster = [];
+    let addedCount = 0;
+    const missingPosters = [];
 
     items.forEach(loc => {
       const key = itemSyncKey(loc);
       const delTs = Math.max(deletedMap[key] || 0, deletedMap[loc.id] || 0);
       if (delTs > (loc.updatedAt || loc.createdAt || 0)) {
-        localChanged = true;
-        return;
+        localChanged = true; return;
       }
       mergedMap.set(key, migrateItemFields(loc));
     });
@@ -1674,35 +1526,26 @@ async function syncCloudFull(manual = false) {
       const key = itemSyncKey(ci);
       const delTs = Math.max(deletedMap[key] || 0, deletedMap[ci.id] || 0);
       const ciTime = ci.updatedAt || ci.createdAt || 0;
-      if (delTs > ciTime) {
-        cloudNeedsPush = true;
-        return;
-      }
+      if (delTs > ciTime) return;
 
       const loc = mergedMap.get(key);
       if (!loc) {
         const migrated = migrateItemFields(ci);
         mergedMap.set(key, migrated);
-        localChanged = true;
-        addedFromCloudCount++;
-        if (!migrated.poster) newlyPulledWithoutPoster.push(migrated);
+        localChanged = true; addedCount++;
+        if (!migrated.poster) missingPosters.push(migrated);
       } else {
         const locTime = loc.updatedAt || loc.createdAt || 0;
         if (ciTime > locTime) {
           if (!ci.poster && loc.poster) ci.poster = loc.poster;
           if ((!ci.genres || !ci.genres.length) && loc.genres && loc.genres.length) ci.genres = loc.genres;
           if ((!ci.watchOrder || !ci.watchOrder.length) && loc.watchOrder && loc.watchOrder.length) ci.watchOrder = loc.watchOrder;
-          const migrated = migrateItemFields(ci);
-          mergedMap.set(key, migrated);
-          localChanged = true;
-          addedFromCloudCount++;
-        } else if (locTime > ciTime) {
-          cloudNeedsPush = true;
-        } else {
+          mergedMap.set(key, migrateItemFields(ci));
+          localChanged = true; addedCount++;
+        } else if (locTime === ciTime) {
           let enriched = false;
           if (!loc.poster && ci.poster) { loc.poster = ci.poster; enriched = true; }
           if ((!loc.genres || !loc.genres.length) && ci.genres && ci.genres.length) { loc.genres = ci.genres; enriched = true; }
-          if ((!loc.watchOrder || !loc.watchOrder.length) && ci.watchOrder && ci.watchOrder.length) { loc.watchOrder = ci.watchOrder; enriched = true; }
           if (enriched) localChanged = true;
         }
       }
@@ -1710,38 +1553,36 @@ async function syncCloudFull(manual = false) {
 
     items = Array.from(mergedMap.values());
     const deltaItems = items.filter(isItemModifiedFromSeed);
-    const fullPacked = packItems(items, false);
-    const delStr = JSON.stringify(deletedMap);
-
+    
     try {
-      localStorage.setItem(STORAGE_KEY_WRITE, fullPacked);
-      localStorage.setItem(DELETED_KEY_WRITE, delStr);
+      localStorage.setItem(STORAGE_KEY_WRITE, packItems(items, false));
+      localStorage.setItem(DELETED_KEY_WRITE, JSON.stringify(deletedMap));
     } catch (e) {}
 
     if (localChanged) {
       render();
-      if (newlyPulledWithoutPoster.length) {
-        autoFillMissingPostersBackground(newlyPulledWithoutPoster.slice(0, 15));
-      }
+      if (missingPosters.length) autoFillMissingPostersBackground(missingPosters.slice(0, 15));
     }
 
-    if (deltaItems.length > 0 && cloudItems.length === 0) {
-      cloudNeedsPush = true;
-    }
-
-    if (cloudNeedsPush || manual) {
-      const writeRes = await writeCloudDelta(deltaItems, delStr);
+    // Force push full state back to HTTP relay so it's always the source of truth
+    if (manual || addedCount > 0 || deltaItems.length > cloudItems.length) {
+      const dPacked = packItems(deltaItems, utf8ByteLen(packItems(deltaItems, false)) > 14000);
+      const httpOk = await httpRelayPush({ d: dPacked, del: deletedMap, kp: kpApiKey || '', ts: Date.now() });
+      tgWriteDeltaFast(dPacked, JSON.stringify(deletedMap)); // fire and forget TG
+      
       if (manual) {
-        if (writeRes.ok) {
-          const extra = addedFromCloudCount > 0 ? ` • скачано: +${addedFromCloudCount}` : ` • изм: ${deltaItems.length}`;
-          showToast(`☁️ Синхронизировано (${items.length} тайтл.${extra})`);
+        if (httpOk || tgDeltaRaw) {
+          showToast(`☁️ Синхронизировано (Всего: ${items.length})`);
         } else {
-          showToast(`⚠️ Ошибка сети: ${writeRes.err}`);
+          showToast(`⚠️ Ошибка сети, попробуй позже`);
         }
+      } else if (addedCount > 0) {
+        showToast(`☁️ Подтянуто с другого устройства: +${addedCount}`);
       }
-    } else if (addedFromCloudCount > 0) {
-      showToast(`☁️ Загружено с другого устройства: +${addedFromCloudCount}`);
+    } else if (manual) {
+      showToast(`☁️ Всё актуально (${items.length} тайтл.)`);
     }
+
   } catch (e) {
     if (manual) showToast('⚠️ Сбой: ' + String(e));
   } finally {
@@ -3696,18 +3537,24 @@ window.pickRandomPlanned = async function() {
 
 document.getElementById('closeRandomModal').onclick = () => document.getElementById('randomModal').classList.remove('open');
 
-document.getElementById('btnCopySyncCode').onclick = async function() {
+document.getElementById('btnCopySyncCode').onclick = function() {
   const deltaItems = items.filter(isItemModifiedFromSeed);
   const packed = packItems(deltaItems.length ? deltaItems : items, true);
   const bytes = new TextEncoder().encode(packed);
   let bin = '';
   for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
   const code = 'KB_SYNC:' + btoa(bin);
+  
+  const box = document.getElementById('pasteSyncBox');
+  const input = document.getElementById('syncCodeInput');
+  box.style.display = 'block';
+  input.value = code;
+  input.select();
   try {
-    await navigator.clipboard.writeText(code);
-    showToast('📋 Код скопирован! Вставь его на втором устройстве');
-  } catch (e) {
-    prompt('Скопируй этот код и отправь на второе устройство:', code);
+    document.execCommand('copy');
+    showToast('📋 Код скопирован! Отправь его в Избранное');
+  } catch(e) {
+    showToast('Выдели текст ниже и нажми Скопировать');
   }
 };
 document.getElementById('btnPasteSyncCode').onclick = function() {
