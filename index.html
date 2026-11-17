@@ -906,15 +906,18 @@
         <button class="btn-pri" id="btnBulkCovers" style="width:100%;height:40px;font-size:13.5px">🖼️ Загрузить обложки и жанры</button>
       </div>
 
-            <div class="settings-card">
-        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">🔄 Перенос между ПК и телефоном</div>
+                  <div class="settings-card">
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">🔄 Ручная синхронизация (Текст)</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:9px;line-height:1.4">
-          Если авто-облако недоступно: нажми <b>Экспорт</b>, отправь файл себе в Избранное, сохрани на телефон и нажми <b>Импорт</b>.
+          Файлы не скачиваются в телеге на ПК. Жми <b>Скопировать</b> (текст будет сжат без картинок), отправляй в Избранное. На телефоне копируй этот текст и жми <b>Вставить</b>.
         </div>
-        <div style="display:flex;gap:6px">
-          <button class="btn-sec" id="btnExport" style="flex:1;height:38px;font-size:13px">⬇️ Экспорт файла</button>
-          <button class="btn-pri" id="btnImport" style="flex:1;height:38px;font-size:13px">⬆️ Импорт файла</button>
-          <input type="file" id="importFile" accept=".json,.txt" style="display:none" />
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button type="button" class="btn-pri" id="btnCopySyncCode" style="flex:1;height:36px;font-size:12.5px">📋 Скопировать</button>
+          <button type="button" class="btn-sec" id="btnPasteSyncCode" style="flex:1;height:36px;font-size:12.5px">📥 Вставить</button>
+        </div>
+        <div id="pasteSyncBox" style="display:none;margin-top:6px">
+          <textarea class="inp" id="syncCodeInput" placeholder="Вставь скопированный текст сюда..." style="height:80px;font-size:11px;padding:8px;resize:none;width:100%;margin-bottom:6px" onclick="this.select()"></textarea>
+          <button type="button" class="btn-pri" id="applySyncCodeBtn" style="width:100%;height:38px;font-size:13px">Применить</button>
         </div>
       </div>
     </div>
@@ -3347,363 +3350,85 @@ document.getElementById('clearKpKeyBtn').onclick = function() {
   showToast('Ключ удалён');
 };
 
-document.getElementById('btnExport').onclick = function() {
-  const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'kinobrouski_backup.json';
-  a.click();
-};
-document.getElementById('btnImport').onclick = () => document.getElementById('importFile').click();
-document.getElementById('importFile').onchange = function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function() {
-    try {
-      const data = JSON.parse(reader.result);
-      if (Array.isArray(data)) {
-        items = data.map(x => { x.updatedAt = Date.now(); return migrateItemFields(x); });
-        saveItems();
-        render();
-        showToast('Импортировано: ' + items.length);
-      }
-    } catch (err) {
-      showToast('Ошибка файла');
-    }
-  };
-  reader.readAsText(file);
-};
-
-
-/* ================= DESCRIPTION FETCHER & DETAIL SHEET ================= */
-const descCache = new Map();
-
-function cleanHtmlTags(str) {
-  return String(str || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-async function fetchTitleDescription(title, type) {
-  const key = (type || 'all') + '::' + String(title || '').toLowerCase().trim();
-  if (descCache.has(key)) return descCache.get(key);
-
-  const cleanQ = String(title || '').replace(/\([^)]*\)/g, '').trim();
-  let result = { desc: '', poster: '', year: '', score: '' };
-
-  // 1. Try YummyAnime for anime
-  if (type === 'anime') {
-    try {
-      const yaList = await searchYummyAnime(cleanQ);
-      if (yaList.length && yaList[0].yummyId) {
-        const r = await fetch('https://api.yani.tv/anime/' + yaList[0].yummyId, {
-          headers: { 'Accept': 'application/json', 'Lang': 'ru' }
-        });
-        if (r.ok) {
-          const data = await r.json();
-          const resp = data.response || data;
-          const d = cleanHtmlTags(resp.description || '');
-          if (d) {
-            result.desc = d;
-            result.poster = yaList[0].poster || '';
-            if (resp.year) result.year = String(resp.year);
-            if (resp.rating && resp.rating.average) result.score = String(Math.round(resp.rating.average * 10) / 10);
-            descCache.set(key, result);
-            return result;
-          }
-        }
-      }
-    } catch (e) {}
-  }
-
-  // 2. Try Kinopoisk API if key is available
-  if (kpApiKey) {
-    try {
-      const res = await fetch('https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword=' + encodeURIComponent(cleanQ) + '&page=1', {
-        headers: { 'X-API-KEY': kpApiKey, 'Content-Type': 'application/json' }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const films = data.films || [];
-        if (films.length > 0) {
-          const f = films[0];
-          result.poster = f.posterUrlPreview || f.posterUrl || '';
-          if (f.year) result.year = String(f.year);
-          if (f.rating) result.score = String(f.rating);
-          if (f.description && f.description.trim()) {
-            result.desc = f.description.trim();
-            descCache.set(key, result);
-            return result;
-          }
-          if (f.filmId) {
-            const detRes = await fetch('https://kinopoiskapiunofficial.tech/api/v2.2/films/' + f.filmId, {
-              headers: { 'X-API-KEY': kpApiKey, 'Content-Type': 'application/json' }
-            });
-            if (detRes.ok) {
-              const det = await detRes.json();
-              const d = (det.description || det.shortDescription || '').trim();
-              if (d) {
-                result.desc = d;
-                if (det.ratingKinopoisk) result.score = String(det.ratingKinopoisk);
-                descCache.set(key, result);
-                return result;
-              }
-            }
-          }
-        }
-      }
-    } catch (e) {}
-  }
-
-  // 3. Fallback: Russian Wikipedia summary
+document.getElementById('btnCopySyncCode').onclick = function() {
   try {
-    const suffix = type === 'anime' ? 'аниме' : (type === 'series' ? 'телесериал' : 'фильм');
-    const url = 'https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' +
-      encodeURIComponent(cleanQ + ' ' + suffix) +
-      '&gsrlimit=2&prop=pageimages|extracts&exintro=1&explaintext=1&exsentences=4&piprop=thumbnail&pithumbsize=400&format=json&origin=*';
-    const r = await fetch(url);
-    if (r.ok) {
-      const data = await r.json();
-      const pages = (data.query && data.query.pages) ? Object.values(data.query.pages) : [];
-      if (pages.length && pages[0].extract) {
-        result.desc = pages[0].extract.trim();
-        if (!result.poster && pages[0].thumbnail) result.poster = pages[0].thumbnail.source;
-      }
+    // Strip posters to make it lightweight
+    const dPacked = packItems(items, true);
+    const payload = JSON.stringify({ d: dPacked, del: deletedMap, kp: kpApiKey || '' });
+    const textToCopy = 'KB_DATA:' + payload;
+    
+    const box = document.getElementById('pasteSyncBox');
+    const input = document.getElementById('syncCodeInput');
+    box.style.display = 'block';
+    input.value = textToCopy;
+    input.select();
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(() => showToast('📋 Текст скопирован в буфер!'));
+    } else {
+        document.execCommand('copy');
+        showToast('📋 Текст скопирован! (если нет - скопируй вручную ниже)');
     }
-  } catch (e) {}
-
-  descCache.set(key, result);
-  return result;
-}
-
-window.openRecDetailSheet = async function(encodedPayload) {
-  try {
-    const rec = JSON.parse(decodeURIComponent(encodedPayload));
-    if (!rec || !rec.title) return;
-
-    const typeNames = { movie: '🎬 Фильм', series: '📺 Сериал', anime: '⛩️ Аниме' };
-    const typeIcons = { movie: '🎬', series: '📺', anime: '⛩️' };
-    document.getElementById('recDetailHeading').textContent = rec.title;
-
-    const alreadyAdded = items.some(x => String(x.title || '').toLowerCase().trim() === rec.title.toLowerCase().trim());
-    const ytUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(rec.title + ' трейлер на русском');
-
-    function renderSheetContent(descText, posterUrl, yearStr, scoreStr) {
-      const thumb = posterUrl
-        ? `<img class="rnd-poster" src="${escapeHtml(posterUrl)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="rnd-poster" style="display:none">${typeIcons[rec.type] || '🎬'}</div>`
-        : `<div class="rnd-poster">${typeIcons[rec.type] || '🎬'}</div>`;
-      const metaLine = [typeNames[rec.type] || '', yearStr, scoreStr ? ('★ ' + scoreStr) : ''].filter(Boolean).join(' • ');
-      const gChips = (rec.genres || []).map(g => `<span class="rec-gtag">${escapeHtml(g)}</span>`).join('');
-
-      document.getElementById('recDetailBody').innerHTML =
-        `<div class="rnd-card-box" style="margin-top:0">` +
-          thumb +
-          `<div class="rnd-info">` +
-            `<div class="rnd-title">${escapeHtml(rec.title)}</div>` +
-            `<div class="rnd-sub">${escapeHtml(metaLine)}</div>` +
-            (gChips ? `<div class="rec-genres" style="margin-top:5px">${gChips}</div>` : '') +
-            `<div class="rnd-desc">${descText ? escapeHtml(descText) : '<span style="color:var(--muted)">Загружаю описание сюжета...</span>'}</div>` +
-          `</div>` +
-        `</div>`;
-
-      const updatedPayload = encodeURIComponent(JSON.stringify({
-        type: rec.type,
-        title: rec.title,
-        year: yearStr || '',
-        genres: rec.genres || [],
-        poster: posterUrl || ''
-      }));
-
-      document.getElementById('recDetailFoot').innerHTML =
-        `<a href="${ytUrl}" target="_blank" rel="noopener" class="btn-sec" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none">▶ Трейлер</a>` +
-        (alreadyAdded
-          ? `<button type="button" class="btn-pri" style="background:rgba(34,197,94,0.2);color:var(--green);border:1px solid rgba(34,197,94,0.4)" disabled>✓ Уже в списке</button>`
-          : `<button type="button" class="btn-pri" onclick="addRecToPlanned('${updatedPayload}');document.getElementById('recDetailModal').classList.remove('open')">+ В планы</button>`);
-    }
-
-    renderSheetContent(rec.desc || '', rec.poster || '', rec.year || '', rec.score || '');
-    document.getElementById('recDetailModal').classList.add('open');
-
-    const fetched = await fetchTitleDescription(rec.title, rec.type);
-    const finalDesc = fetched.desc || rec.desc || 'Описание не найдено. Можешь глянуть трейлер по кнопке ниже!';
-    const finalPoster = rec.poster || fetched.poster || '';
-    const finalYear = rec.year || fetched.year || '';
-    const finalScore = rec.score || fetched.score || '';
-    renderSheetContent(finalDesc, finalPoster, finalYear, finalScore);
-  } catch (e) {}
+  } catch(e) {
+    showToast('⚠️ Ошибка. Скопируй текст из окна вручную');
+  }
 };
 
-document.getElementById('closeRecDetailModal').onclick = () => document.getElementById('recDetailModal').classList.remove('open');
-
-/* ================= RANDOMIZER ("🎲 ЧТО ПОСМОТРЕТЬ?") ================= */
-let rndFilterType = 'all';
-let rndCurrentItem = null;
-let rndLastId = null;
-
-window.openRandomizerModal = function() {
-  rndFilterType = (filterType !== 'all' && filterType !== 'stats') ? filterType : 'all';
-  document.getElementById('randomModal').classList.add('open');
-  pickRandomPlanned();
+document.getElementById('btnPasteSyncCode').onclick = function() {
+  const box = document.getElementById('pasteSyncBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  document.getElementById('syncCodeInput').value = '';
 };
 
-window.setRndType = function(t) {
-  rndFilterType = t;
-  pickRandomPlanned();
-};
-
-window.pickRandomPlanned = async function() {
-  document.querySelectorAll('#rndTypeSwitch .t-opt').forEach(el => {
-    el.classList.toggle('active', el.dataset.rtype === rndFilterType);
-  });
-
-  const pool = items.filter(x => x.status === 'planned' && (rndFilterType === 'all' || x.type === rndFilterType));
-  const bodyEl = document.getElementById('rndBody');
-  const startBtn = document.getElementById('rndStartBtn');
-  const shuffleBtn = document.getElementById('rndShuffleBtn');
-
-  if (!pool.length) {
-    rndCurrentItem = null;
-    bodyEl.innerHTML = `<div class="sr-msg" style="margin-top:10px">В разделе «В планах» пока пусто для этой категории.<br>Загляни в <b>📊 Статистику → Подборка</b> и накидай новых тайтлов!</div>`;
-    startBtn.disabled = true;
-    startBtn.style.opacity = '0.5';
-    shuffleBtn.disabled = true;
+document.getElementById('applySyncCodeBtn').onclick = function() {
+  const val = document.getElementById('syncCodeInput').value.trim();
+  if (!val.startsWith('KB_DATA:')) {
+    showToast('Неверный формат кода');
     return;
   }
-
-  startBtn.disabled = false;
-  startBtn.style.opacity = '1';
-  shuffleBtn.disabled = pool.length <= 1;
-
-  let candidates = pool.length > 1 ? pool.filter(x => x.id !== rndLastId) : pool;
-  const chosen = candidates[Math.floor(Math.random() * candidates.length)];
-  rndCurrentItem = chosen;
-  rndLastId = chosen.id;
-
-  const typeNames = { movie: '🎬 Фильм', series: '📺 Сериал', anime: '⛩️ Аниме' };
-  const typeIcons = { movie: '🎬', series: '📺', anime: '⛩️' };
-
-  function drawRndCard(descStr, posterUrl) {
-    const thumb = posterUrl
-      ? `<img class="rnd-poster" src="${escapeHtml(posterUrl)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="rnd-poster" style="display:none">${typeIcons[chosen.type] || '🎬'}</div>`
-      : `<div class="rnd-poster">${typeIcons[chosen.type] || '🎬'}</div>`;
-    const gChips = (chosen.genres || []).map(g => `<span class="rec-gtag">${escapeHtml(g)}</span>`).join('');
-    bodyEl.innerHTML =
-      `<div class="rnd-card-box">` +
-        thumb +
-        `<div class="rnd-info">` +
-          `<div class="rnd-title">${escapeHtml(chosen.title)}</div>` +
-          `<div class="rnd-sub">${typeNames[chosen.type] || ''} • В планах (${pool.length} шт.)</div>` +
-          (gChips ? `<div class="rec-genres" style="margin-top:5px">${gChips}</div>` : '') +
-          `<div class="rnd-desc">${descStr ? escapeHtml(descStr) : '<span style="color:var(--muted)">Подтягиваю описание...</span>'}</div>` +
-        `</div>` +
-      `</div>`;
-  }
-
-  drawRndCard('', chosen.poster || '');
-
-  startBtn.onclick = function() {
-    if (!rndCurrentItem) return;
-    rndCurrentItem.status = 'watching';
-    rndCurrentItem.updatedAt = Date.now();
-    saveItems();
-    document.getElementById('randomModal').classList.remove('open');
-    render();
-    showToast('🍿 Перенесено в «Смотрю»: ' + rndCurrentItem.title);
-  };
-
-  const fetched = await fetchTitleDescription(chosen.title, chosen.type);
-  if (rndCurrentItem && rndCurrentItem.id === chosen.id) {
-    if (!chosen.poster && fetched.poster) {
-      chosen.poster = fetched.poster;
-      saveItems();
-    }
-    drawRndCard(fetched.desc || chosen.note || 'Описание пока не подгрузилось — самое время включить и заценить!', chosen.poster || '');
-  }
-};
-
-document.getElementById('closeRandomModal').onclick = () => document.getElementById('randomModal').classList.remove('open');
-
-document.getElementById('btnExport').onclick = function() {
-  const deltaItems = items.filter(isItemModifiedFromSeed);
-  const packed = packItems(deltaItems.length ? deltaItems : items, false);
-  const payload = { d: packed, del: deletedMap, kp: kpApiKey || '', ts: Date.now() };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'kinobrouski_backup.json';
-  a.click();
-};
-
-document.getElementById('btnImport').onclick = () => document.getElementById('importFile').click();
-document.getElementById('importFile').onchange = function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function() {
-    try {
-      const text = reader.result.trim();
-      let importedDelta = [];
-      let importedDel = {};
-      
-      // Support legacy raw text paste code if they selected the message.txt
-      if (text.startsWith('KB_SYNC:')) {
-        const binStr = atob(text.replace(/^KB_SYNC:/, ''));
-        const bytes = new Uint8Array(binStr.length);
-        for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
-        importedDelta = unpackItems(new TextDecoder().decode(bytes));
-      } else {
-        const data = JSON.parse(text);
-        if (Array.isArray(data)) {
-          // Very old backup format
-          importedDelta = data;
-        } else if (data && data.d) {
-          // New structured payload
-          importedDelta = unpackItems(data.d);
-          if (data.del) importedDel = data.del;
-          if (data.kp && !kpApiKey) {
-            kpApiKey = data.kp;
-            localStorage.setItem(KP_KEY_STORAGE, kpApiKey);
-            updateKpIndicator();
-          }
-        }
-      }
-
-      if (!importedDelta.length) {
-        showToast('Файл пуст или повреждён');
-        return;
-      }
-
-      // Merge gracefully
-      for (const [dk, ts] of Object.entries(importedDel)) {
+  
+  try {
+    const rawJson = val.replace('KB_DATA:', '');
+    const data = JSON.parse(rawJson);
+    
+    if (!data.d) { showToast('Код пуст'); return; }
+    
+    const importedDelta = unpackItems(data.d);
+    if (data.del) {
+      for (const [dk, ts] of Object.entries(data.del)) {
         if (!deletedMap[dk] || ts > deletedMap[dk]) deletedMap[dk] = ts;
       }
-
-      const map = new Map();
-      items.forEach(it => map.set(itemSyncKey(it), it));
-      let count = 0;
-      importedDelta.forEach(imp => {
-        const k = itemSyncKey(imp);
-        const loc = map.get(k);
-        if (!loc || (imp.updatedAt || 0) >= (loc.updatedAt || 0)) {
-          if (loc && !imp.poster && loc.poster) imp.poster = loc.poster;
-          map.set(k, migrateItemFields(imp));
-          count++;
-        }
-      });
-
-      items = Array.from(map.values());
-      saveItems(true);
-      render();
-      document.getElementById('settingsModal').classList.remove('open');
-      document.getElementById('importFile').value = '';
-      showToast(`✅ Импорт завершён! Обновлено: ${count} тайтл.`);
-    } catch (err) {
-      showToast('⚠️ Ошибка чтения файла');
     }
-  };
-  reader.readAsText(file);
+    
+    const map = new Map();
+    items.forEach(it => map.set(itemSyncKey(it), it));
+    let count = 0;
+    importedDelta.forEach(imp => {
+      const k = itemSyncKey(imp);
+      const loc = map.get(k);
+      if (!loc || (imp.updatedAt || 0) >= (loc.updatedAt || 0)) {
+        if (loc && !imp.poster && loc.poster) imp.poster = loc.poster;
+        map.set(k, migrateItemFields(imp));
+        count++;
+      }
+    });
+    
+    items = Array.from(map.values());
+    saveItems(true);
+    render();
+    
+    document.getElementById('syncCodeInput').value = '';
+    document.getElementById('pasteSyncBox').style.display = 'none';
+    document.getElementById('settingsModal').classList.remove('open');
+    showToast(`✅ Успешно! Обновлено: ${count} тайтл.`);
+    
+    const missing = items.filter(x => !x.poster);
+    if (missing.length) autoFillMissingPostersBackground(missing.slice(0, 10));
+    
+  } catch (e) {
+    showToast('⚠️ Ошибка при чтении кода');
+  }
 };
-
-
 
 document.getElementById('btnSyncCloud').onclick = () => syncCloudFull(true);
 
