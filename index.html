@@ -307,6 +307,24 @@
       border-radius: var(--radius);
     }
 
+    
+    /* Achievements */
+    .achs-scroll {
+      display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+    .achs-scroll::-webkit-scrollbar { display: none; }
+    .ach-card {
+      flex: 0 0 auto; width: 110px; background: var(--card-2);
+      border: 1px solid rgba(251, 191, 36, 0.22); border-radius: 14px;
+      padding: 10px 8px; text-align: center; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .ach-ic { font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); }
+    .ach-n { font-size: 11.5px; font-weight: 800; color: var(--gold); line-height: 1.1; }
+    .ach-d { font-size: 9.5px; color: var(--muted); line-height: 1.2; }
+
     /* Statistics View */
     .stats-view {
       display: flex; flex-direction: column; gap: 12px;
@@ -725,7 +743,7 @@
         <input type="text" class="search-input" id="localSearch" placeholder="Поиск по тайтлам..." />
         <button class="clear-search" id="clearLocalSearch">✕</button>
       </div>
-      <button class="icon-btn" id="btnSyncCloud" title="Синхронизировать с облаком"><svg class="sync-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+      
       <button class="icon-btn" id="btnSettings" title="Настройки">⚙️<span class="dot" id="kpDot" style="display:none"></span></button>
       <button class="add-btn" id="btnOpenAdd" title="Добавить тайтл">+</button>
     </div>
@@ -2087,7 +2105,7 @@ async function loadLiveRecommendationsForTab(tabType) {
               year: f.year ? String(f.year) : '',
               genres: genres,
               poster: f.posterUrlPreview || f.posterUrl || '',
-              score: f.ratingKinopoisk ? String(f.ratingKinopoisk) : ''
+              score: f.ratingImdb ? String(f.ratingImdb) : (f.ratingKinopoisk ? String(f.ratingKinopoisk) : '')
             });
           });
         }
@@ -2157,6 +2175,46 @@ window.addRecToPlanned = async function(encodedPayload) {
 };
 
 /* ================= STATISTICS & GENRE ANALYTICS ================= */
+
+function getAchievements() {
+  const achs = [];
+  const watched = items.filter(x => x.status === 'watched');
+  const rated = items.filter(x => typeof x.rating === 'number' && x.rating > 0);
+  const tens = rated.filter(x => x.rating === 10);
+  const waiting = items.filter(x => isItemWaitingSequel(x));
+  const animes = watched.filter(x => x.type === 'anime');
+  const movies = watched.filter(x => x.type === 'movie');
+  const series = watched.filter(x => x.type === 'series');
+  
+  let cyb = 0, com = 0, hor = 0, act = 0;
+  watched.forEach(x => {
+     const gs = (x.genres || []).map(g => g.toLowerCase());
+     if (gs.includes('киберпанк')) cyb++;
+     if (gs.includes('комедия')) com++;
+     if (gs.includes('ужасы')) hor++;
+     if (gs.includes('боевик')) act++;
+  });
+  
+  if (watched.length >= 10) achs.push({ ic: '🍿', n: 'Разминка', d: 'Посмотрел 10 тайтлов' });
+  if (watched.length >= 50) achs.push({ ic: '🎬', n: 'Киноман', d: 'Посмотрел 50 тайтлов' });
+  if (watched.length >= 150) achs.push({ ic: '🏆', n: 'Ноулайфер', d: 'Посмотрел 150 тайтлов' });
+  
+  if (animes.length >= 20) achs.push({ ic: '⛩️', n: 'Отаку', d: 'Посмотрел 20 аниме' });
+  if (series.length >= 10) achs.push({ ic: '📺', n: 'Сериаломан', d: 'Закрыл 10 сериалов' });
+  if (movies.length >= 50) achs.push({ ic: '🎞️', n: 'Синефил', d: 'Осилил 50 фильмов' });
+  
+  if (tens.length >= 5) achs.push({ ic: '✨', n: 'Истинный эстет', d: 'Поставил 5 десяток' });
+  if (rated.length >= 30) achs.push({ ic: '🧐', n: 'Критик', d: 'Оценил 30 тайтлов' });
+  if (waiting.length >= 5) achs.push({ ic: '⏳', n: 'Хатико', d: 'Ждёт проду 5 раз' });
+  
+  if (cyb >= 3) achs.push({ ic: '🤖', n: 'Кибер-ниндзя', d: '3 киберпанка в базе' });
+  if (hor >= 5) achs.push({ ic: '🧟', n: 'Стальные нервы', d: '5 хорроров осилено' });
+  if (act >= 15) achs.push({ ic: '💥', n: 'Адреналин', d: '15 боевиков' });
+  if (com >= 10) achs.push({ ic: '🤡', n: 'Шутник', d: '10 комедий пройдено' });
+  
+  return achs;
+}
+
 function renderStatsView() {
   const container = document.getElementById('statsContainer');
   const subTabs = [
@@ -2283,6 +2341,28 @@ function renderStatsView() {
 
   const favLabel = favGenres.length ? favGenres.slice(0, 2).join(', ') : 'твой вкус';
 
+    // Achievements Html
+    const userAchs = getAchievements();
+    const achsHtml = userAchs.length ? 
+       `<div class="achs-scroll">` + userAchs.map(a => 
+         `<div class="ach-card">
+            <div class="ach-ic">${a.ic}</div>
+            <div class="ach-n">${escapeHtml(a.n)}</div>
+            <div class="ach-d">${escapeHtml(a.d)}</div>
+          </div>`
+       ).join('') + `</div>` 
+       : `<div style="font-size:12px;color:var(--muted)">Пока нет достижений. Больше смотри и оценивай!</div>`;
+
+    const genreGradients = [
+       'linear-gradient(90deg, #f43f5e, #fb7185)', // Rose
+       'linear-gradient(90deg, #8b5cf6, #a78bfa)', // Violet
+       'linear-gradient(90deg, #3b82f6, #60a5fa)', // Blue
+       'linear-gradient(90deg, #10b981, #34d399)', // Emerald
+       'linear-gradient(90deg, #f59e0b, #fbbf24)', // Amber
+       'linear-gradient(90deg, #06b6d4, #22d3ee)'  // Cyan
+    ];
+
+
   container.innerHTML = `<div class="stats-view">` +
     summaryBarHtml +
     `<div class="st-subtabs">` +
@@ -2312,21 +2392,30 @@ function renderStatsView() {
       `</div>` +
     `</div>` +
 
+    `<div class="panel" style="background:var(--card-2);border-color:rgba(251,191,36,0.3)">` +
+      `<div class="panel-title" style="margin-bottom:6px">` +
+        `<span>🏆 Твои ачивки</span>` +
+        `<span style="font-size:11px;color:var(--gold);font-weight:800">${userAchs.length} шт.</span>` +
+      `</div>` +
+      achsHtml +
+    `</div>` +
+
     `<div class="panel">` +
       `<div class="panel-title">` +
         `<span>📈 Топ жанров по просмотрам</span>` +
         `<span style="font-size:11px;color:var(--muted);font-weight:600">Нажми для фильтра</span>` +
       `</div>` +
-      (byFreq.length ? byFreq.map(g => {
+      (byFreq.length ? byFreq.map((g, idx) => {
         const cnt = g.consumedCount || g.totalCount;
         const pct = Math.min(100, Math.round((cnt / maxConsumed) * 100));
         const isSel = statsSelectedGenre === g.name;
+        const grad = genreGradients[idx % genreGradients.length];
         return `<div class="g-bar-row ${isSel ? 'selected' : ''}" onclick="toggleStatsGenre('${escapeHtml(g.name)}')">` +
           `<div class="g-bar-top">` +
             `<span>${escapeHtml(g.name)}</span>` +
             `<span class="g-bar-meta">${g.consumedCount} просм. • Всего ${g.totalCount} ${g.avgRating ? `• <b style="color:var(--gold)">★ ${g.avgRating}</b>` : ''}</span>` +
           `</div>` +
-          `<div class="g-bar-track"><div class="g-bar-fill blue" style="width:${pct}%"></div></div>` +
+          `<div class="g-bar-track"><div class="g-bar-fill" style="width:${pct}%;background:${grad}"></div></div>` +
         `</div>`;
       }).join('') : `<div style="font-size:12px;color:var(--muted)">Пока нет тайтлов в этой категории</div>`) +
     `</div>` +
@@ -2895,7 +2984,8 @@ async function searchMediaApi() {
             title: title,
             sub: sub,
             poster: f.posterUrlPreview || f.posterUrl || '',
-            genres: genres
+            genres: genres,
+            score: f.ratingImdb ? String(f.ratingImdb) : (f.ratingKinopoisk ? String(f.ratingKinopoisk) : '')
           });
         });
       }
@@ -3506,34 +3596,66 @@ function showNextTinderCard() {
   
   const rec = tinderQueue[0];
   const typeIcons = { movie: '🎬', series: '📺', anime: '⛩️' };
+  
+  // Image container should have a fixed or relative height and not stretch weirdly
   const thumb = rec.poster
-    ? `<img src="${escapeHtml(rec.poster)}" style="width:100%;height:100%;object-fit:cover;border-radius:18px 18px 0 0" onerror="this.style.display='none'" />`
+    ? `<img src="${escapeHtml(rec.poster)}" style="width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:18px 18px 0 0;display:block" onerror="this.style.display='none'" />`
     : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;background:var(--card-2);border-radius:18px 18px 0 0">${typeIcons[rec.type] || '🎬'}</div>`;
     
-  const metaLine = [rec.year, rec.score ? ('★ ' + rec.score) : ''].filter(Boolean).join(' • ');
+  // Format platforms/ratings
+  let ratingHtml = '';
+  if (rec.score) {
+    if (rec.type === 'anime') {
+       ratingHtml = `<span style="background:#1e1e26;padding:4px 8px;border-radius:6px;border:1px solid #333;font-size:11.5px">YummyAnime: <b style="color:var(--gold)">★ ${rec.score}</b></span>`;
+    } else {
+       ratingHtml = `<span style="background:#1e1e26;padding:4px 8px;border-radius:6px;border:1px solid #333;font-size:11.5px">IMDb: <b style="color:var(--gold)">★ ${rec.score}</b></span>`;
+    }
+  }
+    
+  const metaLine = [rec.year].filter(Boolean).join(' • ');
   const gChips = (rec.genres || []).slice(0,4).map(g => `<span class="rec-gtag" style="background:#2b2b36;padding:4px 8px">${escapeHtml(g)}</span>`).join('');
   
+  // Render structure: Fixed height image (e.g. 55% of card), scrollable info area below
   box.innerHTML = `
-    <div id="tinderActiveCard" style="position:absolute;width:95%;max-width:340px;height:95%;max-height:500px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,0.6);display:flex;flex-direction:column;transition: transform 0.35s ease, opacity 0.35s ease;will-change:transform">
-       <div style="flex:1;width:100%;background:#121217;border-radius:18px 18px 0 0;overflow:hidden;position:relative">
+    <div id="tinderActiveCard" style="position:absolute;width:95%;max-width:350px;height:98%;max-height:600px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,0.6);display:flex;flex-direction:column;transition: transform 0.35s ease, opacity 0.35s ease;will-change:transform">
+       <div style="height:50%;width:100%;background:#121217;border-radius:18px 18px 0 0;position:relative;flex-shrink:0">
           ${thumb}
           <div style="position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.76);padding:6px 10px;border-radius:10px;font-size:14px;font-weight:900;color:#fff">${typeIcons[rec.type] || ''}</div>
        </div>
-       <div style="padding:16px;flex-shrink:0;background:var(--card);border-radius:0 0 18px 18px">
-         <div style="font-size:19px;font-weight:900;margin-bottom:6px;line-height:1.2">${escapeHtml(rec.title)}</div>
-         <div style="font-size:13.5px;color:var(--gold);font-weight:800;margin-bottom:10px">${metaLine}</div>
+       <div style="flex:1;overflow-y:auto;padding:14px;background:var(--card);border-radius:0 0 18px 18px;display:flex;flex-direction:column;gap:8px">
+         <div style="font-size:20px;font-weight:900;line-height:1.1">${escapeHtml(rec.title)}</div>
+         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-size:13.5px;color:var(--muted);font-weight:700">${metaLine}</span>
+            ${ratingHtml}
+         </div>
          <div style="display:flex;gap:5px;flex-wrap:wrap">${gChips}</div>
+         <div id="tinderDescBox" style="font-size:12.5px;color:#d4d4e0;line-height:1.45;margin-top:4px;padding:10px;background:var(--card-2);border-radius:12px;border:1px solid var(--border)">
+            <span style="color:var(--muted)">Подтягиваю описание сюжета...</span>
+         </div>
        </div>
     </div>
   `;
   
-  // async description fetch for better poster if missing
+  // async description fetch
   fetchTitleDescription(rec.title, rec.type).then(fetched => {
      const c = document.getElementById('tinderActiveCard');
      if (c && tinderQueue[0] === rec) {
         if (!rec.poster && fetched.poster) {
            rec.poster = fetched.poster;
+           // If we fetched a new poster, update it inline if possible, or just trigger full redraw if safer
            showNextTinderCard(); 
+           return;
+        }
+        const dBox = document.getElementById('tinderDescBox');
+        if (dBox) {
+           const finalDesc = fetched.desc || rec.desc || 'Описание сюжета не найдено, но отзывы говорят, что годно!';
+           dBox.innerHTML = escapeHtml(finalDesc);
+           
+           // Update score if we fetched a better one
+           if (fetched.score && !rec.score) {
+              rec.score = fetched.score;
+              showNextTinderCard();
+           }
         }
      }
   });
