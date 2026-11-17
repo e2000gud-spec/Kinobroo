@@ -450,23 +450,24 @@
     }
     .random-trigger-btn:active { transform: scale(0.96); }
     .rnd-card-box {
-      display: flex; gap: 12px; align-items: flex-start;
+      display: flex; gap: 12px; align-items: stretch;
       background: var(--card); border: 1px solid var(--border);
       border-radius: 16px; padding: 12px; margin-top: 10px;
     }
     .rnd-poster {
-      width: 78px; height: 114px; border-radius: 10px;
+      width: 116px; height: 174px; border-radius: 12px;
       background: var(--card-2); object-fit: cover; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      font-size: 28px; border: 1px solid var(--border);
+      font-size: 32px; border: 1px solid var(--border);
     }
-    .rnd-info { flex: 1; min-width: 0; }
-    .rnd-title { font-size: 16px; font-weight: 800; line-height: 1.25; color: var(--text); }
-    .rnd-sub { font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 4px; }
+    .rnd-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .rnd-title { font-size: 15.5px; font-weight: 800; line-height: 1.25; color: var(--text); }
+    .rnd-sub { font-size: 11.5px; color: var(--gold); font-weight: 700; margin-top: 4px; }
     .rnd-desc {
-      font-size: 12.5px; color: #c4c4d4; line-height: 1.45;
-      margin-top: 10px; background: var(--card); border: 1px solid var(--border);
-      border-radius: 12px; padding: 10px 12px; max-height: 160px; overflow-y: auto;
+      font-size: 12px; color: #d4d4e0; line-height: 1.42;
+      margin-top: 8px; background: var(--card-2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 10px; max-height: 124px; overflow-y: auto;
+      flex: 1;
     }
     .rec-card { cursor: pointer; transition: border-color 0.15s; }
     .rec-card:hover { border-color: rgba(255, 255, 255, 0.22); }
@@ -722,7 +723,7 @@
         <input type="text" class="search-input" id="localSearch" placeholder="Поиск по тайтлам..." />
         <button class="clear-search" id="clearLocalSearch">✕</button>
       </div>
-      <button class="icon-btn" id="btnSyncCloud" title="Синхронизировать с облаком"><span class="sync-ic">🔄</span></button>
+      <button class="icon-btn" id="btnSyncCloud" title="Синхронизировать с облаком"><svg class="sync-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
       <button class="icon-btn" id="btnSettings" title="Настройки">⚙️<span class="dot" id="kpDot" style="display:none"></span></button>
       <button class="add-btn" id="btnOpenAdd" title="Добавить тайтл">+</button>
     </div>
@@ -1145,13 +1146,18 @@ function unpackItems(str) {
 function cloudGetRaw(key) {
   return new Promise((resolve) => {
     if (tg && tg.CloudStorage) {
+      let settled = false;
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve(''); } }, 3000);
       try {
         tg.CloudStorage.getItem(key, (err, val) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
           if (!err && val) return resolve(val);
           resolve('');
         });
       } catch (e) {
-        resolve('');
+        if (!settled) { settled = true; clearTimeout(timer); resolve(''); }
       }
     } else {
       resolve('');
@@ -1159,15 +1165,43 @@ function cloudGetRaw(key) {
   });
 }
 
+function cloudGetItemsBatch(keys) {
+  return new Promise((resolve) => {
+    if (!tg || !tg.CloudStorage || !keys.length) return resolve({});
+    if (typeof tg.CloudStorage.getItems === 'function') {
+      let settled = false;
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve(null); } }, 4000);
+      try {
+        tg.CloudStorage.getItems(keys, (err, vals) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          if (!err && vals && typeof vals === 'object') return resolve(vals);
+          resolve(null);
+        });
+        return;
+      } catch (e) {
+        if (!settled) { settled = true; clearTimeout(timer); }
+      }
+    }
+    resolve(null);
+  });
+}
+
 function cloudSetRaw(key, val) {
   return new Promise((resolve) => {
     if (tg && tg.CloudStorage) {
+      let settled = false;
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve(false); } }, 3000);
       try {
         tg.CloudStorage.setItem(key, String(val), (err, ok) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
           resolve(!err);
         });
       } catch (e) {
-        resolve(false);
+        if (!settled) { settled = true; clearTimeout(timer); resolve(false); }
       }
     } else {
       resolve(false);
@@ -1183,53 +1217,65 @@ async function readCloudSmart(baseKey) {
   const chunkCntStr = await cloudGetRaw(baseKey + '_chunks');
   const chunkCnt = parseInt(chunkCntStr, 10);
   if (chunkCnt > 0 && chunkCnt < 120) {
-    // Read in small batches of 4 to avoid Telegram Desktop flood limits
+    const chunkKeys = [];
+    for (let i = 0; i < chunkCnt; i++) chunkKeys.push(baseKey + '_' + i);
+
+    // Try single native batch request first (1 call instead of 15!)
+    const batchRes = await cloudGetItemsBatch(chunkKeys);
+    if (batchRes) {
+      const parts = chunkKeys.map(k => batchRes[k] || '');
+      if (!parts.some(p => !p)) return parts.join('');
+    }
+
+    // Fallback: parallel read in batches of 6
     const parts = new Array(chunkCnt).fill('');
-    for (let i = 0; i < chunkCnt; i += 4) {
+    for (let i = 0; i < chunkCnt; i += 6) {
       const batch = [];
-      for (let j = i; j < Math.min(i + 4, chunkCnt); j++) {
+      for (let j = i; j < Math.min(i + 6, chunkCnt); j++) {
         batch.push(cloudGetRaw(baseKey + '_' + j).then(v => { parts[j] = v || ''; }));
       }
       await Promise.all(batch);
-      if (i + 4 < chunkCnt) await sleepMs(60);
     }
-    if (parts.some(p => !p)) {
-      // If any chunk is missing, don't corrupt JSON
-      return '';
-    }
+    if (parts.some(p => !p)) return '';
     return parts.join('');
   }
   return await cloudGetRaw(baseKey);
 }
 
-async function writeCloudSequential(packed, delStr) {
+// Track which chunks are already stored in cloud so we ONLY upload changed chunks!
+let lastUploadedChunks = {};
+
+async function writeCloudSequential(packed, delStr, forceAll = false) {
   if (!tg || !tg.CloudStorage) return false;
   try {
-    if (delStr && delStr.length <= 3900) {
-      await cloudSetRaw(DELETED_KEY_WRITE, delStr);
-      await sleepMs(70);
+    if (delStr && delStr.length <= 3900 && lastUploadedChunks['_del'] !== delStr) {
+      const okDel = await cloudSetRaw(DELETED_KEY_WRITE, delStr);
+      if (okDel) lastUploadedChunks['_del'] = delStr;
     }
     if (packed.length <= 3800) {
       const ok1 = await cloudSetRaw(STORAGE_KEY_WRITE, packed);
-      await sleepMs(70);
       const ok2 = await cloudSetRaw(STORAGE_KEY_WRITE + '_chunks', '0');
       return ok1 && ok2;
     } else {
       const chunkSize = 3800;
       const chunks = Math.ceil(packed.length / chunkSize);
-      // Write all chunks sequentially so Telegram Desktop doesn't drop requests
       for (let i = 0; i < chunks; i++) {
+        const key = STORAGE_KEY_WRITE + '_' + i;
         const slice = packed.slice(i * chunkSize, (i + 1) * chunkSize);
-        let ok = await cloudSetRaw(STORAGE_KEY_WRITE + '_' + i, slice);
+        if (!forceAll && lastUploadedChunks[key] === slice) {
+          continue; // Skip unchanged chunk!
+        }
+        let ok = await cloudSetRaw(key, slice);
         if (!ok) {
-          await sleepMs(250);
-          ok = await cloudSetRaw(STORAGE_KEY_WRITE + '_' + i, slice);
+          await sleepMs(150);
+          ok = await cloudSetRaw(key, slice);
         }
         if (!ok) return false;
-        await sleepMs(85);
+        lastUploadedChunks[key] = slice;
+        await sleepMs(35);
       }
-      // Commit chunk count ONLY after all chunks succeeded!
-      return await cloudSetRaw(STORAGE_KEY_WRITE + '_chunks', String(chunks));
+      const okCnt = await cloudSetRaw(STORAGE_KEY_WRITE + '_chunks', String(chunks));
+      return okCnt;
     }
   } catch (e) {
     return false;
@@ -1248,10 +1294,10 @@ function saveItems(immediateCloud = false) {
   if (tg && tg.CloudStorage) {
     clearTimeout(cloudSaveTimer);
     if (immediateCloud) {
-      return writeCloudSequential(packed, delStr);
+      return writeCloudSequential(packed, delStr, false);
     }
     cloudSaveTimer = setTimeout(() => {
-      writeCloudSequential(packed, delStr);
+      writeCloudSequential(packed, delStr, false);
     }, 500);
   }
   return Promise.resolve(true);
@@ -1342,19 +1388,27 @@ async function syncCloudFull(manual = false) {
   const syncBtn = document.getElementById('btnSyncCloud');
   if (syncBtn) syncBtn.classList.add('syncing');
 
+  // Hard 12s watchdog so spinner can NEVER get stuck forever on iOS
+  const watchdog = setTimeout(() => {
+    isCloudSyncing = false;
+    if (syncBtn) syncBtn.classList.remove('syncing');
+  }, 12000);
+
   try {
-    // 1. Sync Kinopoisk API Key
-    const cloudKey = await cloudGetRaw(KP_KEY_STORAGE);
+    // 1. Sync Kinopoisk API Key & deleted tombstones in parallel
+    const [cloudKey, cloudDelRaw] = await Promise.all([
+      cloudGetRaw(KP_KEY_STORAGE),
+      cloudGetRaw(DELETED_KEY_WRITE)
+    ]);
+
     if (cloudKey && cloudKey !== kpApiKey) {
       kpApiKey = cloudKey;
       try { localStorage.setItem(KP_KEY_STORAGE, kpApiKey); } catch (e) {}
       updateKpIndicator();
     } else if (kpApiKey && !cloudKey) {
-      await cloudSetRaw(KP_KEY_STORAGE, kpApiKey);
+      cloudSetRaw(KP_KEY_STORAGE, kpApiKey);
     }
 
-    // 2. Merge deleted tombstones
-    const cloudDelRaw = await cloudGetRaw(DELETED_KEY_WRITE);
     if (cloudDelRaw) {
       try {
         const cDel = JSON.parse(cloudDelRaw) || {};
@@ -1366,20 +1420,29 @@ async function syncCloudFull(manual = false) {
       } catch (e) {}
     }
 
-    // 3. Read latest cloud items
+    // 2. Read latest cloud items (check v8 first, fallback to v7 only if v8 is empty)
     let cloudItems = [];
-    for (const k of STORAGE_KEYS_READ) {
-      const raw = await readCloudSmart(k);
-      if (raw) {
-        const parsed = unpackItems(raw);
-        if (parsed.length > 0) {
-          cloudItems = parsed;
-          break;
-        }
+    let rawV8 = await readCloudSmart('kinobrouski_v8');
+    if (rawV8) {
+      try { cloudItems = unpackItems(rawV8); } catch (e) {}
+    }
+    if (!cloudItems.length) {
+      const rawV7 = await readCloudSmart('kinobrouski_v7');
+      if (rawV7) {
+        try { cloudItems = unpackItems(rawV7); } catch (e) {}
       }
     }
 
-    // 4. Two-way timestamp merge (latest updatedAt wins!)
+    // Cache cloud chunks so we don't re-upload identical chunks back to cloud!
+    if (rawV8 && rawV8.length > 3800) {
+      const cSize = 3800;
+      const cCnt = Math.ceil(rawV8.length / cSize);
+      for (let i = 0; i < cCnt; i++) {
+        lastUploadedChunks[STORAGE_KEY_WRITE + '_' + i] = rawV8.slice(i * cSize, (i + 1) * cSize);
+      }
+    }
+
+    // 3. Two-way timestamp merge (latest updatedAt wins!)
     const mergedMap = new Map();
     let localChanged = false;
     let cloudNeedsPush = false;
@@ -1410,17 +1473,14 @@ async function syncCloudFull(manual = false) {
       } else {
         const locTime = loc.updatedAt || loc.createdAt || 0;
         if (ciTime > locTime) {
-          // Cloud version is newer -> take status, rating, seasonRatings, episode, note, waiting, etc. from cloud, preserving poster/genres if cloud lacked them
           if (!ci.poster && loc.poster) ci.poster = loc.poster;
           if ((!ci.genres || !ci.genres.length) && loc.genres && loc.genres.length) ci.genres = loc.genres;
           if ((!ci.watchOrder || !ci.watchOrder.length) && loc.watchOrder && loc.watchOrder.length) ci.watchOrder = loc.watchOrder;
           mergedMap.set(key, migrateItemFields(ci));
           localChanged = true;
         } else if (locTime > ciTime) {
-          // Local version is newer -> push local up to cloud
           cloudNeedsPush = true;
         } else {
-          // Same timestamp -> enrich missing metadata (poster, genres, watchOrder)
           let enriched = false;
           if (!loc.poster && ci.poster) { loc.poster = ci.poster; enriched = true; }
           if ((!loc.genres || !loc.genres.length) && ci.genres && ci.genres.length) { loc.genres = ci.genres; enriched = true; }
@@ -1445,19 +1505,22 @@ async function syncCloudFull(manual = false) {
       localStorage.setItem(DELETED_KEY_WRITE, delStr);
     } catch (e) {}
 
-    if (cloudNeedsPush || manual) {
-      const ok = await writeCloudSequential(packed, delStr);
-      if (manual) {
-        showToast(ok ? `☁️ Синхронизировано (${items.length} тайтл.)` : '⚠️ Ошибка записи в облако, попробуй ещё раз');
-      }
-    }
-
     if (localChanged) {
       render();
+    }
+
+    if (cloudNeedsPush) {
+      const ok = await writeCloudSequential(packed, delStr, false);
+      if (manual) {
+        showToast(ok ? `☁️ Синхронизировано (${items.length} тайтл.)` : '⚠️ Не удалось записать в облако');
+      }
+    } else if (manual) {
+      showToast(`☁️ Всё актуально (${items.length} тайтл.)`);
     }
   } catch (e) {
     if (manual) showToast('⚠️ Сбой синхронизации');
   } finally {
+    clearTimeout(watchdog);
     isCloudSyncing = false;
     if (syncBtn) syncBtn.classList.remove('syncing');
   }
@@ -1648,7 +1711,9 @@ function render() {
         progHtml +
         `<div class="card-actions">` +
           `<button class="act-btn" onclick="cycleStatus('${item.id}')">🔄 Статус</button>` +
-          `<button class="act-btn gold" onclick="openEditModal('${item.id}')">★ Оценить</button>` +
+          (item.status === 'planned'
+            ? `<button class="act-btn" onclick="openEditModal('${item.id}')">✏️ Изменить</button>`
+            : `<button class="act-btn gold" onclick="openEditModal('${item.id}')">★ Оценить</button>`) +
         `</div>` +
       `</div>` +
     `</div>`;
@@ -2809,7 +2874,10 @@ function renderModalControls() {
 
   const rates = [null, 1, 2, 3, 4, 5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
 
-  if (formType === 'movie') {
+  if (formStatus === 'planned') {
+    document.getElementById('movieRateBlock').style.display = 'none';
+    document.getElementById('seasonRateBlock').style.display = 'none';
+  } else if (formType === 'movie') {
     document.getElementById('movieRateBlock').style.display = 'block';
     document.getElementById('seasonRateBlock').style.display = 'none';
     document.getElementById('rateGrid').innerHTML = rates.map(function(r) {
@@ -3252,10 +3320,10 @@ window.openRecDetailSheet = async function(encodedPayload) {
           `<div class="rnd-info">` +
             `<div class="rnd-title">${escapeHtml(rec.title)}</div>` +
             `<div class="rnd-sub">${escapeHtml(metaLine)}</div>` +
-            (gChips ? `<div class="rec-genres" style="margin-top:6px">${gChips}</div>` : '') +
+            (gChips ? `<div class="rec-genres" style="margin-top:5px">${gChips}</div>` : '') +
+            `<div class="rnd-desc">${descText ? escapeHtml(descText) : '<span style="color:var(--muted)">Загружаю описание сюжета...</span>'}</div>` +
           `</div>` +
-        `</div>` +
-        `<div class="rnd-desc">${descText ? escapeHtml(descText) : '<span style="color:var(--muted)">Загружаю описание сюжета...</span>'}</div>`;
+        `</div>`;
 
       const updatedPayload = encodeURIComponent(JSON.stringify({
         type: rec.type,
@@ -3344,10 +3412,10 @@ window.pickRandomPlanned = async function() {
         `<div class="rnd-info">` +
           `<div class="rnd-title">${escapeHtml(chosen.title)}</div>` +
           `<div class="rnd-sub">${typeNames[chosen.type] || ''} • В планах (${pool.length} шт.)</div>` +
-          (gChips ? `<div class="rec-genres" style="margin-top:6px">${gChips}</div>` : '') +
+          (gChips ? `<div class="rec-genres" style="margin-top:5px">${gChips}</div>` : '') +
+          `<div class="rnd-desc">${descStr ? escapeHtml(descStr) : '<span style="color:var(--muted)">Подтягиваю описание...</span>'}</div>` +
         `</div>` +
-      `</div>` +
-      `<div class="rnd-desc">${descStr ? escapeHtml(descStr) : '<span style="color:var(--muted)">Подтягиваю описание...</span>'}</div>`;
+      `</div>`;
   }
 
   drawRndCard('', chosen.poster || '');
@@ -3375,10 +3443,6 @@ window.pickRandomPlanned = async function() {
 document.getElementById('closeRandomModal').onclick = () => document.getElementById('randomModal').classList.remove('open');
 
 document.getElementById('btnSyncCloud').onclick = () => syncCloudFull(true);
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') syncCloudFull(false);
-});
-window.addEventListener('focus', () => syncCloudFull(false));
 
 bootInstant();
   </script>
