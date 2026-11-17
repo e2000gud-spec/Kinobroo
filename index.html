@@ -3521,6 +3521,107 @@ document.getElementById('applySyncCodeBtn').onclick = function() {
   }
 };
 
+
+async function fetchTitleDescription(title, type) {
+  const cleanQ = title.replace(/\([^)]*\)/g, '').trim();
+  try {
+    const suffix = type === 'anime' ? 'аниме' : (type === 'series' ? 'телесериал' : 'фильм');
+    const wikiQuery = cleanQ + ' ' + suffix;
+    const url = 'https://ru.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' +
+      encodeURIComponent(wikiQuery) +
+      '&gsrlimit=1&prop=extracts&exintro=1&explaintext=1&exsentences=3&format=json&origin=*';
+    const r = await fetch(url);
+    if (r.ok) {
+      const data = await r.json();
+      const pages = (data.query && data.query.pages) ? Object.values(data.query.pages) : [];
+      if (pages.length > 0 && pages[0].extract) {
+        return { desc: pages[0].extract };
+      }
+    }
+  } catch (e) {}
+  return { desc: 'Описание не найдено, но отзывы говорят, что годнота!' };
+}
+
+
+/* ================= RANDOMIZER LOGIC ================= */
+let currentRndType = 'all';
+
+window.openRandomizerModal = function() {
+  document.getElementById('randomModal').classList.add('open');
+  setRndType('all');
+};
+
+window.setRndType = function(type) {
+  currentRndType = type;
+  document.querySelectorAll('#rndTypeSwitch .t-opt').forEach(el => {
+    el.classList.toggle('active', el.dataset.rtype === type);
+  });
+  pickRandomPlanned();
+};
+
+window.pickRandomPlanned = function() {
+  const box = document.getElementById('rndBody');
+  const btnStart = document.getElementById('rndStartBtn');
+  
+  let pool = items.filter(x => x.status === 'planned');
+  if (currentRndType !== 'all') {
+    pool = pool.filter(x => x.type === currentRndType);
+  }
+  
+  if (!pool.length) {
+    box.innerHTML = '<div class="sr-msg">В твоих планах пусто для этой категории! Добавь что-нибудь.</div>';
+    btnStart.style.display = 'none';
+    return;
+  }
+  
+  btnStart.style.display = 'block';
+  const item = pool[Math.floor(Math.random() * pool.length)];
+  
+  const typeIcons = { movie: '🎬', series: '📺', anime: '⛩️' };
+  const typeText = { movie: 'Фильм', series: 'Сериал', anime: 'Аниме' };
+  
+  const thumbHtml = item.poster
+    ? `<img src="${escapeHtml(item.poster)}" class="rnd-poster" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+       <div class="rnd-poster" style="display:none">${typeIcons[item.type] || '🎬'}</div>`
+    : `<div class="rnd-poster">${typeIcons[item.type] || '🎬'}</div>`;
+    
+  const metaParts = [typeText[item.type], item.note].filter(Boolean).join(' • ');
+  const gChips = (item.genres || []).slice(0,3).map(g => `<span class="rec-gtag">${escapeHtml(g)}</span>`).join('');
+  
+  box.innerHTML = `
+    <div class="rnd-card-box">
+      ${thumbHtml}
+      <div class="rnd-info">
+        <div class="rnd-title">${escapeHtml(item.title)}</div>
+        <div class="rnd-sub">${escapeHtml(metaParts)}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">${gChips}</div>
+        <div class="rnd-desc" style="display:none" id="rndDescTxt">Ищу описание...</div>
+      </div>
+    </div>
+  `;
+  
+  btnStart.onclick = function() {
+    item.status = 'watching';
+    item.updatedAt = Date.now();
+    saveItems();
+    render();
+    document.getElementById('randomModal').classList.remove('open');
+    showToast('🚀 Погнали! Статус изменён на «Смотрю»');
+  };
+  
+  // async description fetch
+  fetchTitleDescription(item.title, item.type).then(fetched => {
+     const dBox = document.getElementById('rndDescTxt');
+     if (dBox) {
+        dBox.style.display = 'block';
+        dBox.innerHTML = escapeHtml(fetched.desc || 'Описания пока нет, но это точно годнота!');
+     }
+  });
+};
+
+document.getElementById('closeRandomModal').onclick = () => document.getElementById('randomModal').classList.remove('open');
+
+
 bootInstant();
   </script>
 </body>
