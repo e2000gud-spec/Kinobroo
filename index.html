@@ -906,6 +906,23 @@
         <button class="btn-pri" id="btnBulkCovers" style="width:100%;height:40px;font-size:13.5px">🖼️ Загрузить обложки и жанры</button>
       </div>
 
+      <div class="settings-card">
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">🔄 Перенос между ПК и телефоном</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:9px;line-height:1.4">
+          Если Telegram CloudStorage тормозит из-за сети/РКН: скопируй код на компе, кинь себе в «Избранное» и вставь на телефоне.
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button type="button" class="btn-pri" id="btnCopySyncCode" style="flex:1;height:36px;font-size:12.5px">📋 Скопировать код</button>
+          <button type="button" class="btn-sec" id="btnPasteSyncCode" style="flex:1;height:36px;font-size:12.5px">📥 Вставить код</button>
+        </div>
+        <div id="pasteSyncBox" style="display:none;margin-top:6px">
+          <div class="input-row">
+            <input type="text" class="inp" id="syncCodeInput" placeholder="Вставь код KB_SYNC:..." style="height:36px;font-size:12px" />
+            <button type="button" class="find-btn" id="applySyncCodeBtn" style="height:36px;background:var(--accent);color:#fff;border:none">ОК</button>
+          </div>
+        </div>
+      </div>
+
       <div class="settings-card" style="display:flex;gap:8px;align-items:center;justify-content:space-between">
         <span style="font-size:12.5px;color:var(--muted);font-weight:600">Резервная копия</span>
         <div style="display:flex;gap:6px">
@@ -1174,7 +1191,7 @@ function cloudGetRaw(key) {
   return new Promise((resolve) => {
     if (tg && tg.CloudStorage) {
       let settled = false;
-      const timer = setTimeout(() => { if (!settled) { settled = true; resolve(''); } }, 4500);
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve(''); } }, 10000);
       try {
         tg.CloudStorage.getItem(key, (err, val) => {
           if (settled) return;
@@ -1196,7 +1213,7 @@ function cloudGetKeys() {
   return new Promise((resolve) => {
     if (tg && tg.CloudStorage && typeof tg.CloudStorage.getKeys === 'function') {
       let settled = false;
-      const timer = setTimeout(() => { if (!settled) { settled = true; resolve([]); } }, 4500);
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve([]); } }, 10000);
       try {
         tg.CloudStorage.getKeys((err, keys) => {
           if (settled) return;
@@ -1218,7 +1235,7 @@ function cloudSetRaw(key, val) {
   return new Promise((resolve) => {
     if (tg && tg.CloudStorage) {
       let settled = false;
-      const timer = setTimeout(() => { if (!settled) { settled = true; resolve({ ok: false, err: 'timeout' }); } }, 4500);
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve({ ok: false, err: 'timeout' }); } }, 10000);
       try {
         tg.CloudStorage.setItem(key, String(val), (err, ok) => {
           if (settled) return;
@@ -1234,6 +1251,65 @@ function cloudSetRaw(key, val) {
       resolve({ ok: false, err: 'no_cloud_api' });
     }
   });
+}
+
+// Secondary HTTPS Cloud Relay (works over standard HTTPS even if Telegram CloudStorage RPC times out!)
+function getUserSyncChannel() {
+  try {
+    const uid = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id)
+      ? String(tg.initDataUnsafe.user.id)
+      : '';
+    if (!uid) return '';
+    // Deterministic channel name derived from Telegram user ID
+    let h = 2166136261;
+    const seed = 'kinobrouski_sync_v9_' + uid;
+    for (let i = 0; i < seed.length; i++) {
+      h ^= seed.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return 'kb9_' + uid + '_' + (h >>> 0).toString(16);
+  } catch (e) {
+    return '';
+  }
+}
+
+async function httpRelayPull() {
+  const ch = getUserSyncChannel();
+  if (!ch) return null;
+  try {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 7000);
+    const res = await fetch('https://kvdb.io/A3b9xK2mP7qR4tW8vN1z/' + encodeURIComponent(ch), {
+      method: 'GET',
+      signal: ctrl.signal
+    });
+    clearTimeout(tid);
+    if (!res.ok) return null;
+    const text = await res.text();
+    if (!text) return null;
+    return JSON.parse(text);
+  } catch (e) {
+    return null;
+  }
+}
+
+async function httpRelayPush(payloadObj) {
+  const ch = getUserSyncChannel();
+  if (!ch) return false;
+  try {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 7000);
+    const res = await fetch('https://kvdb.io/A3b9xK2mP7qR4tW8vN1z/' + encodeURIComponent(ch), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payloadObj),
+      signal: ctrl.signal
+    });
+    clearTimeout(tid);
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
 }
 
 function sleepMs(ms) {
@@ -1274,7 +1350,6 @@ function splitByUtf8Bytes(str, maxBytes) {
 }
 
 async function readCloudDelta() {
-  // Discover keys directly via getKeys() so even partial/legacy keys are found!
   const allKeys = await cloudGetKeys();
   const deltaKeys = allKeys
     .filter(k => k.startsWith(CLOUD_DELTA_KEY + '_') && /^kb_delta_v9_\d+$/.test(k))
@@ -1301,49 +1376,65 @@ async function readCloudDelta() {
 }
 
 async function writeCloudDelta(deltaItems, delStr) {
-  if (!tg || !tg.CloudStorage) return { ok: false, err: 'no_tg' };
-  try {
-    // 1. Save deleted tombstones
-    const delEntries = Object.entries(deletedMap).sort((a, b) => b[1] - a[1]).slice(0, 60);
-    const trimmedDel = Object.fromEntries(delEntries);
-    const safeDelStr = JSON.stringify(trimmedDel);
-    if (utf8ByteLen(safeDelStr) <= 3800) {
-      await cloudSetRaw(DELETED_KEY_WRITE, safeDelStr);
-    }
+  // Always push to HTTPS relay in parallel with Telegram CloudStorage so at least one channel succeeds!
+  let deltaPacked = packItems(deltaItems, false);
+  if (utf8ByteLen(deltaPacked) > 28000) {
+    deltaPacked = packItems(deltaItems, true);
+  }
+  const delEntries = Object.entries(deletedMap).sort((a, b) => b[1] - a[1]).slice(0, 60);
+  const trimmedDel = Object.fromEntries(delEntries);
+  const safeDelStr = JSON.stringify(trimmedDel);
 
-    // 2. Pack delta; if too large (> 16 KB because of long poster URLs), strip poster URLs so sync stays ultra-fast & under 4 keys!
-    let deltaPacked = packItems(deltaItems, false);
-    if (utf8ByteLen(deltaPacked) > 16000) {
-      deltaPacked = packItems(deltaItems, true);
-    }
+  const httpPromise = httpRelayPush({
+    d: deltaPacked,
+    del: trimmedDel,
+    kp: kpApiKey || '',
+    ts: Date.now()
+  });
 
-    const chunks = splitByUtf8Bytes(deltaPacked, 3600);
-    if (chunks.length === 0) chunks.push('[]');
+  let tgOk = false;
+  let tgErr = 'no_tg';
 
-    // Write chunks in fast parallel batches of 4
-    for (let i = 0; i < chunks.length; i += 4) {
-      const batch = [];
-      for (let j = i; j < Math.min(i + 4, chunks.length); j++) {
-        batch.push(cloudSetRaw(CLOUD_DELTA_KEY + '_' + j, chunks[j]));
+  if (tg && tg.CloudStorage) {
+    try {
+      if (utf8ByteLen(safeDelStr) <= 3800) {
+        await cloudSetRaw(DELETED_KEY_WRITE, safeDelStr);
       }
-      const results = await Promise.all(batch);
-      if (results.some(r => !r.ok)) {
-        // Retry failed ones sequentially once
+      let tgDeltaPacked = deltaPacked;
+      if (utf8ByteLen(tgDeltaPacked) > 16000) {
+        tgDeltaPacked = packItems(deltaItems, true);
+      }
+      const chunks = splitByUtf8Bytes(tgDeltaPacked, 3600);
+      if (chunks.length === 0) chunks.push('[]');
+
+      let allChunksOk = true;
+      for (let i = 0; i < chunks.length; i += 4) {
+        const batch = [];
         for (let j = i; j < Math.min(i + 4, chunks.length); j++) {
-          const retry = await cloudSetRaw(CLOUD_DELTA_KEY + '_' + j, chunks[j]);
-          if (!retry.ok) return { ok: false, err: retry.err || ('chunk_' + j) };
+          batch.push(cloudSetRaw(CLOUD_DELTA_KEY + '_' + j, chunks[j]));
+        }
+        const results = await Promise.all(batch);
+        if (results.some(r => !r.ok)) {
+          allChunksOk = false;
+          tgErr = (results.find(r => !r.ok) || {}).err || 'chunk_err';
+          break;
         }
       }
+      if (allChunksOk) {
+        const cntRes = await cloudSetRaw(CLOUD_DELTA_KEY + '_n', String(chunks.length));
+        tgOk = cntRes.ok;
+        tgErr = cntRes.err;
+      }
+    } catch (e) {
+      tgErr = String(e);
     }
-
-    const cntRes = await cloudSetRaw(CLOUD_DELTA_KEY + '_n', String(chunks.length));
-    if (!cntRes.ok) {
-      return { ok: false, err: cntRes.err || 'cnt_fail' };
-    }
-    return { ok: true, err: '', chunks: chunks.length };
-  } catch (e) {
-    return { ok: false, err: String(e) };
   }
+
+  const httpOk = await httpPromise;
+  if (tgOk || httpOk) {
+    return { ok: true, err: '', via: tgOk ? 'TG' : 'HTTPS' };
+  }
+  return { ok: false, err: tgErr };
 }
 
 let cloudSaveTimer = null;
@@ -1355,16 +1446,14 @@ function saveItems(immediateCloud = false) {
     localStorage.setItem(DELETED_KEY_WRITE, delStr);
   } catch (e) {}
 
-  if (tg && tg.CloudStorage) {
-    const deltaItems = items.filter(isItemModifiedFromSeed);
-    clearTimeout(cloudSaveTimer);
-    if (immediateCloud) {
-      return writeCloudDelta(deltaItems, delStr);
-    }
-    cloudSaveTimer = setTimeout(() => {
-      writeCloudDelta(deltaItems, delStr);
-    }, 500);
+  const deltaItems = items.filter(isItemModifiedFromSeed);
+  clearTimeout(cloudSaveTimer);
+  if (immediateCloud) {
+    return writeCloudDelta(deltaItems, delStr);
   }
+  cloudSaveTimer = setTimeout(() => {
+    writeCloudDelta(deltaItems, delStr);
+  }, 500);
   return Promise.resolve({ ok: true, err: '' });
 }
 
@@ -1460,10 +1549,6 @@ async function autoFillMissingPostersBackground(newTitlesList) {
 }
 
 async function syncCloudFull(manual = false) {
-  if (!tg || !tg.CloudStorage) {
-    if (manual) showToast('Облако доступно только внутри Telegram');
-    return;
-  }
   if (isCloudSyncing) return;
   isCloudSyncing = true;
   const syncBtn = document.getElementById('btnSyncCloud');
@@ -1472,16 +1557,20 @@ async function syncCloudFull(manual = false) {
   const watchdog = setTimeout(() => {
     isCloudSyncing = false;
     if (syncBtn) syncBtn.classList.remove('syncing');
-  }, 15000);
+  }, 18000);
 
   try {
-    const [cloudKey, cloudDelRaw] = await Promise.all([
+    // Pull from BOTH Telegram CloudStorage AND HTTPS Relay in parallel
+    const [cloudKey, cloudDelRaw, rawDelta, httpObj] = await Promise.all([
       cloudGetRaw(KP_KEY_STORAGE),
-      cloudGetRaw(DELETED_KEY_WRITE)
+      cloudGetRaw(DELETED_KEY_WRITE),
+      readCloudDelta(),
+      httpRelayPull()
     ]);
 
-    if (cloudKey && cloudKey !== kpApiKey) {
-      kpApiKey = cloudKey;
+    const effectiveKey = cloudKey || (httpObj && httpObj.kp) || '';
+    if (effectiveKey && effectiveKey !== kpApiKey) {
+      kpApiKey = effectiveKey;
       try { localStorage.setItem(KP_KEY_STORAGE, kpApiKey); } catch (e) {}
       updateKpIndicator();
     } else if (kpApiKey && !cloudKey) {
@@ -1492,17 +1581,22 @@ async function syncCloudFull(manual = false) {
       try {
         const cDel = JSON.parse(cloudDelRaw) || {};
         for (const [dk, ts] of Object.entries(cDel)) {
-          if (!deletedMap[dk] || ts > deletedMap[dk]) {
-            deletedMap[dk] = ts;
-          }
+          if (!deletedMap[dk] || ts > deletedMap[dk]) deletedMap[dk] = ts;
         }
       } catch (e) {}
     }
+    if (httpObj && httpObj.del && typeof httpObj.del === 'object') {
+      for (const [dk, ts] of Object.entries(httpObj.del)) {
+        if (!deletedMap[dk] || ts > deletedMap[dk]) deletedMap[dk] = ts;
+      }
+    }
 
     let cloudItems = [];
-    const rawDelta = await readCloudDelta();
     if (rawDelta) {
-      try { cloudItems = unpackItems(rawDelta); } catch (e) {}
+      try { cloudItems = cloudItems.concat(unpackItems(rawDelta)); } catch (e) {}
+    }
+    if (httpObj && httpObj.d) {
+      try { cloudItems = cloudItems.concat(unpackItems(httpObj.d)); } catch (e) {}
     }
 
     const mergedMap = new Map();
@@ -1576,7 +1670,7 @@ async function syncCloudFull(manual = false) {
       }
     }
 
-    if (deltaItems.length !== cloudItems.length) {
+    if (deltaItems.length > 0 && cloudItems.length === 0) {
       cloudNeedsPush = true;
     }
 
@@ -1584,10 +1678,10 @@ async function syncCloudFull(manual = false) {
       const writeRes = await writeCloudDelta(deltaItems, delStr);
       if (manual) {
         if (writeRes.ok) {
-          const extra = addedFromCloudCount > 0 ? ` • скачано: +${addedFromCloudCount}` : ` • изм. в облаке: ${deltaItems.length}`;
-          showToast(`☁️ Готово (${items.length} тайтл.${extra})`);
+          const extra = addedFromCloudCount > 0 ? ` • скачано: +${addedFromCloudCount}` : ` • изм: ${deltaItems.length}`;
+          showToast(`☁️ Синхронизировано (${items.length} тайтл.${extra})`);
         } else {
-          showToast(`⚠️ Ошибка облака: ${writeRes.err}`);
+          showToast(`⚠️ Ошибка сети: ${writeRes.err}`);
         }
       }
     } else if (addedFromCloudCount > 0) {
@@ -1600,6 +1694,35 @@ async function syncCloudFull(manual = false) {
     isCloudSyncing = false;
     if (syncBtn) syncBtn.classList.remove('syncing');
   }
+}
+
+function applySyncPayloadString(rawCode) {
+  const cleaned = String(rawCode || '').trim().replace(/^KB_SYNC:/, '');
+  if (!cleaned) return false;
+  const binStr = atob(cleaned);
+  const bytes = new Uint8Array(binStr.length);
+  for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+  const jsonStr = new TextDecoder().decode(bytes);
+  const importedDelta = unpackItems(jsonStr);
+  if (!importedDelta.length) return false;
+
+  const map = new Map();
+  items.forEach(it => map.set(itemSyncKey(it), it));
+  let count = 0;
+  importedDelta.forEach(imp => {
+    const k = itemSyncKey(imp);
+    const loc = map.get(k);
+    if (!loc || (imp.updatedAt || 0) >= (loc.updatedAt || 0)) {
+      if (loc && !imp.poster && loc.poster) imp.poster = loc.poster;
+      map.set(k, migrateItemFields(imp));
+      count++;
+    }
+  });
+  items = Array.from(map.values());
+  saveItems(true);
+  render();
+  showToast(`✅ Перенесено тайтлов: ${count} (всего ${items.length})`);
+  return true;
 }
 function updateKpIndicator() {
   const dot = document.getElementById('kpDot');
@@ -3517,6 +3640,39 @@ window.pickRandomPlanned = async function() {
 };
 
 document.getElementById('closeRandomModal').onclick = () => document.getElementById('randomModal').classList.remove('open');
+
+document.getElementById('btnCopySyncCode').onclick = async function() {
+  const deltaItems = items.filter(isItemModifiedFromSeed);
+  const packed = packItems(deltaItems.length ? deltaItems : items, true);
+  const bytes = new TextEncoder().encode(packed);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  const code = 'KB_SYNC:' + btoa(bin);
+  try {
+    await navigator.clipboard.writeText(code);
+    showToast('📋 Код скопирован! Вставь его на втором устройстве');
+  } catch (e) {
+    prompt('Скопируй этот код и отправь на второе устройство:', code);
+  }
+};
+document.getElementById('btnPasteSyncCode').onclick = function() {
+  const box = document.getElementById('pasteSyncBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+};
+document.getElementById('applySyncCodeBtn').onclick = function() {
+  const val = document.getElementById('syncCodeInput').value;
+  try {
+    if (applySyncPayloadString(val)) {
+      document.getElementById('syncCodeInput').value = '';
+      document.getElementById('pasteSyncBox').style.display = 'none';
+      document.getElementById('settingsModal').classList.remove('open');
+    } else {
+      showToast('Неверный или пустой код');
+    }
+  } catch (e) {
+    showToast('Ошибка чтения кода');
+  }
+};
 
 document.getElementById('btnSyncCloud').onclick = () => syncCloudFull(true);
 
