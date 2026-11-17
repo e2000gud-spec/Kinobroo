@@ -968,23 +968,22 @@ const KP_KEY_STORAGE = 'kinobrouski_kp_key';
 const SEED_FLAG_KEY = 'kinobrouski_seeded_v9';
 
 let items = [];
-let deletedMap = {}; // { "movie::title" or id: deletedTimestamp }
+let deletedMap = {};
 let kpApiKey = '';
-let filterType = 'all'; // 'all' | 'movie' | 'series' | 'anime' | 'stats'
-let filterStatus = 'all'; // 'all' | 'watching' | 'watched' | 'planned' | 'sequel'
+let filterType = 'all';
+let filterStatus = 'all';
 let localQuery = '';
 let sortBy = 'newest';
 let visibleLimit = 40;
 
-// Stats view state
-let statsTypeFilter = 'all'; // 'all' | 'anime' | 'series' | 'movie'
+let statsTypeFilter = 'all';
 let statsSelectedGenre = null;
 
 let editingId = null;
 let formType = 'movie';
 let formStatus = 'watched';
 let formRating = null;
-let formSeasonRatings = {}; // { "1": 9, "2": 8.5 }
+let formSeasonRatings = {};
 let formActiveRateSeason = 1;
 let formSeasonCount = 1;
 let formSeason = 1;
@@ -1013,7 +1012,7 @@ function showToast(msg) {
   if (!el) return;
   el.textContent = msg;
   el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2600);
+  setTimeout(() => el.classList.remove('show'), 3000);
 }
 
 function itemSyncKey(it) {
@@ -1065,7 +1064,6 @@ function migrateItemFields(it) {
   return it;
 }
 
-// Build lookup map of INITIAL_SEED so cloud delta only stores new/modified items!
 const SEED_LOOKUP = new Map();
 INITIAL_SEED.forEach(s => {
   const copy = migrateItemFields(JSON.parse(JSON.stringify(s)));
@@ -1075,7 +1073,7 @@ INITIAL_SEED.forEach(s => {
 function isItemModifiedFromSeed(it) {
   const key = itemSyncKey(it);
   const s = SEED_LOOKUP.get(key);
-  if (!s) return true; // Brand new title added by user!
+  if (!s) return true;
   if ((it.updatedAt || 0) > (s.createdAt || 0) + 10000) return true;
   if (it.status !== s.status) return true;
   if ((it.rating || null) !== (s.rating || null)) return true;
@@ -1091,7 +1089,7 @@ function isItemModifiedFromSeed(it) {
   return false;
 }
 
-function packItems(arr) {
+function packItems(arr, stripPosters = false) {
   return JSON.stringify(arr.map(x => [
     x.id,
     x.type === 'movie' ? 0 : (x.type === 'series' ? 1 : 2),
@@ -1100,7 +1098,7 @@ function packItems(arr) {
     x.rating ?? null,
     x.season || 1,
     x.episode || 1,
-    x.poster || '',
+    stripPosters ? '' : (x.poster || ''),
     x.note || '',
     x.createdAt || 0,
     (x.watchOrder && x.watchOrder.length) ? x.watchOrder.map(w => [
@@ -1176,7 +1174,7 @@ function cloudGetRaw(key) {
   return new Promise((resolve) => {
     if (tg && tg.CloudStorage) {
       let settled = false;
-      const timer = setTimeout(() => { if (!settled) { settled = true; resolve(''); } }, 3500);
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve(''); } }, 4500);
       try {
         tg.CloudStorage.getItem(key, (err, val) => {
           if (settled) return;
@@ -1194,11 +1192,33 @@ function cloudGetRaw(key) {
   });
 }
 
+function cloudGetKeys() {
+  return new Promise((resolve) => {
+    if (tg && tg.CloudStorage && typeof tg.CloudStorage.getKeys === 'function') {
+      let settled = false;
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve([]); } }, 4500);
+      try {
+        tg.CloudStorage.getKeys((err, keys) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          if (!err && Array.isArray(keys)) return resolve(keys);
+          resolve([]);
+        });
+      } catch (e) {
+        if (!settled) { settled = true; clearTimeout(timer); resolve([]); }
+      }
+    } else {
+      resolve([]);
+    }
+  });
+}
+
 function cloudSetRaw(key, val) {
   return new Promise((resolve) => {
     if (tg && tg.CloudStorage) {
       let settled = false;
-      const timer = setTimeout(() => { if (!settled) { settled = true; resolve({ ok: false, err: 'timeout' }); } }, 4000);
+      const timer = setTimeout(() => { if (!settled) { settled = true; resolve({ ok: false, err: 'timeout' }); } }, 4500);
       try {
         tg.CloudStorage.setItem(key, String(val), (err, ok) => {
           if (settled) return;
@@ -1220,7 +1240,6 @@ function sleepMs(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
-// Safe byte-length helper (Telegram CloudStorage limit is 4096 UTF-8 bytes per key!)
 function utf8ByteLen(str) {
   try {
     return new TextEncoder().encode(str).length;
@@ -1236,7 +1255,6 @@ function splitByUtf8Bytes(str, maxBytes) {
   for (let i = 0; i < str.length; i++) {
     const ch = str[i];
     const code = ch.charCodeAt(0);
-    // Handle surrogate pairs
     let fullCh = ch;
     if (code >= 0xD800 && code <= 0xDBFF && i + 1 < str.length) {
       fullCh += str[++i];
@@ -1256,55 +1274,73 @@ function splitByUtf8Bytes(str, maxBytes) {
 }
 
 async function readCloudDelta() {
+  // Discover keys directly via getKeys() so even partial/legacy keys are found!
+  const allKeys = await cloudGetKeys();
+  const deltaKeys = allKeys
+    .filter(k => k.startsWith(CLOUD_DELTA_KEY + '_') && /^kb_delta_v9_\d+$/.test(k))
+    .sort((a, b) => parseInt(a.split('_').pop(), 10) - parseInt(b.split('_').pop(), 10));
+
   const cntStr = await cloudGetRaw(CLOUD_DELTA_KEY + '_n');
   const cnt = parseInt(cntStr, 10);
-  if (cnt > 0 && cnt < 80) {
-    const parts = [];
-    for (let i = 0; i < cnt; i++) {
-      const part = await cloudGetRaw(CLOUD_DELTA_KEY + '_' + i);
-      if (!part) return '';
-      parts.push(part);
+
+  const targetCount = (cnt > 0 && cnt < 100) ? cnt : deltaKeys.length;
+  if (targetCount > 0) {
+    const parts = new Array(targetCount).fill('');
+    for (let i = 0; i < targetCount; i += 4) {
+      const batch = [];
+      for (let j = i; j < Math.min(i + 4, targetCount); j++) {
+        batch.push(cloudGetRaw(CLOUD_DELTA_KEY + '_' + j).then(v => { parts[j] = v || ''; }));
+      }
+      await Promise.all(batch);
     }
-    return parts.join('');
+    if (!parts.some(p => !p)) {
+      return parts.join('');
+    }
   }
   return await cloudGetRaw(CLOUD_DELTA_KEY);
 }
 
-let lastDeltaHash = '';
-
-async function writeCloudDelta(deltaPacked, delStr) {
+async function writeCloudDelta(deltaItems, delStr) {
   if (!tg || !tg.CloudStorage) return { ok: false, err: 'no_tg' };
   try {
-    // 1. Save deleted tombstones (keep max 60 recent deletions so it fits under 3500 bytes)
+    // 1. Save deleted tombstones
     const delEntries = Object.entries(deletedMap).sort((a, b) => b[1] - a[1]).slice(0, 60);
     const trimmedDel = Object.fromEntries(delEntries);
     const safeDelStr = JSON.stringify(trimmedDel);
     if (utf8ByteLen(safeDelStr) <= 3800) {
       await cloudSetRaw(DELETED_KEY_WRITE, safeDelStr);
-      await sleepMs(60);
     }
 
-    // 2. Split deltaPacked strictly by UTF-8 byte length (<= 3600 bytes per key, well under Telegram's 4096-byte ceiling!)
+    // 2. Pack delta; if too large (> 16 KB because of long poster URLs), strip poster URLs so sync stays ultra-fast & under 4 keys!
+    let deltaPacked = packItems(deltaItems, false);
+    if (utf8ByteLen(deltaPacked) > 16000) {
+      deltaPacked = packItems(deltaItems, true);
+    }
+
     const chunks = splitByUtf8Bytes(deltaPacked, 3600);
     if (chunks.length === 0) chunks.push('[]');
 
-    for (let i = 0; i < chunks.length; i++) {
-      let res = await cloudSetRaw(CLOUD_DELTA_KEY + '_' + i, chunks[i]);
-      if (!res.ok) {
-        await sleepMs(200);
-        res = await cloudSetRaw(CLOUD_DELTA_KEY + '_' + i, chunks[i]);
+    // Write chunks in fast parallel batches of 4
+    for (let i = 0; i < chunks.length; i += 4) {
+      const batch = [];
+      for (let j = i; j < Math.min(i + 4, chunks.length); j++) {
+        batch.push(cloudSetRaw(CLOUD_DELTA_KEY + '_' + j, chunks[j]));
       }
-      if (!res.ok) {
-        return { ok: false, err: res.err || ('chunk_' + i) };
+      const results = await Promise.all(batch);
+      if (results.some(r => !r.ok)) {
+        // Retry failed ones sequentially once
+        for (let j = i; j < Math.min(i + 4, chunks.length); j++) {
+          const retry = await cloudSetRaw(CLOUD_DELTA_KEY + '_' + j, chunks[j]);
+          if (!retry.ok) return { ok: false, err: retry.err || ('chunk_' + j) };
+        }
       }
-      await sleepMs(60);
     }
+
     const cntRes = await cloudSetRaw(CLOUD_DELTA_KEY + '_n', String(chunks.length));
     if (!cntRes.ok) {
       return { ok: false, err: cntRes.err || 'cnt_fail' };
     }
-    lastDeltaHash = deltaPacked + '|' + safeDelStr;
-    return { ok: true, err: '' };
+    return { ok: true, err: '', chunks: chunks.length };
   } catch (e) {
     return { ok: false, err: String(e) };
   }
@@ -1312,7 +1348,7 @@ async function writeCloudDelta(deltaPacked, delStr) {
 
 let cloudSaveTimer = null;
 function saveItems(immediateCloud = false) {
-  const fullPacked = packItems(items);
+  const fullPacked = packItems(items, false);
   const delStr = JSON.stringify(deletedMap);
   try {
     localStorage.setItem(STORAGE_KEY_WRITE, fullPacked);
@@ -1321,14 +1357,13 @@ function saveItems(immediateCloud = false) {
 
   if (tg && tg.CloudStorage) {
     const deltaItems = items.filter(isItemModifiedFromSeed);
-    const deltaPacked = packItems(deltaItems);
     clearTimeout(cloudSaveTimer);
     if (immediateCloud) {
-      return writeCloudDelta(deltaPacked, delStr);
+      return writeCloudDelta(deltaItems, delStr);
     }
     cloudSaveTimer = setTimeout(() => {
-      writeCloudDelta(deltaPacked, delStr);
-    }, 600);
+      writeCloudDelta(deltaItems, delStr);
+    }, 500);
   }
   return Promise.resolve({ ok: true, err: '' });
 }
@@ -1408,6 +1443,22 @@ function bootInstant() {
   syncCloudFull(false);
 }
 
+async function autoFillMissingPostersBackground(newTitlesList) {
+  for (const it of newTitlesList) {
+    if (!it.poster) {
+      const meta = await fetchBestMeta(it.title, it.type);
+      if (meta && meta.poster && meta.poster !== 'RATE_LIMIT') {
+        it.poster = meta.poster;
+        if ((!it.genres || !it.genres.length) && meta.genres && meta.genres.length) {
+          it.genres = meta.genres;
+        }
+        try { localStorage.setItem(STORAGE_KEY_WRITE, packItems(items, false)); } catch (e) {}
+        render();
+      }
+    }
+  }
+}
+
 async function syncCloudFull(manual = false) {
   if (!tg || !tg.CloudStorage) {
     if (manual) showToast('Облако доступно только внутри Telegram');
@@ -1421,21 +1472,22 @@ async function syncCloudFull(manual = false) {
   const watchdog = setTimeout(() => {
     isCloudSyncing = false;
     if (syncBtn) syncBtn.classList.remove('syncing');
-  }, 12000);
+  }, 15000);
 
   try {
-    // 1. Sync Kinopoisk API Key
-    const cloudKey = await cloudGetRaw(KP_KEY_STORAGE);
+    const [cloudKey, cloudDelRaw] = await Promise.all([
+      cloudGetRaw(KP_KEY_STORAGE),
+      cloudGetRaw(DELETED_KEY_WRITE)
+    ]);
+
     if (cloudKey && cloudKey !== kpApiKey) {
       kpApiKey = cloudKey;
       try { localStorage.setItem(KP_KEY_STORAGE, kpApiKey); } catch (e) {}
       updateKpIndicator();
     } else if (kpApiKey && !cloudKey) {
-      await cloudSetRaw(KP_KEY_STORAGE, kpApiKey);
+      cloudSetRaw(KP_KEY_STORAGE, kpApiKey);
     }
 
-    // 2. Sync deleted tombstones
-    const cloudDelRaw = await cloudGetRaw(DELETED_KEY_WRITE);
     if (cloudDelRaw) {
       try {
         const cDel = JSON.parse(cloudDelRaw) || {};
@@ -1447,17 +1499,17 @@ async function syncCloudFull(manual = false) {
       } catch (e) {}
     }
 
-    // 3. Read cloud delta items
     let cloudItems = [];
     const rawDelta = await readCloudDelta();
     if (rawDelta) {
       try { cloudItems = unpackItems(rawDelta); } catch (e) {}
     }
 
-    // 4. Two-way timestamp merge (latest updatedAt wins!)
     const mergedMap = new Map();
     let localChanged = false;
     let cloudNeedsPush = false;
+    let addedFromCloudCount = 0;
+    const newlyPulledWithoutPoster = [];
 
     items.forEach(loc => {
       const key = itemSyncKey(loc);
@@ -1480,16 +1532,21 @@ async function syncCloudFull(manual = false) {
 
       const loc = mergedMap.get(key);
       if (!loc) {
-        mergedMap.set(key, migrateItemFields(ci));
+        const migrated = migrateItemFields(ci);
+        mergedMap.set(key, migrated);
         localChanged = true;
+        addedFromCloudCount++;
+        if (!migrated.poster) newlyPulledWithoutPoster.push(migrated);
       } else {
         const locTime = loc.updatedAt || loc.createdAt || 0;
         if (ciTime > locTime) {
           if (!ci.poster && loc.poster) ci.poster = loc.poster;
           if ((!ci.genres || !ci.genres.length) && loc.genres && loc.genres.length) ci.genres = loc.genres;
           if ((!ci.watchOrder || !ci.watchOrder.length) && loc.watchOrder && loc.watchOrder.length) ci.watchOrder = loc.watchOrder;
-          mergedMap.set(key, migrateItemFields(ci));
+          const migrated = migrateItemFields(ci);
+          mergedMap.set(key, migrated);
           localChanged = true;
+          addedFromCloudCount++;
         } else if (locTime > ciTime) {
           cloudNeedsPush = true;
         } else {
@@ -1504,8 +1561,7 @@ async function syncCloudFull(manual = false) {
 
     items = Array.from(mergedMap.values());
     const deltaItems = items.filter(isItemModifiedFromSeed);
-    const deltaPacked = packItems(deltaItems);
-    const fullPacked = packItems(items);
+    const fullPacked = packItems(items, false);
     const delStr = JSON.stringify(deletedMap);
 
     try {
@@ -1515,6 +1571,9 @@ async function syncCloudFull(manual = false) {
 
     if (localChanged) {
       render();
+      if (newlyPulledWithoutPoster.length) {
+        autoFillMissingPostersBackground(newlyPulledWithoutPoster.slice(0, 15));
+      }
     }
 
     if (deltaItems.length !== cloudItems.length) {
@@ -1522,14 +1581,17 @@ async function syncCloudFull(manual = false) {
     }
 
     if (cloudNeedsPush || manual) {
-      const writeRes = await writeCloudDelta(deltaPacked, delStr);
+      const writeRes = await writeCloudDelta(deltaItems, delStr);
       if (manual) {
         if (writeRes.ok) {
-          showToast(`☁️ Синхронизировано (${items.length} тайтл., изм: ${deltaItems.length})`);
+          const extra = addedFromCloudCount > 0 ? ` • скачано: +${addedFromCloudCount}` : ` • изм. в облаке: ${deltaItems.length}`;
+          showToast(`☁️ Готово (${items.length} тайтл.${extra})`);
         } else {
-          showToast(`⚠️ Облако: ${writeRes.err}`);
+          showToast(`⚠️ Ошибка облака: ${writeRes.err}`);
         }
       }
+    } else if (addedFromCloudCount > 0) {
+      showToast(`☁️ Загружено с другого устройства: +${addedFromCloudCount}`);
     }
   } catch (e) {
     if (manual) showToast('⚠️ Сбой: ' + String(e));
