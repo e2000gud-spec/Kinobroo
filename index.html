@@ -1461,6 +1461,99 @@ function saveItems(immediateCloud = false) {
   cloudSaveTimer = setTimeout(pushTask, 800);
 }
 
+
+function mergeSeed(existing) {
+  const seedMap = new Map();
+  for (const s of INITIAL_SEED) {
+    seedMap.set((s.type || 'movie') + '::' + s.title.toLowerCase().trim(), s);
+  }
+
+  const seen = new Set();
+  const merged = [];
+  for (const it of existing) {
+    if (!it || !it.title) continue;
+    const norm = String(it.title).toLowerCase().trim();
+    const typeKey = (it.type || 'movie') + '::' + norm;
+    if (deletedMap[typeKey] || deletedMap[it.id]) continue;
+    const seedMatch = seedMap.get(typeKey);
+    if (seedMatch) {
+      if (!it.watchOrder || !it.watchOrder.length) {
+        it.watchOrder = JSON.parse(JSON.stringify(seedMatch.watchOrder || []));
+      }
+      if (seedMatch.waiting && !it.waiting) {
+        it.waiting = true;
+        if (!it.waitNote) it.waitNote = seedMatch.waitNote || '';
+      }
+    }
+    seen.add(norm);
+    seen.add(typeKey);
+    merged.push(migrateItemFields(it));
+  }
+  for (const s of INITIAL_SEED) {
+    const norm = String(s.title).toLowerCase().trim();
+    const typeKey = (s.type || 'movie') + '::' + norm;
+    if (deletedMap[typeKey] || deletedMap[s.id]) continue;
+    if (!seen.has(norm) && !seen.has(typeKey)) {
+      seen.add(typeKey);
+      merged.push(migrateItemFields(JSON.parse(JSON.stringify(s))));
+    }
+  }
+  return merged;
+}
+
+function bootInstant() {
+  try { kpApiKey = localStorage.getItem(KP_KEY_STORAGE) || ''; } catch (e) {}
+  try {
+    const rawDel = localStorage.getItem(DELETED_KEY_WRITE);
+    if (rawDel) deletedMap = JSON.parse(rawDel) || {};
+  } catch (e) {}
+  updateKpIndicator();
+
+  let localFound = [];
+  for (const k of STORAGE_KEYS_READ) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) {
+        const parsed = unpackItems(raw);
+        if (parsed.length > 0) {
+          localFound = parsed;
+          break;
+        }
+      }
+    } catch (e) {}
+  }
+
+  let seeded = false;
+  try { seeded = localStorage.getItem(SEED_FLAG_KEY) === '1'; } catch (e) {}
+
+  if (!seeded || localFound.length === 0) {
+    items = mergeSeed(localFound);
+    try { localStorage.setItem(SEED_FLAG_KEY, '1'); } catch (e) {}
+    saveItems(false);
+  } else {
+    items = localFound.map(migrateItemFields);
+  }
+  render();
+  syncCloudFull(false);
+}
+
+async function autoFillMissingPostersBackground(newTitlesList) {
+  for (const it of newTitlesList) {
+    if (!it.poster) {
+      const meta = await fetchBestMeta(it.title, it.type);
+      if (meta && meta.poster && meta.poster !== 'RATE_LIMIT') {
+        it.poster = meta.poster;
+        if ((!it.genres || !it.genres.length) && meta.genres && meta.genres.length) {
+          it.genres = meta.genres;
+        }
+        try { localStorage.setItem(STORAGE_KEY_WRITE, packItems(items, false)); } catch (e) {}
+        render();
+      }
+    }
+  }
+}
+
+
 async function syncCloudFull(manual = false) {
   if (isCloudSyncing) return;
   isCloudSyncing = true;
