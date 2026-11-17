@@ -906,33 +906,21 @@
         <button class="btn-pri" id="btnBulkCovers" style="width:100%;height:40px;font-size:13.5px">🖼️ Загрузить обложки и жанры</button>
       </div>
 
-      <div class="settings-card">
+            <div class="settings-card">
         <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">🔄 Перенос между ПК и телефоном</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:9px;line-height:1.4">
-          Если облако Telegram тормозит из-за сети: нажми «Скопировать код» на компе, скинь его боту и нажми «Вставить код» на телефоне.
+          Если авто-облако недоступно: нажми <b>Экспорт</b>, отправь файл себе в Избранное, сохрани на телефон и нажми <b>Импорт</b>.
         </div>
-        <div style="display:flex;gap:6px;margin-bottom:8px">
-          <button type="button" class="btn-pri" id="btnCopySyncCode" style="flex:1;height:36px;font-size:12.5px">📋 Скопировать код</button>
-          <button type="button" class="btn-sec" id="btnPasteSyncCode" style="flex:1;height:36px;font-size:12.5px">📥 Вставить код</button>
-        </div>
-        <div id="pasteSyncBox" style="display:none;margin-top:6px">
-          <textarea class="inp" id="syncCodeInput" placeholder="Вставь код KB_SYNC:..." style="height:80px;font-size:11px;padding:8px;resize:none;width:100%;margin-bottom:6px" onclick="this.select()"></textarea>
-          <button type="button" class="btn-pri" id="applySyncCodeBtn" style="width:100%;height:38px;font-size:13px">Применить код</button>
-        </div>
-      </div>
-
-      <div class="settings-card" style="display:flex;gap:8px;align-items:center;justify-content:space-between">
-        <span style="font-size:12.5px;color:var(--muted);font-weight:600">Резервная копия</span>
         <div style="display:flex;gap:6px">
-          <button class="btn-sec" id="btnExport" style="height:34px;padding:0 12px;font-size:12px">⬇️ Экспорт</button>
-          <button class="btn-sec" id="btnImport" style="height:34px;padding:0 12px;font-size:12px">⬆️ Импорт</button>
-          <input type="file" id="importFile" accept=".json" style="display:none" />
+          <button class="btn-sec" id="btnExport" style="flex:1;height:38px;font-size:13px">⬇️ Экспорт файла</button>
+          <button class="btn-pri" id="btnImport" style="flex:1;height:38px;font-size:13px">⬆️ Импорт файла</button>
+          <input type="file" id="importFile" accept=".json,.txt" style="display:none" />
         </div>
       </div>
     </div>
   </div>
 
-    <!-- Randomizer ("Что посмотреть?") Modal -->
+  <!-- Randomizer ("Что посмотреть?") Modal -->
   <div class="modal-bg" id="randomModal">
     <div class="modal">
       <div class="modal-head">
@@ -1253,7 +1241,7 @@ function cloudSetRaw(key, val) {
 
 // Secondary HTTPS Cloud Relay via public Bin (works over standard HTTPS even if Telegram CloudStorage RPC times out!)
 // --- CLOUD SYNC ENGINE ---
-const JSONBIN_MASTER = '$2a$10$wO3a1dEezrOQv5Vq0aB/2.kE/LhB2P3tLd6U556N63f3wJ3wHwDHO'; 
+const KVDB_BUCKET = 'A3b9xK2mP7qR4tW8vN1z'; 
 
 function getUserSyncChannel() {
   try {
@@ -1270,57 +1258,30 @@ function getUserSyncChannel() {
       localStorage.setItem('kb_fallback_uid', uid);
     }
     let h = 2166136261;
-    const seed = 'kinobrouski_sync_v9_' + uid;
+    const seed = 'kinobrouski_sync_v12_' + uid;
     for (let i = 0; i < seed.length; i++) {
       h ^= seed.charCodeAt(i);
       h = Math.imul(h, 16777619);
     }
-    return 'kb9_' + uid + '_' + (h >>> 0).toString(16);
+    return 'kb12_' + uid + '_' + (h >>> 0).toString(16);
   } catch (e) {
-    return 'kb_fallback_channel_1';
-  }
-}
-
-async function getBinIdForUser(channel) {
-  let binId = localStorage.getItem('kb_bin_id_' + channel);
-  if (binId) return binId;
-  if (tg && tg.CloudStorage) {
-    try {
-      binId = await cloudGetRawFast('kb_bin_id');
-      if (binId) {
-        localStorage.setItem('kb_bin_id_' + channel, binId);
-        return binId;
-      }
-    } catch(e){}
-  }
-  return '';
-}
-
-async function saveBinIdForUser(channel, binId) {
-  localStorage.setItem('kb_bin_id_' + channel, binId);
-  if (tg && tg.CloudStorage) {
-    await cloudSetRawFast('kb_bin_id', binId);
+    return 'kb_fallback_channel_2';
   }
 }
 
 async function httpRelayPull() {
   const ch = getUserSyncChannel();
-  if (!ch) return null;
-  const binId = await getBinIdForUser(ch);
-  if (!binId) return null;
-
   try {
     const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), 12000);
-    const res = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+    const tid = setTimeout(() => ctrl.abort(), 10000);
+    const res = await fetch('https://kvdb.io/' + KVDB_BUCKET + '/' + encodeURIComponent(ch), {
       method: 'GET',
-      headers: { 'X-Master-Key': JSONBIN_MASTER },
       signal: ctrl.signal
     });
     clearTimeout(tid);
     if (!res.ok) return null;
-    const data = await res.json();
-    return data.record;
+    const text = await res.text();
+    return JSON.parse(text);
   } catch (e) {
     return null;
   }
@@ -1328,38 +1289,17 @@ async function httpRelayPull() {
 
 async function httpRelayPush(payloadObj) {
   const ch = getUserSyncChannel();
-  if (!ch) return false;
-  let binId = await getBinIdForUser(ch);
-
   try {
     const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), 15000);
-    if (binId) {
-      const res = await fetch('https://api.jsonbin.io/v3/b/' + binId, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER },
-        body: JSON.stringify(payloadObj),
-        signal: ctrl.signal
-      });
-      clearTimeout(tid);
-      return res.ok;
-    } else {
-      const res = await fetch('https://api.jsonbin.io/v3/b', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER, 'X-Bin-Name': ch },
-        body: JSON.stringify(payloadObj),
-        signal: ctrl.signal
-      });
-      clearTimeout(tid);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.metadata && data.metadata.id) {
-          await saveBinIdForUser(ch, data.metadata.id);
-          return true;
-        }
-      }
-      return false;
-    }
+    const tid = setTimeout(() => ctrl.abort(), 10000);
+    const res = await fetch('https://kvdb.io/' + KVDB_BUCKET + '/' + encodeURIComponent(ch), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payloadObj),
+      signal: ctrl.signal
+    });
+    clearTimeout(tid);
+    return res.ok;
   } catch (e) {
     return false;
   }
@@ -3682,88 +3622,61 @@ window.pickRandomPlanned = async function() {
 
 document.getElementById('closeRandomModal').onclick = () => document.getElementById('randomModal').classList.remove('open');
 
-document.getElementById('btnCopySyncCode').onclick = async function() {
-  const btn = document.getElementById('btnCopySyncCode');
-  const orig = btn.textContent;
-  btn.textContent = '⏳ Создаю код...';
-  btn.disabled = true;
-
-  try {
-    const deltaItems = items.filter(isItemModifiedFromSeed);
-    const dPacked = packItems(deltaItems.length ? deltaItems : items, false);
-    const payload = { d: dPacked, del: deletedMap, kp: kpApiKey || '', ts: Date.now() };
-
-    const res = await fetch('https://api.jsonbin.io/v3/b', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER },
-      body: JSON.stringify(payload)
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      const code = 'KB_SYNC:' + data.metadata.id;
-      
-      const box = document.getElementById('pasteSyncBox');
-      const input = document.getElementById('syncCodeInput');
-      box.style.display = 'block';
-      input.value = code;
-      input.style.height = '40px';
-      input.select();
-      try {
-        document.execCommand('copy');
-        showToast('📋 Короткий код скопирован!');
-      } catch(e) {
-        showToast('Выдели код ниже и нажми Скопировать');
-      }
-    } else {
-      showToast('⚠️ Ошибка создания кода');
-    }
-  } catch(e) {
-    showToast('⚠️ Ошибка сети');
-  } finally {
-    btn.textContent = orig;
-    btn.disabled = false;
-  }
+document.getElementById('btnExport').onclick = function() {
+  const deltaItems = items.filter(isItemModifiedFromSeed);
+  const packed = packItems(deltaItems.length ? deltaItems : items, false);
+  const payload = { d: packed, del: deletedMap, kp: kpApiKey || '', ts: Date.now() };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'kinobrouski_backup.json';
+  a.click();
 };
 
-document.getElementById('btnPasteSyncCode').onclick = function() {
-  const box = document.getElementById('pasteSyncBox');
-  box.style.display = box.style.display === 'none' ? 'block' : 'none';
-  document.getElementById('syncCodeInput').style.height = '40px';
-  document.getElementById('syncCodeInput').value = '';
-};
-
-document.getElementById('applySyncCodeBtn').onclick = async function() {
-  const val = document.getElementById('syncCodeInput').value.trim();
-  const cleaned = val.replace(/^KB_SYNC:/, '');
-  if (!cleaned || cleaned.length < 10) {
-    showToast('Неверный код');
-    return;
-  }
-  
-  const btn = document.getElementById('applySyncCodeBtn');
-  const orig = btn.textContent;
-  btn.textContent = '⏳ Загрузка...';
-  btn.disabled = true;
-  
-  try {
-    const res = await fetch('https://api.jsonbin.io/v3/b/' + cleaned + '/latest', {
-      method: 'GET',
-      headers: { 'X-Master-Key': JSONBIN_MASTER }
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      const httpObj = data.record;
-      if (!httpObj || !httpObj.d) { showToast('Код пуст'); return; }
+document.getElementById('btnImport').onclick = () => document.getElementById('importFile').click();
+document.getElementById('importFile').onchange = function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function() {
+    try {
+      const text = reader.result.trim();
+      let importedDelta = [];
+      let importedDel = {};
       
-      const importedDelta = unpackItems(httpObj.d);
-      if (httpObj.del) {
-        for (const [dk, ts] of Object.entries(httpObj.del)) {
-          if (!deletedMap[dk] || ts > deletedMap[dk]) deletedMap[dk] = ts;
+      // Support legacy raw text paste code if they selected the message.txt
+      if (text.startsWith('KB_SYNC:')) {
+        const binStr = atob(text.replace(/^KB_SYNC:/, ''));
+        const bytes = new Uint8Array(binStr.length);
+        for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+        importedDelta = unpackItems(new TextDecoder().decode(bytes));
+      } else {
+        const data = JSON.parse(text);
+        if (Array.isArray(data)) {
+          // Very old backup format
+          importedDelta = data;
+        } else if (data && data.d) {
+          // New structured payload
+          importedDelta = unpackItems(data.d);
+          if (data.del) importedDel = data.del;
+          if (data.kp && !kpApiKey) {
+            kpApiKey = data.kp;
+            localStorage.setItem(KP_KEY_STORAGE, kpApiKey);
+            updateKpIndicator();
+          }
         }
       }
-      
+
+      if (!importedDelta.length) {
+        showToast('Файл пуст или повреждён');
+        return;
+      }
+
+      // Merge gracefully
+      for (const [dk, ts] of Object.entries(importedDel)) {
+        if (!deletedMap[dk] || ts > deletedMap[dk]) deletedMap[dk] = ts;
+      }
+
       const map = new Map();
       items.forEach(it => map.set(itemSyncKey(it), it));
       let count = 0;
@@ -3776,29 +3689,21 @@ document.getElementById('applySyncCodeBtn').onclick = async function() {
           count++;
         }
       });
+
       items = Array.from(map.values());
       saveItems(true);
       render();
-      
-      document.getElementById('syncCodeInput').value = '';
-      document.getElementById('pasteSyncBox').style.display = 'none';
       document.getElementById('settingsModal').classList.remove('open');
-      showToast(`✅ Успешно! Добавлено/обновлено: ${count} тайтл.`);
-      
-      // Also link this channel for future auto-syncs!
-      const ch = getUserSyncChannel();
-      if (ch) await saveBinIdForUser(ch, cleaned);
-      
-    } else {
-      showToast('⚠️ Код не найден или устарел');
+      document.getElementById('importFile').value = '';
+      showToast(`✅ Импорт завершён! Обновлено: ${count} тайтл.`);
+    } catch (err) {
+      showToast('⚠️ Ошибка чтения файла');
     }
-  } catch (e) {
-    showToast('⚠️ Ошибка загрузки по коду');
-  } finally {
-    btn.textContent = orig;
-    btn.disabled = false;
-  }
+  };
+  reader.readAsText(file);
 };
+
+
 
 document.getElementById('btnSyncCloud').onclick = () => syncCloudFull(true);
 
