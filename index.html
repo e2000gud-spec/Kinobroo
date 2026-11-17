@@ -1253,41 +1253,74 @@ function cloudSetRaw(key, val) {
 
 // Secondary HTTPS Cloud Relay via public Bin (works over standard HTTPS even if Telegram CloudStorage RPC times out!)
 // --- CLOUD SYNC ENGINE ---
-const JSONBIN_KEY = 'A3b9xK2mP7qR4tW8vN1z'; // KVDB.io Bucket
+const JSONBIN_MASTER = '$2a$10$wO3a1dEezrOQv5Vq0aB/2.kE/LhB2P3tLd6U556N63f3wJ3wHwDHO'; 
 
 function getUserSyncChannel() {
   try {
-    const uid = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id)
+    let uid = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id)
       ? String(tg.initDataUnsafe.user.id)
       : '';
-    if (!uid) return '';
+    if (!uid) {
+      uid = localStorage.getItem('kb_fallback_uid');
+      if (!uid) {
+        uid = 'user_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('kb_fallback_uid', uid);
+      }
+    } else {
+      localStorage.setItem('kb_fallback_uid', uid);
+    }
     let h = 2166136261;
-    const seed = 'kinobrouski_sync_v10_' + uid;
+    const seed = 'kinobrouski_sync_v9_' + uid;
     for (let i = 0; i < seed.length; i++) {
       h ^= seed.charCodeAt(i);
       h = Math.imul(h, 16777619);
     }
-    return 'kb10_' + uid + '_' + (h >>> 0).toString(16);
+    return 'kb9_' + uid + '_' + (h >>> 0).toString(16);
   } catch (e) {
-    return '';
+    return 'kb_fallback_channel_1';
+  }
+}
+
+async function getBinIdForUser(channel) {
+  let binId = localStorage.getItem('kb_bin_id_' + channel);
+  if (binId) return binId;
+  if (tg && tg.CloudStorage) {
+    try {
+      binId = await cloudGetRawFast('kb_bin_id');
+      if (binId) {
+        localStorage.setItem('kb_bin_id_' + channel, binId);
+        return binId;
+      }
+    } catch(e){}
+  }
+  return '';
+}
+
+async function saveBinIdForUser(channel, binId) {
+  localStorage.setItem('kb_bin_id_' + channel, binId);
+  if (tg && tg.CloudStorage) {
+    await cloudSetRawFast('kb_bin_id', binId);
   }
 }
 
 async function httpRelayPull() {
   const ch = getUserSyncChannel();
   if (!ch) return null;
+  const binId = await getBinIdForUser(ch);
+  if (!binId) return null;
+
   try {
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), 12000);
-    const res = await fetch('https://kvdb.io/' + JSONBIN_KEY + '/' + encodeURIComponent(ch), {
+    const res = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
       method: 'GET',
+      headers: { 'X-Master-Key': JSONBIN_MASTER },
       signal: ctrl.signal
     });
     clearTimeout(tid);
     if (!res.ok) return null;
-    const text = await res.text();
-    if (!text) return null;
-    return JSON.parse(text);
+    const data = await res.json();
+    return data.record;
   } catch (e) {
     return null;
   }
@@ -1296,22 +1329,41 @@ async function httpRelayPull() {
 async function httpRelayPush(payloadObj) {
   const ch = getUserSyncChannel();
   if (!ch) return false;
+  let binId = await getBinIdForUser(ch);
+
   try {
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), 15000);
-    const res = await fetch('https://kvdb.io/' + JSONBIN_KEY + '/' + encodeURIComponent(ch), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payloadObj),
-      signal: ctrl.signal
-    });
-    clearTimeout(tid);
-    return res.ok;
+    if (binId) {
+      const res = await fetch('https://api.jsonbin.io/v3/b/' + binId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER },
+        body: JSON.stringify(payloadObj),
+        signal: ctrl.signal
+      });
+      clearTimeout(tid);
+      return res.ok;
+    } else {
+      const res = await fetch('https://api.jsonbin.io/v3/b', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER, 'X-Bin-Name': ch },
+        body: JSON.stringify(payloadObj),
+        signal: ctrl.signal
+      });
+      clearTimeout(tid);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.metadata && data.metadata.id) {
+          await saveBinIdForUser(ch, data.metadata.id);
+          return true;
+        }
+      }
+      return false;
+    }
   } catch (e) {
     return false;
   }
 }
-
 function cloudGetRawFast(key) {
   return new Promise((resolve) => {
     if (tg && tg.CloudStorage) {
@@ -3630,42 +3682,121 @@ window.pickRandomPlanned = async function() {
 
 document.getElementById('closeRandomModal').onclick = () => document.getElementById('randomModal').classList.remove('open');
 
-document.getElementById('btnCopySyncCode').onclick = function() {
-  const deltaItems = items.filter(isItemModifiedFromSeed);
-  const packed = packItems(deltaItems.length ? deltaItems : items, true);
-  const bytes = new TextEncoder().encode(packed);
-  let bin = '';
-  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-  const code = 'KB_SYNC:' + btoa(bin);
-  
-  const box = document.getElementById('pasteSyncBox');
-  const input = document.getElementById('syncCodeInput');
-  box.style.display = 'block';
-  input.value = code;
-  input.select();
+document.getElementById('btnCopySyncCode').onclick = async function() {
+  const btn = document.getElementById('btnCopySyncCode');
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Создаю код...';
+  btn.disabled = true;
+
   try {
-    document.execCommand('copy');
-    showToast('📋 Код скопирован! Отправь его в Избранное');
+    const deltaItems = items.filter(isItemModifiedFromSeed);
+    const dPacked = packItems(deltaItems.length ? deltaItems : items, false);
+    const payload = { d: dPacked, del: deletedMap, kp: kpApiKey || '', ts: Date.now() };
+
+    const res = await fetch('https://api.jsonbin.io/v3/b', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER },
+      body: JSON.stringify(payload)
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      const code = 'KB_SYNC:' + data.metadata.id;
+      
+      const box = document.getElementById('pasteSyncBox');
+      const input = document.getElementById('syncCodeInput');
+      box.style.display = 'block';
+      input.value = code;
+      input.style.height = '40px';
+      input.select();
+      try {
+        document.execCommand('copy');
+        showToast('📋 Короткий код скопирован!');
+      } catch(e) {
+        showToast('Выдели код ниже и нажми Скопировать');
+      }
+    } else {
+      showToast('⚠️ Ошибка создания кода');
+    }
   } catch(e) {
-    showToast('Выдели текст ниже и нажми Скопировать');
+    showToast('⚠️ Ошибка сети');
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
   }
 };
+
 document.getElementById('btnPasteSyncCode').onclick = function() {
   const box = document.getElementById('pasteSyncBox');
   box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  document.getElementById('syncCodeInput').style.height = '40px';
+  document.getElementById('syncCodeInput').value = '';
 };
-document.getElementById('applySyncCodeBtn').onclick = function() {
-  const val = document.getElementById('syncCodeInput').value;
+
+document.getElementById('applySyncCodeBtn').onclick = async function() {
+  const val = document.getElementById('syncCodeInput').value.trim();
+  const cleaned = val.replace(/^KB_SYNC:/, '');
+  if (!cleaned || cleaned.length < 10) {
+    showToast('Неверный код');
+    return;
+  }
+  
+  const btn = document.getElementById('applySyncCodeBtn');
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Загрузка...';
+  btn.disabled = true;
+  
   try {
-    if (applySyncPayloadString(val)) {
+    const res = await fetch('https://api.jsonbin.io/v3/b/' + cleaned + '/latest', {
+      method: 'GET',
+      headers: { 'X-Master-Key': JSONBIN_MASTER }
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      const httpObj = data.record;
+      if (!httpObj || !httpObj.d) { showToast('Код пуст'); return; }
+      
+      const importedDelta = unpackItems(httpObj.d);
+      if (httpObj.del) {
+        for (const [dk, ts] of Object.entries(httpObj.del)) {
+          if (!deletedMap[dk] || ts > deletedMap[dk]) deletedMap[dk] = ts;
+        }
+      }
+      
+      const map = new Map();
+      items.forEach(it => map.set(itemSyncKey(it), it));
+      let count = 0;
+      importedDelta.forEach(imp => {
+        const k = itemSyncKey(imp);
+        const loc = map.get(k);
+        if (!loc || (imp.updatedAt || 0) >= (loc.updatedAt || 0)) {
+          if (loc && !imp.poster && loc.poster) imp.poster = loc.poster;
+          map.set(k, migrateItemFields(imp));
+          count++;
+        }
+      });
+      items = Array.from(map.values());
+      saveItems(true);
+      render();
+      
       document.getElementById('syncCodeInput').value = '';
       document.getElementById('pasteSyncBox').style.display = 'none';
       document.getElementById('settingsModal').classList.remove('open');
+      showToast(`✅ Успешно! Добавлено/обновлено: ${count} тайтл.`);
+      
+      // Also link this channel for future auto-syncs!
+      const ch = getUserSyncChannel();
+      if (ch) await saveBinIdForUser(ch, cleaned);
+      
     } else {
-      showToast('Неверный или пустой код');
+      showToast('⚠️ Код не найден или устарел');
     }
   } catch (e) {
-    showToast('Ошибка чтения кода');
+    showToast('⚠️ Ошибка загрузки по коду');
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
   }
 };
 
